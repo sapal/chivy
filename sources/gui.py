@@ -122,6 +122,8 @@ class Client(object):
             g.clear()
             g.xy = s.xy
             g.render()
+        if not oooMan.alive:
+            s.alpha = 1.0 - oooMan.dieProgress
 
         s.render()
         sA = self.sprites["action0"]

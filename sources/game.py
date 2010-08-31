@@ -76,7 +76,8 @@ class Board(object):
             self.tiles.append([])
             for y in range(self.height):
                 self.tiles[x].append(BoardTile((x,y),int(rows[y][2*x+1]),rows[y][2*x]))
-
+    def randomPosition(self):
+        return random.randint(0,self.width-1),random.randint(0,self.height-1)
     def __repr__(self):
         resLst = []
         for y in range(self.height):
@@ -235,21 +236,36 @@ class OooMan(GameObject):
     kinds = {}
     @staticmethod
     def create(player):
-        return OooMan((0,0),0,random.choice(list(OooMan.kinds.keys())),player.board)
-    def __init__(self,position,rotation,kind,board):
+        return OooMan(player.board.randomPosition(),0,random.choice(list(OooMan.kinds.keys())),player)
+    def __init__(self,position,rotation,kind,player):
         GameObject.__init__(self,position,rotation)
         self.kind = kind
-        self.board = board
+        self.player = player
+        self.board = player.board
         self.actionList = []
         self.size = 0.66
         self.alive = True
         self.dieProgress = 0
         self.dieStartTime = 0
-        self.dieSpeed = 0.5
+        self.dieSpeed = 0.1
+    def __str__(self):
+        return str(self.position)+" "+self.kind
     def collide(self,gameObject):
+        if gameObject is self:
+            return False
         x,y = self.position
         ox,oy = gameObject.position
-        return self.size**2 >= (ox-x)**2+(oy-y)**2
+        #print("{0}\t{1}\t{2}".format(self,gameObject,(self.size**2, (ox-x)**2 , (oy-y)**2)))
+        return (self.size**2 >= (ox-x)**2+(oy-y)**2)
+    def collideOooMan(self,other,time):
+        if not self.collide(other):
+            return
+        #print("COLLIDE!")
+        if (other.player is not self.player) and other.kind in OooMan.kinds[self.kind]:
+            other.die(time)
+    def die(self,time):
+        self.dieStartTime = time
+        self.alive = False
     def actionEnded(self,time):
         if self.actionList:
             self.actionList.pop(0)
@@ -294,6 +310,7 @@ class Player(object):
         o = OooMan.create(self)
         self.oooMen.append(o)
         self.updateActiveOooMan()
+
     def updateActiveOooMan(self):
         if self.activeOooMan not in self.alive:
             self.activeOooMan = None
@@ -302,16 +319,22 @@ class Player(object):
     def removeOooMan(self,oooMan):
         self.oooMen.remove(oooMan)
         self.updateActiveOooMan()
+
     def switchActiveOooMan(self):
         if not self.activeOooMan:
             return
-        idx = self.oooMen.index(self.activeOooMan)
-        self.activeOooMan = self.oooMen[(idx+1)%len(self.oooMen)]
+        alive = self.alive
+        idx = alive.index(self.activeOooMan)
+        self.activeOooMan = alive[(idx+1)%len(alive)]
 
     def update(self,time):
         for o in self.oooMen:
             o.update(time)
         self.oooMen[:] = [o for o in self.oooMen if not o.dieProgress >=1]
+        self.updateActiveOooMan()
+        while len(self.oooMen) < 3:
+            self.addOooMan()
+
     def addAction(self,kind):
         """Adds action to active oooMan"""
         if self.activeOooMan:
@@ -342,6 +365,10 @@ class Game(object):
     def update(self,time):
         for p in self.players:
             p.update(time)
+        oooMen = [o for p in self.players for o in p.alive ]
+        for man in oooMen:
+            for other in oooMen:
+                man.collideOooMan(other,time)
 
 if __name__ == "__main__":
     Board._test()
