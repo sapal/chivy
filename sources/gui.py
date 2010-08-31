@@ -143,7 +143,7 @@ class Client(object):
             sA.y = s.y+config.spriteSize/3+height
             sA.rot = 0
             sA.alpha = 1.0 - a.progress
-            if a.started and not a.canPerform():
+            if a.started and (not a.canPerform() or a.discarded):
                 sA.green = 0
                 sA.blue = 0
                 #print((a.direction,a.startPosition,a.getEndPosition()))
@@ -206,17 +206,18 @@ if __name__ == "__main__":
             #key.UP: (p.addAction, {'kind':game.ActionFactory.MOVE}),
             #key.RIGHT: (p.addAction, {'kind':game.ActionFactory.ROTATE_CW}),
             #key.LEFT: (p.addAction, {'kind':game.ActionFactory.ROTATE_CCW}),
+
             key.UP: (p.addAction, {'kind':game.ActionFactory.GO_NORTH}),
             key.LEFT: (p.addAction, {'kind':game.ActionFactory.GO_WEST}),
             key.DOWN: (p.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
             key.RIGHT: (p.addAction, {'kind':game.ActionFactory.GO_EAST}),
-            key.RSHIFT: (p.removeAction, {}),
+            #key.RSHIFT: (p.removeAction, {}),
             key.RCTRL: (p.switchActiveOooMan,{}),
 
             key.W: (q.addAction, {'kind':game.ActionFactory.GO_NORTH}),
             key.A: (q.addAction, {'kind':game.ActionFactory.GO_WEST}),
             key.S: (q.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
             key.D: (q.addAction, {'kind':game.ActionFactory.GO_EAST}),
-            key.LSHIFT: (q.removeAction, {}),
+            #key.LSHIFT: (q.removeAction, {}),
             key.LCTRL: (q.switchActiveOooMan,{})}
     c.run()

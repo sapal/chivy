@@ -122,6 +122,7 @@ class OooManAction(object):
     """ Base class for various actions.
     kind - one of ActionFactory.kinds
     """
+    discardImpossible = True
     def __init__(self,oooMan,kind):
         """All derived classes should have constructor with this three parameters first."""
         self.startTime = 0
@@ -167,11 +168,19 @@ class OooManMoveRotate(OooManAction):
         self.rotate = rotate
         self.startPosition = None
         self.relative = relative
+        self.discarded = False
     def start(self,time):
         OooManAction.start(self,time)
         self.startPosition = self.oooMan.position
         self.startRotation = self.oooMan.rotation
         self.direction =  (4+int(round(self.oooMan.rotation/90.0))%4)%4
+        if OooManAction.discardImpossible and not self.canPerform():
+            self.discard()
+    def discard(self):
+        self.discarded = True
+        self.roatate = 0
+        self.relative = True
+        self.move = None
     def update(self,time):
         #print((self.started,self.ended,self.canPerform(),self.getEndPosition()))
         if not OooManAction.update(self,time):
