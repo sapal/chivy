@@ -55,7 +55,7 @@ class Board(object):
     """Class representing board.
     
     dimensions = (width,height)
-    tiles - 2 dimensional array of BoardTile
+    tiles - dictionary: (x,y) -> BoardTile
     """
     def __init__(self, dimensions=(8,8),tiles=""):
         """Creates board."""
@@ -71,19 +71,73 @@ class Board(object):
             s = ((".0"*self.width)+'\n')*self.height
         rows = list(reversed(s.split()))
         self.dimensions = (len(rows[0])//2,len(rows))
-        self.tiles = []
+        self.tiles = {}
         for x in range(self.width):
-            self.tiles.append([])
             for y in range(self.height):
-                self.tiles[x].append(BoardTile((x,y),int(rows[y][2*x+1]),rows[y][2*x]))
+                self.tiles[(x,y)] = BoardTile((x,y),int(rows[y][2*x+1]),rows[y][2*x])
+    def generateBoard(self,tiles,seed=0):
+        que = [(0,0)]
+        self.tiles = {}
+        random.seed(seed)
+        tiles = list(tiles)
+        random.shuffle(tiles)
+        for t in tiles:
+            random.shuffle(que)
+            while que:
+                if que[-1] in self.tiles.keys():
+                    que.pop()
+                else:break
+            if not que:break
+            pos = que.pop()
+            dirs = list(BoardTile.directions)
+            random.shuffle(dirs)
+            for d in dirs:
+                self.tiles[pos] = BoardTile(pos,0,'+')
+                if self.getTile(pos,d) or pos == (0,0):
+                    for up in dirs:
+                        self.tiles[pos] = BoardTile(pos,up,t)
+                        if self.getTile(pos,d):
+                            break
+                    break
+            for d in dirs:
+                if self.getTile(pos,d) is None:
+                    x,y = pos
+                    dx,dy = BoardTile.delta[d]
+                    #print("dodaję d({0},{1})".format(dx,dy))
+                    que.append((x+dx,y+dy))
+            #print("t:{t},kind:{k} pos:{pos} up:{up}".format(t=t,pos=pos,up=self.tiles[pos].upSide,k=self.tiles[pos].kind))
+        for (x,y) in que:
+            if (x,y) not in self.tiles:
+                self.tiles[x,y] = BoardTile((x,y),0,'.')
+        left = len(tiles)
+        right = -left
+        top = -left
+        bottom = left
+        for (x,y) in self.tiles.keys():
+            left = min(left,x)
+            right = max(right,x)
+            top = max(top,y)
+            bottom = min(bottom,y)
+        #print("[{0},{1}] x [{2},{3}]".format(left,right,bottom,top))
+        self.dimensions = max(0,1+right-left),max(0,1+top-bottom)
+        nTiles = {}
+        for (x,y),t in self.tiles.items():
+            nx,ny = x-left,y-bottom
+            nTiles[nx,ny] = BoardTile((nx,ny),t.upSide,t.kind)
+        self.tiles = nTiles
+
     def randomPosition(self):
-        return random.randint(0,self.width-1),random.randint(0,self.height-1)
+        pos = [ p for p in self.tiles.keys() if self.tiles[p].kind != '.']
+        return random.choice(pos)
     def __repr__(self):
         resLst = []
         for y in range(self.height):
             row = []
             for x in range(self.width):
-                row.append(self.tiles[x][y].kind+str(self.tiles[x][y].upSide))
+                if (x,y) in self.tiles:
+                    row.append(self.tiles[(x,y)].kind+str(self.tiles[(x,y)].upSide))
+                else:
+                    row.append('.0')
             resLst.append("".join(row))
         return "\n".join(reversed(resLst))
 
@@ -91,19 +145,18 @@ class Board(object):
         """Returns tile at position = (x,y) if direction is None,
         or tile NORTH/WEST/SOUTH/EAST (according to direction) from this tile.
 
-        Returns None if no such tile exists, or cannot be reached from tile (x,y)."""
+        Returns None if no such tile exists, and False if it cannot be reached from tile (x,y)."""
         try:
             x,y = position
             if direction is None:
-                return self.tiles[x][y]
+                return self.tiles[x,y]
             dx,dy = BoardTile.delta[direction]
-            if x+dx < 0 or y+dy <0:
-                return None
-            if self.tiles[dx+x][dy+y].canGo(BoardTile.reverseDirection(direction)) and self.tiles[x][y].canGo(direction):
-                return self.tiles[dx+x][dy+y]
+            #if x+dx < 0 or y+dy <0:
+            #    return None
+            if self.tiles[x,y].canGo(direction) and self.tiles[dx+x,dy+y].canGo(BoardTile.reverseDirection(direction)):
+                return self.tiles[dx+x,dy+y]
             else:
-                #print(("AAA",self.tiles[x][y].canGo(direction)))
-                return None
+                return False
         except BaseException,e:
             return None
 
@@ -116,7 +169,10 @@ class Board(object):
 
     @staticmethod
     def _test():
-        print(Board(tiles="T1L2I1\n.0+4I2"))
+        #print(Board(tiles="T1L2I1\n.0+4I2"))
+        b = Board()
+        b.generateBoard("T"*10+"+"*3)
+        print(b)
 
 class OooManAction(object):
     """ Base class for various actions.

@@ -26,16 +26,26 @@ class MySprite(rabbyt.Sprite):
 
 class Camera(object):
 
-    def __init__(self, win, x=0.0, y=0.0, zoom = 1.0, follow=None):
+    def __init__(self, win, position=(0,0), zoom = 1.0, follow=None):
         self.win = win
-        self.x = x
-        self.y = y
         self.zoom = zoom
         self.follow = follow
+        self.position = position
+        self.dimensions = (0,0,0,0)
+
+    @property
+    def x(self):
+        s = config.spriteSize*self.zoom
+        return self.position[0]*s
+
+    @property
+    def y(self):
+        s = config.spriteSize*self.zoom
+        return self.position[1]*s
 
     def update(self):
         if self.follow:
-            self.x,self.y = self.follow.position
+            self.position = self.follow.position
 
     def worldProjection(self):
         gl.glMatrixMode(gl.GL_PROJECTION)
@@ -46,6 +56,22 @@ class Camera(object):
             (self.x + w/2)/self.zoom,
             (self.y - h/2)/self.zoom,
             (self.y + h/2)/self.zoom)
+        x,y = self.position
+        s = 2*config.spriteSize/self.zoom
+        self.dimensions = (x-w/s, x+w/s, y-h/s, y+h/s)
+
+    @property
+    def left(self):
+        return self.dimensions[0]
+    @property
+    def right(self):
+        return self.dimensions[1]
+    @property
+    def bottom(self):
+        return self.dimensions[2]
+    @property
+    def top(self):
+        return self.dimensions[3]
 
     def hudProjection(self):
         gl.glMatrixMode(gl.GL_PROJECTION)
@@ -79,7 +105,8 @@ class Client(object):
         self.addKeyBindings()
         self.window.push_handlers(self.inputListener)
         rabbyt.set_default_attribs()
-        self.camera = Camera(self.window, x=0, y=0,zoom=1.0)
+        bw,bh = self.game.board.dimensions
+        self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
         self.time = 0
         clock.schedule(self.addTime)
         self.fps = clock.ClockDisplay()
@@ -95,7 +122,8 @@ class Client(object):
         x,y = pos
         b = self.game.board
         size = config.spriteSize
-        return ((x-b.width/2+0.5)*size, (y-b.height/2+0.5)*size)
+        #return ((x-b.width/2+0.5)*size, (y-b.height/2+0.5)*size)
+        return x*size, y*size
 
 
     def drawTile(self,tile):
@@ -107,10 +135,9 @@ class Client(object):
         s.render()
 
     def drawBoard(self):
-        w,h = self.game.board.dimensions
-        for x in range(w):
-            for y in range(h):
-                self.drawTile(self.game.board.tiles[x][y])
+        tiles = self.game.board.tiles
+        for x,y in tiles.keys():
+            self.drawTile(tiles[x,y])
 
     def drawOooMan(self, player, oooMan):
         s = self.sprites["OooMan-"+player.color+"-"+oooMan.kind]
@@ -167,8 +194,9 @@ class Client(object):
         clock.tick()
         self.window.dispatch_events()
         rabbyt.set_time(self.time)
-        self.camera.update()
         self.game.update(self.time)
+        #self.camera.follow = self.game.players[0].activeOooMan
+        self.camera.update()
         self.draw()
         self.window.flip()
 
@@ -191,8 +219,10 @@ class InputListener(pyglet.event.EventDispatcher):
 if __name__ == "__main__":
     game.OooMan.kinds = eval(file(config.levelsDir+"sample.ooo").read())
     #print(game.OooMan.kinds)
-    b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
+    #b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
     #b = game.Board(tiles="I0L0\nT0T0")
+    b = game.Board()
+    b.generateBoard("T+LI"*30)
     p = game.Player(b,"red")
     p.addOooMan()
     p.addOooMan()
