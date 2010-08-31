@@ -236,7 +236,11 @@ class OooMan(GameObject):
     kinds = {}
     @staticmethod
     def create(player):
-        return OooMan(player.board.randomPosition(),0,random.choice(list(OooMan.kinds.keys())),player)
+        kinds = list(OooMan.kinds.keys())
+        for o in player.oooMen:
+            if o.kind in kinds:
+                kinds.remove(o.kind)
+        return OooMan(player.board.randomPosition(),0,random.choice(kinds),player)
     def __init__(self,position,rotation,kind,player):
         GameObject.__init__(self,position,rotation)
         self.kind = kind
@@ -248,6 +252,7 @@ class OooMan(GameObject):
         self.dieProgress = 0
         self.dieStartTime = 0
         self.dieSpeed = 0.1
+        self.canDie = False
     def __str__(self):
         return str(self.position)+" "+self.kind
     def collide(self,gameObject):
@@ -285,6 +290,13 @@ class OooMan(GameObject):
             if not a.started:
                 a.start(time)
             a.update(time)
+    def updateCanDie(self,activeOooMen):
+        self.canDie = False
+        for a in activeOooMen:
+            if not a or a is self.player.activeOooMan:
+                continue
+            if self.kind in OooMan.kinds[a.kind]:
+                self.canDie = True
     def removeAction(self):
         if self.actionList:
             self.actionList.pop()
@@ -321,6 +333,7 @@ class Player(object):
         self.updateActiveOooMan()
 
     def switchActiveOooMan(self):
+        self.updateActiveOooMan()
         if not self.activeOooMan:
             return
         alive = self.alive
@@ -369,6 +382,9 @@ class Game(object):
         for man in oooMen:
             for other in oooMen:
                 man.collideOooMan(other,time)
+        activeOooMen = [p.activeOooMan for p in self.players]
+        for man in oooMen:
+            man.updateCanDie(activeOooMen)
 
 if __name__ == "__main__":
     Board._test()

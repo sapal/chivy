@@ -124,6 +124,8 @@ class Client(object):
             g.render()
         if not oooMan.alive:
             s.alpha = 1.0 - oooMan.dieProgress
+        if oooMan.canDie:
+            s.red = s.green = s.blue = 0.5
 
         s.render()
         sA = self.sprites["action0"]
