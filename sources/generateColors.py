@@ -85,7 +85,7 @@ def replaceColor(image,color,imageOut,colorOut):
     background = Image.new('RGBA', image.size, colorOut)
     bands = background.split()
     alpha = (image.split())[3]
-    alpha = ImageMath.eval("convert(255.0 * max(alpha-254.0,0.0), 'L')",
+    alpha = ImageMath.eval("convert(255.0 * max(alpha-200.0,0.0), 'L')",
             alpha = alpha)
     bands = [
             ImageMath.eval("convert( min(alpha,color), 'L')",
@@ -103,7 +103,12 @@ if __name__ == "__main__":
     r = re.compile(r"OooMan-red-.*128\.png")
     colors = {"green":(0,255,0,0),
             "blue":(0,36,219,0),
-            "yellow":(255,255,0,0)}
+            "yellow":(255,255,0,0),
+            "white":(255,255,255,0),
+            "black":(0,0,0,0),
+            "purple":(160,32,240,0),
+            "cyan":(0,255,255,0)}
+
     for s in [128]:
         for c in colors.keys():
             for f in os.listdir(config.imagesDir):
