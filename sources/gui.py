@@ -115,7 +115,7 @@ class Client(object):
         bw,bh = self.game.board.dimensions
         gl.glEnable(gl.GL_MULTISAMPLE)
         self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
-        self.time = 0
+        self.dt = 0
         clock.schedule(self.addTime)
         self.fps = clock.ClockDisplay()
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
@@ -125,7 +125,7 @@ class Client(object):
         
 
     def addTime(self,dt):
-        self.time += dt
+        self.dt = dt
 
     def toScreenCoords(self,pos):
         x,y = pos
@@ -157,6 +157,7 @@ class Client(object):
             g.clear()
             g.xy = s.xy
             g.render()
+            #print(oooMan.position)
         if not oooMan.alive:
             s.alpha = s.scale = 1.0 - oooMan.dieProgress
             
@@ -210,7 +211,8 @@ class Client(object):
         txt = ["<font size=6>Scores</font><br/>"]
         for p in self.game.players:
             txt.append("<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=p.color, name=p.name, score=p.score))
-        self.scores.text = "".join(txt)
+        txt = "".join(txt)
+        if self.scores.text != txt: self.scores.text = txt
         self.scores.draw()
         """s = self.sprites["cheatSheet"]
         s.x = 256
@@ -231,8 +233,8 @@ class Client(object):
     def loop(self):
         clock.tick()
         self.window.dispatch_events()
-        rabbyt.set_time(self.time)
-        self.game.update(self.time)
+        self.game.update(self.dt)
+        rabbyt.set_time(self.game.time)
         #self.camera.follow = self.game.players[0].activeOooMan
         self.camera.update()
         self.draw()
@@ -254,7 +256,8 @@ class InputListener(pyglet.event.EventDispatcher):
             f,kwargs = self.keyBindings[symbol]
             f(**kwargs)
 
-if __name__ == "__main__":
+
+def main():
     game.OooMan.kinds = eval(file(config.levelsDir+"sample.ooo").read())
     #print(game.OooMan.kinds)
     #b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
@@ -293,3 +296,6 @@ if __name__ == "__main__":
             key.SPACE: (r.switchActiveOooMan,{})
             }
     c.run()
+
+if __name__ == "__main__":
+    main()

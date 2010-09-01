@@ -236,6 +236,8 @@ class OooManAction(object):
         return True
     def end(self,time):
         self.ended = True
+        self.oooMan.position = self.getEndPosition()
+        self.oooMan.rotation = self.rotate
         self.oooMan.actionEnded(time)
 
 class OooManMoveRotate(OooManAction):
@@ -274,11 +276,15 @@ class OooManMoveRotate(OooManAction):
         sx,sy = self.startPosition
         ex,ey = self.getEndPosition()
         p = self.progress
-        self.oooMan.position = (sx*(1.0-p) + ex*p, sy*(1.0-p) + ey*p)
+        x,y = sx,sy
+        if abs(ex-sx) > 0.01: x = sx*(1.0-p) + ex*p
+        if abs(ey-sy) > 0.01: y = sy*(1.0-p) + ey*p
+        self.oooMan.position = (x,y)
         r = self.startRotation + self.rotate
         self.oooMan.rotation = self.startRotation*(1.0-p) + r*p
         #print((self.startTime,time,self.progress))
         return True
+
     def getEndPosition(self):
         if not self.started:
             return self.startPosition
@@ -296,6 +302,7 @@ class OooManMoveRotate(OooManAction):
             if not tile:
                 return None
             return tile.position
+
     def canPerform(self):
         return not (self.getEndPosition() is None)
 
@@ -306,10 +313,7 @@ class ActionFactory(object):
     """Actions arguments:"""
     actionsConstructors = {
                 MOVE: (OooManMoveRotate,{'move':True,'rotate':0,'relative':True}),
-                ROTATE_CW: (OooManMoveRotate,{'move':False,'rotate':-90,'relative':True}),
-                ROTATE_CCW: (OooManMoveRotate,{'move':False,'rotate':+90,'relative':True}),
-                GO_NORTH: (OooManMoveRotate,{'move':BoardTile.NORTH,'rotate':0,'relative':False}),
-                GO_WEST: (OooManMoveRotate,{'move':BoardTile.WEST,'rotate':0,'relative':False}),
+                ROTATE_CW: (OooManMoveRotate,{'move':False,'rotate':-90,'relative':True}), ROTATE_CCW: (OooManMoveRotate,{'move':False,'rotate':+90,'relative':True}), GO_NORTH: (OooManMoveRotate,{'move':BoardTile.NORTH,'rotate':0,'relative':False}), GO_WEST: (OooManMoveRotate,{'move':BoardTile.WEST,'rotate':0,'relative':False}),
                 GO_SOUTH: (OooManMoveRotate,{'move':BoardTile.SOUTH,'rotate':0,'relative':False}),
                 GO_EAST: (OooManMoveRotate,{'move':BoardTile.EAST,'rotate':0,'relative':False})
             }
@@ -459,6 +463,7 @@ class Game(object):
     
     board - Board
     players - list of Players
+    time - in-game time
     """
     def _setAttr(self,kwargs,attrName,default):
         if attrName in kwargs.keys():
@@ -470,16 +475,18 @@ class Game(object):
         Possible kwargs:
         board - Board to be used in this game.
         players - Players to play the game (list of Players)."""
+        self.time = 0
         self._setAttr(kwargs,"board",Board())
         self._setAttr(kwargs,"players",[])
 
-    def update(self,time):
+    def update(self,dt):
+        self.time += dt
         for p in self.players:
-            p.update(time)
+            p.update(self.time)
         oooMen = [o for p in self.players for o in p.alive ]
         for man in oooMen:
             for other in oooMen:
-                man.collideOooMan(other,time)
+                man.collideOooMan(other,self.time)
         activeOooMen = [p.activeOooMan for p in self.players]
         for man in oooMen:
             man.updateCanDie(activeOooMen)
