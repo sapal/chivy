@@ -95,14 +95,17 @@ class Client(object):
 
     def __init__(self,game):
         self.sprites = {}
-        self.loadSprites(["tile.","tile+","tileL","tileI","tileT"])
         self.loadSprites(["glow","cheatSheet"])
+        self.loadSpritesRegex("tile.*")
         self.loadSpritesRegex("OooMan.*")
         self.loadSpritesRegex("action.*")
         self.game = game
         clock.set_fps_limit(50)
         w,h = config.screenSize
-        self.window = Window(width=w,height=h)
+        if not config.fullScreen:
+            self.window = Window(width=w, height=h)
+        else:
+            self.window = Window(fullscreen=True)
         self.window.set_caption("NoTitle!")
         self.window.on_close = sys.exit
         self.inputListener = InputListener()
@@ -114,7 +117,7 @@ class Client(object):
         self.time = 0
         clock.schedule(self.addTime)
         self.fps = clock.ClockDisplay()
-        self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=0, y=h)
+        self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
 
     def addKeyBindings(self):
         pass

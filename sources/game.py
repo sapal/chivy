@@ -21,6 +21,7 @@ class BoardTile(GameObject):
     position - position on board (x,y) - (0,0) is lower left corner
     upSide - rotation of tile (witch of the sides is facing NORTH - one of BoardTile.directions)
     kind - one of BoardTile.kinds
+    border - True means that this BoardTile is on border of the board and nothing should be placed here.
     """
     """Directions:"""
     directions = (NORTH,WEST,SOUTH,EAST) = range(4)
@@ -31,15 +32,17 @@ class BoardTile(GameObject):
             "T":[False,True,True,True], 
             "+":[True,]*4, 
             "L":[True,False,False,True],
-            ".":[False,]*4}
+            ".":[False,]*4,
+            "U":[True,False,False,False]}
     @staticmethod
     def reverseDirection(dir):
         return (dir+2)%4
     
-    def __init__(self,position=(0,0),upSide=0,kind="."):
+    def __init__(self,position=(0,0),upSide=0,kind=".",border=False):
         GameObject.__init__(self,position)
         self.kind = kind
         self.upSide = upSide
+        self.border = border
 
     def canGo(self,direction):
         """Checks if it is possible to move in "direction" from this tile."""
@@ -66,7 +69,10 @@ class Board(object):
     def tilesFromString(self,s):
         """Creates array of tiles (self.tiles) from string s.
         Board description string is height lines with 2*width characters each.
-        Each tile is represented by 2 characters: kind and upSide (0,1,2,3)."""
+        Each tile is represented by 2 characters: kind and upSide (0,1,2,3).
+        Kind = '_' means that there is no tile on that position.
+        If upSide is > 3 then tile is on border
+        """
         if not s:
             s = ((".0"*self.width)+'\n')*self.height
         rows = list(reversed(s.split()))
@@ -74,7 +80,11 @@ class Board(object):
         self.tiles = {}
         for x in range(self.width):
             for y in range(self.height):
-                self.tiles[(x,y)] = BoardTile((x,y),int(rows[y][2*x+1]),rows[y][2*x])
+                k,u = rows[y][2*x],int(rows[y][2*x+1])
+                b = (u>3)
+                u %= 4
+                if k != '_':
+                    self.tiles[(x,y)] = BoardTile((x,y),u,k,b)
     def generateBoard(self,tiles,seed=0):
         que = [(0,0)]
         self.tiles = {}
@@ -108,7 +118,22 @@ class Board(object):
             #print("t:{t},kind:{k} pos:{pos} up:{up}".format(t=t,pos=pos,up=self.tiles[pos].upSide,k=self.tiles[pos].kind))
         for (x,y) in que:
             if (x,y) not in self.tiles:
-                self.tiles[x,y] = BoardTile((x,y),0,'.')
+                for k in ("T","I","L","U","."):
+                    okKind = False
+                    for u in BoardTile.directions:
+                        self.tiles[x,y] = BoardTile((x,y),u,k,True)
+                        okUp = True
+                        for d in BoardTile.directions:
+                            t = self.getTile((x,y),d)
+                            if t and not t.border:
+                                okUp = False
+                                break
+                        if okUp:
+                            okKind = True
+                            break
+                    if okKind:
+                        break
+                            
         left = len(tiles)
         right = -left
         top = -left
@@ -123,11 +148,11 @@ class Board(object):
         nTiles = {}
         for (x,y),t in self.tiles.items():
             nx,ny = x-left,y-bottom
-            nTiles[nx,ny] = BoardTile((nx,ny),t.upSide,t.kind)
+            nTiles[nx,ny] = BoardTile((nx,ny),t.upSide,t.kind,t.border)
         self.tiles = nTiles
 
     def randomPosition(self):
-        pos = [ p for p in self.tiles.keys() if self.tiles[p].kind != '.']
+        pos = [ p for p in self.tiles.keys() if not self.tiles[p].border]
         return random.choice(pos)
     def __repr__(self):
         resLst = []
@@ -135,9 +160,10 @@ class Board(object):
             row = []
             for x in range(self.width):
                 if (x,y) in self.tiles:
-                    row.append(self.tiles[(x,y)].kind+str(self.tiles[(x,y)].upSide))
+                    t = self.tiles[x,y]
+                    row.append(t.kind+str(t.upSide + 4*int(t.border)))
                 else:
-                    row.append('.0')
+                    row.append('_0')
             resLst.append("".join(row))
         return "\n".join(reversed(resLst))
 
@@ -166,13 +192,17 @@ class Board(object):
     @property
     def height(self):
         return self.dimensions[1]
-
     @staticmethod
     def _test():
         #print(Board(tiles="T1L2I1\n.0+4I2"))
         b = Board()
         b.generateBoard("T"*10+"+"*3)
-        print(b)
+        #print(b)
+        import copy
+        a = copy.deepcopy(b)
+        a.tilesFromString(str(b))
+        print(str(b) == str(a))
+        #print(a)
 
 class OooManAction(object):
     """ Base class for various actions.
