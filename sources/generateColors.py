@@ -102,7 +102,7 @@ def replaceColor(image,color,imageOut,colorOut):
 if __name__ == "__main__":
     r = re.compile(r"OooMan-red-.*128\.png")
     colors = {"green":(0,255,0,0),
-            "blue":(0,0,255,0),
+            "blue":(0,36,219,0),
             "yellow":(255,255,0,0)}
     for s in [128]:
         for c in colors.keys():
