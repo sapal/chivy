@@ -508,6 +508,14 @@ class Game(object):
 
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
+    @staticmethod
+    def simpleGame(players=2, seed=random.randint(1,10000)):
+        b = Board()
+        b.generateBoard("T+LI"*10*players,seed)
+        colors = ["red","blue","green","cyan","black","white","purple"]
+        random.shuffle(colors)
+        playerList = [ Player(b,colors[i],"Player {0}".format(i)) for i in range(players)]
+        return Game(board=b, players=playerList)
 
 if __name__ == "__main__":
     Board._test()

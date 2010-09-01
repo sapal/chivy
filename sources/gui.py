@@ -234,6 +234,7 @@ class Client(object):
     def loop(self):
         clock.tick()
         self.window.dispatch_events()
+        self.controller.update()
         self.game = self.controller.game
         self.game.update(self.dt)
         rabbyt.set_time(self.game.time)
