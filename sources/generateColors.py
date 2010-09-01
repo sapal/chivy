@@ -88,7 +88,7 @@ def replaceColor(image,color,imageOut,colorOut):
     alpha = ImageMath.eval("convert(255.0 * max(alpha-254.0,0.0), 'L')",
             alpha = alpha)
     bands = [
-            ImageMath.eval("convert( min(255-alpha + color,255.0), 'L')",
+            ImageMath.eval("convert( min(alpha,color), 'L')",
                 color = bands[i],
                 alpha = alpha) for i in range(3)
             ]

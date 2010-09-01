@@ -60,6 +60,8 @@ class Camera(object):
         x,y = self.position
         s = 2*config.spriteSize/self.zoom
         self.dimensions = (x-w/s, x+w/s, y-h/s, y+h/s)
+        #gl.glScissor(100,100,400,400)
+        #gl.glEnable(gl.GL_SCISSOR_TEST)
 
     @property
     def left(self):
@@ -75,6 +77,7 @@ class Camera(object):
         return self.dimensions[3]
 
     def hudProjection(self):
+        #gl.glDisable(gl.GL_SCISSOR_TEST)
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
         gl.gluOrtho2D(0, self.win.width, 0, self.win.height)
@@ -197,8 +200,8 @@ class Client(object):
 
 
     def draw(self):
-        self.camera.worldProjection()
         rabbyt.clear((1,1,1,1))
+        self.camera.worldProjection()
         self.drawBoard()
         self.drawOooMen()
         self.camera.hudProjection()
