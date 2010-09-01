@@ -2,6 +2,7 @@
 # coding=utf-8
 from PIL import Image, ImageMath
 from PIL.ImageColor import getrgb
+from colors import colors
 import os
 import config
 import re
@@ -101,16 +102,10 @@ def replaceColor(image,color,imageOut,colorOut):
 
 if __name__ == "__main__":
     r = re.compile(r"OooMan-red-.*128\.png")
-    colors = {"green":(0,255,0,0),
-            "blue":(0,36,219,0),
-            "yellow":(255,255,0,0),
-            "white":(255,255,255,0),
-            "black":(0,0,0,0),
-            "purple":(160,32,240,0),
-            "cyan":(0,255,255,0)}
-
     for s in [128]:
         for c in colors.keys():
+            if c == "red":
+                continue
             for f in os.listdir(config.imagesDir):
                 if r.match(f):
                     nf = "OooMan-"+c+f[10:]

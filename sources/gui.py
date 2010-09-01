@@ -9,6 +9,9 @@ import sys
 import os
 import pyglet
 import re
+import controller
+import keyBindings
+import colors
 from pyglet import gl, clock, font
 from pyglet.window import Window,key
 from pyglet.text import Label,HTMLLabel
@@ -93,25 +96,26 @@ class Client(object):
             self.sprites[f] = MySprite(config.imagesDir+os.sep+f+str(config.spriteSize)+".png")
             #print(f)
 
-    def __init__(self,game):
+    def __init__(self,controller):
         self.sprites = {}
         self.loadSprites(["glow","cheatSheet"])
         self.loadSpritesRegex("tile.*")
         self.loadSpritesRegex("OooMan.*")
         self.loadSpritesRegex("action.*")
-        self.game = game
+        self.controller = controller
+        self.game = self.controller.game
         clock.set_fps_limit(50)
         w,h = config.screenSize
         if not config.fullScreen:
             self.window = Window(width=w, height=h)
         else:
             self.window = Window(fullscreen=True)
+        rabbyt.set_default_attribs()
         self.window.set_caption("NoTitle!")
         self.window.on_close = sys.exit
-        self.inputListener = InputListener()
-        self.addKeyBindings()
-        self.window.push_handlers(self.inputListener)
-        rabbyt.set_default_attribs()
+        self.playersInput = [ PlayerControl(controller,i,keyBindings.preconfigured[i]) for i in range(len(controller.game.players))]
+        for i in self.playersInput:
+            self.window.push_handlers(i)
         bw,bh = self.game.board.dimensions
         gl.glEnable(gl.GL_MULTISAMPLE)
         self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
@@ -119,10 +123,6 @@ class Client(object):
         clock.schedule(self.addTime)
         self.fps = clock.ClockDisplay()
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
-
-    def addKeyBindings(self):
-        pass
-        
 
     def addTime(self,dt):
         self.dt = dt
@@ -210,9 +210,10 @@ class Client(object):
     def drawScores(self):
         txt = ["<font size=6>Scores</font><br/>"]
         for p in self.game.players:
-            txt.append("<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=p.color, name=p.name, score=p.score))
+            txt.append("<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=colors.htmlColor(p.color), name=p.name, score=p.score))
         txt = "".join(txt)
-        if self.scores.text != txt: self.scores.text = txt
+        if self.scores.text != txt:
+            self.scores.text = txt
         self.scores.draw()
         """s = self.sprites["cheatSheet"]
         s.x = 256
@@ -233,6 +234,7 @@ class Client(object):
     def loop(self):
         clock.tick()
         self.window.dispatch_events()
+        self.game = self.controller.game
         self.game.update(self.dt)
         rabbyt.set_time(self.game.time)
         #self.camera.follow = self.game.players[0].activeOooMan
@@ -243,6 +245,17 @@ class Client(object):
     def run(self):
         while True:
             self.loop()
+
+
+class PlayerControl(pyglet.event.EventDispatcher):
+    def __init__(self, controller, playerId, keyBindings):
+        """keyBindings is a dictionary key -> action (string)"""
+        self.controller = controller
+        self.playerId = playerId
+        self.keyBindings = keyBindings
+    def on_key_press(self, symbol, modifiers):
+        if symbol in self.keyBindings:
+            self.controller.sendInput(self.playerId, self.keyBindings[symbol])
 
 class InputListener(pyglet.event.EventDispatcher):
     """Class that translates user input to events.
@@ -258,43 +271,21 @@ class InputListener(pyglet.event.EventDispatcher):
 
 
 def main():
-    game.OooMan.kinds = eval(file(config.levelsDir+"sample.ooo").read())
+    #game.OooMan.kinds = eval(file(config.levelsDir+"sample.ooo").read())
     #print(game.OooMan.kinds)
     #b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
     #b = game.Board(tiles="I0L0\nT0T0")
-    b = game.Board()
+    """b = game.Board()
     b.generateBoard("T+LI"*30,random.randint(0,123412341))
     p = game.Player(b,"red","Michal")
     q = game.Player(b,"green","Szymon")
     r = game.Player(b,"blue","Ewa")
 
     g = game.Game(board=b, players=[p,q,r])
-    c = Client(g)
-    c.inputListener.keyBindings = {
-            #key.UP: (p.addAction, {'kind':game.ActionFactory.MOVE}),
-            #key.RIGHT: (p.addAction, {'kind':game.ActionFactory.ROTATE_CW}),
-            #key.LEFT: (p.addAction, {'kind':game.ActionFactory.ROTATE_CCW}),
-
-            key.UP: (p.addAction, {'kind':game.ActionFactory.GO_NORTH}),
-            key.LEFT: (p.addAction, {'kind':game.ActionFactory.GO_WEST}),
-            key.DOWN: (p.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
-            key.RIGHT: (p.addAction, {'kind':game.ActionFactory.GO_EAST}),
-            #key.RSHIFT: (p.removeAction, {}),
-            key.RCTRL: (p.switchActiveOooMan,{}),
-
-            key.W: (q.addAction, {'kind':game.ActionFactory.GO_NORTH}),
-            key.A: (q.addAction, {'kind':game.ActionFactory.GO_WEST}),
-            key.S: (q.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
-            key.D: (q.addAction, {'kind':game.ActionFactory.GO_EAST}),
-            #key.LSHIFT: (q.removeAction, {}),
-            key.LCTRL: (q.switchActiveOooMan,{}),
-            
-            key.I: (r.addAction, {'kind':game.ActionFactory.GO_NORTH}),
-            key.J: (r.addAction, {'kind':game.ActionFactory.GO_WEST}),
-            key.K: (r.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
-            key.L: (r.addAction, {'kind':game.ActionFactory.GO_EAST}),
-            key.SPACE: (r.switchActiveOooMan,{})
-            }
+    ctrl = controller.Controller(g)"""
+    ctrl = controller.Controller()
+    #ctrl.simpleGame(3)
+    c = Client(ctrl)
     c.run()
 
 if __name__ == "__main__":

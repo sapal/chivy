@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import division,print_function
 import random
+import kinds
 
 class GameObject(object):
     """Base class for other objects in game."""
@@ -332,7 +333,7 @@ class OooMan(GameObject):
     """Maximum number of queued actions:"""
     maxActions = 8
     """Types of OooMen: (dictionary: string->list of stirngs - OooMen eaten by this one)"""
-    kinds = {}
+    kinds = kinds.CLASSIC
     @staticmethod
     def create(player):
         kinds = list(OooMan.kinds.keys())
@@ -417,6 +418,17 @@ class Player(object):
         self.color = color
         self.activeOooMan = None
         self.score = 0
+        self.actions = {
+                "goNorth": (self.addAction, {'kind':ActionFactory.GO_NORTH}),
+                "goWest": (self.addAction, {'kind':ActionFactory.GO_WEST}),
+                "goSouth": (self.addAction, {'kind':ActionFactory.GO_SOUTH}),
+                "goEast": (self.addAction, {'kind':ActionFactory.GO_EAST}),
+                "move": (self.addAction, {'kind':ActionFactory.MOVE}),
+                "rotateCW": (self.addAction, {'kind':ActionFactory.ROTATE_CW}),
+                "rotateCCW": (self.addAction, {'kind':ActionFactory.ROTATE_CCW}),
+                "switchActive": (self.switchActiveOooMan, {})
+                }
+
     @property
     def alive(self):
         return [o for o in self.oooMen if o.alive]
@@ -457,6 +469,9 @@ class Player(object):
     def removeAction(self):
         if self.activeOooMan:
             self.activeOooMan.removeAction()
+    def sendInput(self,action):
+        f,kwargs = self.actions[action]
+        f(**kwargs)
 
 class Game(object):
     """Class representing game
@@ -490,6 +505,9 @@ class Game(object):
         activeOooMen = [p.activeOooMan for p in self.players]
         for man in oooMen:
             man.updateCanDie(activeOooMen)
+
+    def sendInput(self,playerId,action):
+        self.players[playerId].sendInput(action)
 
 if __name__ == "__main__":
     Board._test()
