@@ -113,6 +113,7 @@ class Client(object):
         self.window.push_handlers(self.inputListener)
         rabbyt.set_default_attribs()
         bw,bh = self.game.board.dimensions
+        gl.glEnable(gl.GL_MULTISAMPLE)
         self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
         self.time = 0
         clock.schedule(self.addTime)
@@ -157,14 +158,15 @@ class Client(object):
             g.xy = s.xy
             g.render()
         if not oooMan.alive:
-            s.alpha = 1.0 - oooMan.dieProgress
-        if oooMan.canDie:
-            s.red = s.green = s.blue = 0.5
+            s.alpha = s.scale = 1.0 - oooMan.dieProgress
+            
+        #if oooMan.canDie:
+        #    s.red = s.green = s.blue = 0.5
 
         s.render()
         sA = self.sprites["action0"]
-        height = sA.top-sA.bottom
-        width = sA.right-sA.left
+        height = (sA.top-sA.bottom)  
+        width = (sA.right-sA.left) 
         w = len(oooMan.actionList)*width
         for a in oooMan.actionList:
             if a.started:
@@ -174,14 +176,29 @@ class Client(object):
             sA = self.sprites["action{0}".format(a.kind)]
             sA.clear()
             sA.x = s.x - w/2 + width/2 + i*width
-            sA.y = s.y+config.spriteSize/3+height
+            sA.y = s.y+ oooMan.size*config.spriteSize/2 + height
+            sA.scale = s.scale
             sA.rot = 0
-            sA.alpha = 1.0 - a.progress
+            sA.alpha = (1.0 - a.progress)*s.alpha
             if a.started and (not a.canPerform() or a.discarded):
                 sA.green = 0
                 sA.blue = 0
                 #print((a.direction,a.startPosition,a.getEndPosition()))
             sA.render()
+        kills = game.OooMan.kinds[oooMan.kind]
+        scale = 0.5*s.scale
+        width = scale * config.spriteSize*oooMan.size*(1.2)
+        w = len(kills)*width
+        for i in range(len(kills)):
+            k = kills[i]
+            sK = self.sprites["OooMan-white-"+k]
+            sK.clear()
+            sK.x = s.x - w/2 + width*(i+0.5)
+            #sK.y = s.y - oooMan.size*config.spriteSize/2 -config.spriteSize*scale/2
+            sK.y = s.y - config.spriteSize*scale/2
+            sK.alpha = 0.8*s.alpha
+            sK.scale = scale
+            sK.render()
     def drawOooMen(self):
         for p in self.game.players:
             for o in p.oooMen:
@@ -243,12 +260,12 @@ if __name__ == "__main__":
     #b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
     #b = game.Board(tiles="I0L0\nT0T0")
     b = game.Board()
-    b.generateBoard("T+LI"*15,random.randint(0,123412341))
+    b.generateBoard("T+LI"*30,random.randint(0,123412341))
     p = game.Player(b,"red","Michal")
     q = game.Player(b,"green","Szymon")
-    #r = game.Player(b,"blue","Ewa")
+    r = game.Player(b,"blue","Ewa")
 
-    g = game.Game(board=b, players=[p,q])
+    g = game.Game(board=b, players=[p,q,r])
     c = Client(g)
     c.inputListener.keyBindings = {
             #key.UP: (p.addAction, {'kind':game.ActionFactory.MOVE}),
@@ -267,12 +284,12 @@ if __name__ == "__main__":
             key.S: (q.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
             key.D: (q.addAction, {'kind':game.ActionFactory.GO_EAST}),
             #key.LSHIFT: (q.removeAction, {}),
-            key.LCTRL: (q.switchActiveOooMan,{})#,
+            key.LCTRL: (q.switchActiveOooMan,{}),
             
-            #key.I: (r.addAction, {'kind':game.ActionFactory.GO_NORTH}),
-            #key.J: (r.addAction, {'kind':game.ActionFactory.GO_WEST}),
-            #key.K: (r.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
-            #key.L: (r.addAction, {'kind':game.ActionFactory.GO_EAST}),
-            #key.SPACE: (r.switchActiveOooMan,{})
+            key.I: (r.addAction, {'kind':game.ActionFactory.GO_NORTH}),
+            key.J: (r.addAction, {'kind':game.ActionFactory.GO_WEST}),
+            key.K: (r.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
+            key.L: (r.addAction, {'kind':game.ActionFactory.GO_EAST}),
+            key.SPACE: (r.switchActiveOooMan,{})
             }
     c.run()
