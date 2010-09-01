@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from __future__ import division,print_function
+import random
 import game
 import config
 import rabbyt
@@ -92,7 +93,7 @@ class Client(object):
     def __init__(self,game):
         self.sprites = {}
         self.loadSprites(["tile.","tile+","tileL","tileI","tileT"])
-        self.loadSprites(["glow"])
+        self.loadSprites(["glow","cheatSheet"])
         self.loadSpritesRegex("OooMan.*")
         self.loadSpritesRegex("action.*")
         self.game = game
@@ -110,6 +111,7 @@ class Client(object):
         self.time = 0
         clock.schedule(self.addTime)
         self.fps = clock.ClockDisplay()
+        self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=0, y=h)
 
     def addKeyBindings(self):
         pass
@@ -124,7 +126,6 @@ class Client(object):
         size = config.spriteSize
         #return ((x-b.width/2+0.5)*size, (y-b.height/2+0.5)*size)
         return x*size, y*size
-
 
     def drawTile(self,tile):
         s = self.sprites["tile{0}".format(tile.kind)]
@@ -182,12 +183,26 @@ class Client(object):
                     self.drawOooMan(p,o)
             self.drawOooMan(p,p.activeOooMan)
 
+    def drawScores(self):
+        txt = ["<font size=6>Scores</font><br/>"]
+        for p in self.game.players:
+            txt.append("<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=p.color, name=p.name, score=p.score))
+        self.scores.text = "".join(txt)
+        self.scores.draw()
+        """s = self.sprites["cheatSheet"]
+        s.x = 256
+        s.y = 512
+        s.alpha = 0.5
+        s.render()"""
+
+
     def draw(self):
         self.camera.worldProjection()
         rabbyt.clear((1,1,1,1))
         self.drawBoard()
         self.drawOooMen()
         self.camera.hudProjection()
+        self.drawScores()
         self.fps.draw()
 
     def loop(self):
@@ -222,13 +237,10 @@ if __name__ == "__main__":
     #b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
     #b = game.Board(tiles="I0L0\nT0T0")
     b = game.Board()
-    b.generateBoard("T+LI"*30)
-    p = game.Player(b,"red")
-    p.addOooMan()
-    p.addOooMan()
-    q = game.Player(b,"blue")
-    q.addOooMan()
-    q.addOooMan()
+    b.generateBoard("T+LI"*15,random.randint(0,123412341))
+    p = game.Player(b,"red","Michal")
+    q = game.Player(b,"green","Szymon")
+    #r = game.Player(b,"blue","Ewa")
 
     g = game.Game(board=b, players=[p,q])
     c = Client(g)
@@ -249,5 +261,12 @@ if __name__ == "__main__":
             key.S: (q.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
             key.D: (q.addAction, {'kind':game.ActionFactory.GO_EAST}),
             #key.LSHIFT: (q.removeAction, {}),
-            key.LCTRL: (q.switchActiveOooMan,{})}
+            key.LCTRL: (q.switchActiveOooMan,{})#,
+            
+            #key.I: (r.addAction, {'kind':game.ActionFactory.GO_NORTH}),
+            #key.J: (r.addAction, {'kind':game.ActionFactory.GO_WEST}),
+            #key.K: (r.addAction, {'kind':game.ActionFactory.GO_SOUTH}),
+            #key.L: (r.addAction, {'kind':game.ActionFactory.GO_EAST}),
+            #key.SPACE: (r.switchActiveOooMan,{})
+            }
     c.run()

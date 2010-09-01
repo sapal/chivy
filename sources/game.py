@@ -333,9 +333,11 @@ class OooMan(GameObject):
         #print("COLLIDE!")
         if (other.player is not self.player) and other.kind in OooMan.kinds[self.kind]:
             other.die(time)
+            self.player.score += 2
     def die(self,time):
         self.dieStartTime = time
         self.alive = False
+        self.player.score -= 1
     def actionEnded(self,time):
         if self.actionList:
             self.actionList.pop(0)
@@ -380,6 +382,7 @@ class Player(object):
         self.oooMen = []
         self.color = color
         self.activeOooMan = None
+        self.score = 0
     @property
     def alive(self):
         return [o for o in self.oooMen if o.alive]
