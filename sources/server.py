@@ -5,6 +5,7 @@ from PodSixNet.Channel import Channel
 from PodSixNet.Server import Server
 from time import sleep, localtime
 from pyglet import clock
+from optparse import OptionParser
 import random
 import colors
 import pickle
@@ -13,14 +14,15 @@ import methodPickle
 class ClientChannel(Channel):
     def Close(self):
         players = self.playerMap[self]
+        print("Connection end (disconnected players: {0})".format(" ".join([ self.game.players[p].name for p in players])))
         for p in players:
             del self.game.players[p]
-        print("Connection end (players {0})".format(players))
 
     def Network(self,data):
-        print(self.game.time)
-        print(data)
-        print()
+        #print(self.game.time)
+        #print(data)
+        #print()
+        pass
 
     def Network_sendInput(self,data):
         self.server.sendToAll(data,True)
@@ -28,13 +30,9 @@ class ClientChannel(Channel):
 
     def Network_requestPlayers(self,data):
         players = data["players"]
-        print("requestPlayers({0})".format(players))
+        print("New players: {0}".format(" ".join(players)))
         for name in players:
-            playerId = 0
-            while playerId in self.game.players:
-                playerId += 1
-            color = random.choice([ k for k in colors.colors.keys() if k not in [p.color for p in self.game.players.values()] ])
-            self.game.players[playerId] = game.Player(self.game.board, color, name)
+            playerId = self.game.addPlayer(name=name)
             self.playerMap[self].append(playerId)
         self.Send({"action":"controlPlayers", "players":self.playerMap[self]})
         self.server.sendToAll(self.server.gameUpdate(),True)
@@ -43,12 +41,16 @@ class OooServer(Server):
     channelClass = ClientChannel
     NIL = -1
     def __init__(self, *args, **kwargs):
+        if "game" not in kwargs:
+            board = game.Board()
+            board.generateBoard("TT++LI"*10,random.randint(0,123123))
+            self.game = game.Game(board=board)
+        else:
+            self.game = kwargs["game"]
+            del kwargs["game"]
         Server.__init__(self, *args, **kwargs)
         self.clients = {}
         self.dt = 0
-        board = game.Board()
-        board.generateBoard("TT++LI"*10,random.randint(0,123123))
-        self.game = game.Game(board=board)
 
     def Connected(self, channel, addr):
         print("{0} connected".format(addr))
@@ -97,10 +99,6 @@ class OooServer(Server):
             self.Pump()
     
 if __name__=="__main__":
-    if len(sys.argv) > 2:
-        s = OooServer(localaddr=(sys.argv[1],int(sys.argv[2])))
-    else:
-        s = OooServer(localaddr=("localhost",9999))
-    s.Launch()
-
+    import start
+    start.startServer(sys.argv[1:])
 

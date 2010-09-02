@@ -15,6 +15,7 @@ import colors
 from pyglet import gl, clock, font
 from pyglet.window import Window,key
 from pyglet.text import Label,HTMLLabel
+from optparse import OptionParser
 
 class MySprite(rabbyt.Sprite):
     def clear(self):
@@ -120,7 +121,8 @@ class Client(object):
         self.controlPlayers = controller.controlPlayers
         bw,bh = self.game.board.dimensions
         gl.glEnable(gl.GL_MULTISAMPLE)
-        self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
+        zoom = min( w/(config.spriteSize*bw), h/(config.spriteSize*bh))*0.95
+        self.camera = Camera(self.window, position=((bw-1)/2,(bh-1)/2), zoom=zoom)
         self.fps = clock.ClockDisplay()
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
 
@@ -294,22 +296,6 @@ class InputListener(pyglet.event.EventDispatcher):
             f(**kwargs)
 
 
-def main():
-    #game.OooMan.kinds = eval(file(config.levelsDir+"sample.ooo").read())
-    #print(game.OooMan.kinds)
-    #b = game.Board(tiles=file(config.levelsDir+"sample.lev").read())
-    #b = game.Board(tiles="I0L0\nT0T0")
-    """b = game.Board()
-    b.generateBoard("T+LI"*30,random.randint(0,123412341))
-    p = game.Player(b,"red","Szymon")
-    q = game.Player(b,"green","Michal")
-    r = game.Player(b,"blue","Ewa")
-
-    g = game.Game(board=b, players={0:p,1:q,2:r})
-    ctrl = controller.Controller(g)"""
-    ctrl = controller.Controller(game.Game.simpleGame(3))
-    c = Client(ctrl)
-    c.run()
-
 if __name__ == "__main__":
-    main()
+    import start
+    start.startLocalGame(sys.argv[1:])

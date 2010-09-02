@@ -3,6 +3,8 @@ from __future__ import division,print_function
 import random
 import kinds
 import pickle
+import colors
+import config
 
 class GameObject(object):
     """Base class for other objects in game."""
@@ -110,14 +112,23 @@ class Board(object):
                 u %= 4
                 if k != '_':
                     self.tiles[(x,y)] = BoardTile((x,y),u,k,b)
-    def generateBoard(self,tiles,seed=0):
+                    
+    def generateBoard(self,tiles,seed=0,tileNumber=None):
+        """If tileNumber is positive number, tiles is repeated
+        to build a string which is tileNumber long."""
+        if tileNumber and tileNumber>0:
+            n = tileNumber
+            t = [tiles for i in range(0,n,len(tiles))]
+            if n % len(tiles):
+                t.append(tiles[:(n % len(tiles))])
+            tiles = "".join(t)
         que = [(0,0)]
         self.tiles = {}
-        self.random.seed(seed)
+        random.seed(seed)
         tiles = list(tiles)
-        self.random.shuffle(tiles)
+        random.shuffle(tiles)
         for t in tiles:
-            self.random.shuffle(que)
+            random.shuffle(que)
             while que:
                 if que[-1] in self.tiles.keys():
                     que.pop()
@@ -125,7 +136,7 @@ class Board(object):
             if not que:break
             pos = que.pop()
             dirs = list(BoardTile.directions)
-            self.random.shuffle(dirs)
+            random.shuffle(dirs)
             for d in dirs:
                 self.tiles[pos] = BoardTile(pos,0,'+')
                 if self.getTile(pos,d) or pos == (0,0):
@@ -613,6 +624,20 @@ class Game(object):
 
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
+
+    def addPlayer(self, name=None, color=None):
+        """Returns created player id.
+        name = None or color = None indicates that a random one
+        should be used."""
+        playerId = 0
+        while playerId in self.players:
+            playerId += 1
+        if color is None:
+            color = random.choice([ k for k in colors.colors.keys() if k not in [p.color for p in self.players.values()] ])
+        if name is None:
+            name = random.choice([ n for n in config.samplePlayerNames if n not in [p.name for p in self.players.values()] ])
+        self.players[playerId] = Player(self.board, color, name)
+        return playerId
 
     @staticmethod
     def simpleGame(players=2, seed=random.randint(1,10000)):

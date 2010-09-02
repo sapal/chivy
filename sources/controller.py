@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import game
+import gui
 import random
 import colors
 import sys
@@ -8,6 +9,7 @@ import config
 import pickle
 import methodPickle
 from time import sleep
+from optparse import OptionParser
 from PodSixNet.Connection import connection, ConnectionListener
 
 class Controller(object):
@@ -28,14 +30,14 @@ class Controller(object):
         pass
 
 class NetworkedController(Controller,ConnectionListener):
-    def __init__(self, host="localhost", port=9999):
+    def __init__(self, host="localhost", port=9999, players=[random.choice(config.samplePlayerNames)]):
         Controller.__init__(self)
         self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.Connect((host, port))
         self.controlPlayers = []
         self.ready = False
         print("Connecting...")
-        connection.Send({"action":"requestPlayers", "players":[random.choice(config.samplePlayerNames)]})
+        connection.Send({"action":"requestPlayers", "players":players})
         while not self.ready:
             connection.Pump()
             self.Pump()
@@ -74,17 +76,13 @@ class NetworkedController(Controller,ConnectionListener):
         if abs(t-self._game.time) < 0.1: 
             self._game.time = t
         else:
-            print(t - self._game.time)
+            print("lag:{0:.2f}s".format(t - self._game.time))
         self.ready = True
 
     def Network_lightGameUpdate(self,data):
         self._game.lightUnpickle(data['game'])
 
 if __name__=="__main__":
-    if len(sys.argv) > 2:
-        ctrl = NetworkedController(sys.argv[1],int(sys.argv[2]))
-    else:
-        ctrl = NetworkedController()
-    import gui
-    c = gui.Client(ctrl)
-    c.run()
+    import start
+    start.startClient(sys.argv[1:])
+    
