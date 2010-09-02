@@ -1,4 +1,5 @@
 # coding=utf-8
+import sys
 import game
 from PodSixNet.Channel import Channel
 from PodSixNet.Server import Server
@@ -96,7 +97,10 @@ class OooServer(Server):
             self.Pump()
     
 if __name__=="__main__":
-    s = OooServer(localaddr=("localhost",9999))
+    if len(sys.argv) > 2:
+        s = OooServer(localaddr=(sys.argv[1],int(sys.argv[2])))
+    else:
+        s = OooServer(localaddr=("localhost",9999))
     s.Launch()
 
 

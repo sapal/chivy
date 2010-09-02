@@ -81,7 +81,10 @@ class NetworkedController(Controller,ConnectionListener):
         self._game.lightUnpickle(data['game'])
 
 if __name__=="__main__":
-    ctrl = NetworkedController()
+    if len(sys.argv) > 2:
+        ctrl = NetworkedController(sys.argv[1],int(sys.argv[2]))
+    else:
+        ctrl = NetworkedController()
     import gui
     c = gui.Client(ctrl)
     c.run()
