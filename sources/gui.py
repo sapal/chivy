@@ -186,9 +186,6 @@ class Client(object):
         if not oooMan.alive:
             s.alpha = s.scale = 1.0 - oooMan.dieProgress
             
-        #if oooMan.canDie:
-        #    s.red = s.green = s.blue = 0.5
-
         s.render()
         sA = self.sprites["action0"]
         height = (sA.top-sA.bottom)  
@@ -230,15 +227,16 @@ class Client(object):
             for o in p.oooMen:
                 if o is not p.activeOooMan:
                     self.drawOooMan(p,o)
-            self.drawOooMan(p,p.activeOooMan)
+            if p.activeOooMan:
+                self.drawOooMan(p,p.activeOooMan)
 
     def drawScores(self):
         txt = ["<font size=6>Scores</font><br/>"]
         for p in self.game.players.values():
-            txt.append("<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=colors.htmlColor(p.color), name=p.name, score=p.score))
-        txt = "".join(txt)
+            txt.append(u"<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
+        txt = u"".join(txt)
         if self.scores.text != txt:
-            self.scores.text = txt
+            self.scores.text = unicode(txt)
         self.scores.draw()
         """s = self.sprites["cheatSheet"]
         s.x = 256

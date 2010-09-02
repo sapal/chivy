@@ -403,6 +403,7 @@ class OooMan(GameObject):
                 kinds.remove(o.kind)
         k = player.board.random.choice(kinds)
         return OooMan(player.board.randomPosition(), 0, k, player)
+
     def __init__(self,position,rotation,kind,player):
         GameObject.__init__(self,position,rotation)
         self.kind = kind
@@ -414,18 +415,17 @@ class OooMan(GameObject):
         self.dieProgress = 0
         self.dieStartTime = 0
         self.dieSpeed = 0.1
-        self.canDie = False
     
     def lightPickle(self):
         s = self
-        return pickle.dumps((s.position, s.rotation, s.kind, [(a.__class__, a.lightPickle()) for a in s.actionList], s.size, s.alive, s.dieProgress, s.dieStartTime, s.dieSpeed, s.canDie ), -1)
+        return pickle.dumps((s.position, s.rotation, s.kind, [(a.__class__, a.lightPickle()) for a in s.actionList], s.size, s.alive, s.dieProgress, s.dieStartTime, s.dieSpeed), -1)
     @staticmethod
 
     def lightUnpickle(pickleString,player):
         arg = pickle.loads(pickleString)
         o = OooMan(arg[0], arg[1], arg[2], player)
         o.actionList = [ c.lightUnpickle(s,o) for c,s in arg[3] ]
-        o.size, o.alive, o.dieProgress, o.dieStartTime, o.dieSpeed, o.canDie = arg[4:]
+        o.size, o.alive, o.dieProgress, o.dieStartTime, o.dieSpeed = arg[4:]
         return o
 
     def __str__(self):
@@ -473,14 +473,6 @@ class OooMan(GameObject):
             if not a.started:
                 a.start(time)
             a.update(time)
-
-    def updateCanDie(self,activeOooMen):
-        self.canDie = False
-        for a in activeOooMen:
-            if not a or a is self.player.activeOooMan:
-                continue
-            if self.kind in OooMan.kinds[a.kind]:
-                self.canDie = True
 
     def removeAction(self):
         if self.actionList:
@@ -618,9 +610,6 @@ class Game(object):
         for man in oooMen:
             for other in oooMen:
                 man.collideOooMan(other,self.time)
-        activeOooMen = [p.activeOooMan for p in self.players.values()]
-        for man in oooMen:
-            man.updateCanDie(activeOooMen)
 
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
