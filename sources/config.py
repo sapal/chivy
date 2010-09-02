@@ -11,6 +11,8 @@ locale = "pl_PL"
 codeDir = os.path.dirname(os.path.abspath(sys.argv[0]))+os.sep
 """Images directory:"""
 imagesDir = codeDir+".."+os.sep+"images"+os.sep
+"""Fonts directory:"""
+fontsDir = codeDir+".."+os.sep+"fonts"+os.sep
 """Levels directory:"""
 levelsDir = codeDir+".."+os.sep+"levels"+os.sep
 """Fonts directory:"""

@@ -97,7 +97,9 @@ class Client(object):
             self.sprites[f] = MySprite(config.imagesDir+os.sep+f+str(config.spriteSize)+".png")
             #print(f)
 
+
     def __init__(self,controller,players = None):
+        pyglet.font.add_directory(config.fontsDir)
         self.sprites = {}
         self.loadSprites(["glow","cheatSheet"])
         self.loadSpritesRegex("tile.*")
@@ -231,9 +233,9 @@ class Client(object):
                 self.drawOooMan(p,p.activeOooMan)
 
     def drawScores(self):
-        txt = ["<font size=6>Scores</font><br/>"]
+        txt = ["<b><font face='Edmunds' size=6>Scores</font><br/></b>"]
         for p in self.game.players.values():
-            txt.append(u"<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
+            txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
         txt = u"".join(txt)
         if self.scores.text != txt:
             self.scores.text = unicode(txt)

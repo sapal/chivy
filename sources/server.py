@@ -90,7 +90,7 @@ class OooServer(Server):
             clicks += 1
             clock.tick()
             self.game.update(self.dt)
-            if clicks+1 >= clock.get_fps():
+            if clicks+1 >= clock.get_fps()*0.5:
                 self.sendToAll(self.gameUpdate(),True)
                 clicks = 0
                 #print(clock.get_fps())
