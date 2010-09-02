@@ -2,14 +2,14 @@
 # coding=utf-8
 import sys
 from optparse import OptionParser
-import gui
-import controller
 import config
 import game
 import server
 import random
 
 def startClient(argv):
+    import controller
+    import gui
     parser = OptionParser()
     parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
     parser.add_option("-a", "--address", default="localhost", help="Server address.")
@@ -22,6 +22,8 @@ def startClient(argv):
     c.run()
 
 def startLocalGame(argv):
+    import controller
+    import gui
     parser = OptionParser()
     parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
     parser.add_option("-t", "--tiles", default="TT++LI", help="Tiles used to create board.")
