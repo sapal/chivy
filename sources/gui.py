@@ -121,13 +121,8 @@ class Client(object):
         bw,bh = self.game.board.dimensions
         gl.glEnable(gl.GL_MULTISAMPLE)
         self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
-        self.dt = 0
-        clock.schedule(self.addTime)
         self.fps = clock.ClockDisplay()
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
-
-    def addTime(self,dt):
-        self.dt = dt
 
     def bindingOk(self,binding):
         for i in self.playersInput.values():
@@ -260,11 +255,11 @@ class Client(object):
         self.fps.draw()
 
     def loop(self):
-        clock.tick()
+        dt = clock.tick()
         self.window.dispatch_events()
         self.controller.update()
         self.game = self.controller.game
-        self.game.update(self.dt)
+        self.game.update(dt)
         rabbyt.set_time(self.game.time)
         #self.camera.follow = self.game.players[0].activeOooMan
         self.camera.update()

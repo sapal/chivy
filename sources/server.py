@@ -17,9 +17,12 @@ class ClientChannel(Channel):
         print("Connection end (players {0})".format(players))
 
     def Network(self,data):
+        print(self.game.time)
         print(data)
+        print()
 
     def Network_sendInput(self,data):
+        self.server.sendToAll(data,True)
         self.game.sendInput(data["playerId"],data["inputAction"])
 
     def Network_requestPlayers(self,data):
@@ -33,6 +36,7 @@ class ClientChannel(Channel):
             self.game.players[playerId] = game.Player(self.game.board, color, name)
             self.playerMap[self].append(playerId)
         self.Send({"action":"controlPlayers", "players":self.playerMap[self]})
+        self.server.sendToAll(self.server.gameUpdate(),True)
 
 class OooServer(Server):
     channelClass = ClientChannel
@@ -42,17 +46,17 @@ class OooServer(Server):
         self.clients = {}
         self.dt = 0
         board = game.Board()
-        board.generateBoard("TT++LI"*30,random.randint(0,123123))
+        board.generateBoard("TT++LI"*10,random.randint(0,123123))
         self.game = game.Game(board=board)
 
     def Connected(self, channel, addr):
         print("{0} connected".format(addr))
         channel.__dict__["game"] = self.game
+        channel.__dict__["server"] = self
         channel.__dict__["playerMap"] = self.clients
         channel.Send(self.gameUpdate())
         channel.Pump()
         self.clients[channel] = []
-
 
     def updateDt(self,dt):
         self.dt = dt
@@ -68,6 +72,7 @@ class OooServer(Server):
             #else:print("not send")
             
     def gameUpdate(self):
+        #print("gameUpdate")
         return {"action":"gameUpdate", "game":pickle.dumps(self.game,-1)}
 
     def lightGameUpdate(self):
@@ -75,18 +80,19 @@ class OooServer(Server):
 
     def Launch(self):
         print("Server started")
-        clock.set_fps_limit(20)
+        clock.set_fps_limit(100)
         clock.schedule(self.updateDt)
         clicks = 0
         while True:
             clicks += 1
             clock.tick()
             self.game.update(self.dt)
-            if clicks >= clock.get_fps_limit()*3: #TODO!
+            if clicks+1 >= clock.get_fps():
                 self.sendToAll(self.gameUpdate(),True)
                 clicks = 0
-            else:
-                self.sendToAll(self.lightGameUpdate())
+                #print(clock.get_fps())
+            #else:
+            #    self.sendToAll(self.lightGameUpdate())
             self.Pump()
     
 if __name__=="__main__":

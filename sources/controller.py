@@ -4,6 +4,7 @@ import game
 import random
 import colors
 import sys
+import config
 import pickle
 import methodPickle
 from time import sleep
@@ -34,7 +35,7 @@ class NetworkedController(Controller,ConnectionListener):
         self.controlPlayers = []
         self.ready = False
         print("Connecting...")
-        connection.Send({"action":"requestPlayers", "players":["Bob", "Alice"]})
+        connection.Send({"action":"requestPlayers", "players":[random.choice(config.samplePlayerNames)]})
         while not self.ready:
             connection.Pump()
             self.Pump()
@@ -60,12 +61,20 @@ class NetworkedController(Controller,ConnectionListener):
         for c in self.clients:
             c.controlPlayers = self.controlPlayers
 
+    def Network_sendInput(self,data):
+        self._game.sendInput(data["playerId"], data["inputAction"])
+
     def update(self):
         connection.Pump()
         self.Pump()
 
     def Network_gameUpdate(self,data):
+        t = self._game.time
         self._game = pickle.loads(data['game'])
+        if abs(t-self._game.time) < 0.1: 
+            self._game.time = t
+        else:
+            print(t - self._game.time)
         self.ready = True
 
     def Network_lightGameUpdate(self,data):

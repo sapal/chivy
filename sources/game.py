@@ -71,17 +71,24 @@ class Board(object):
     """
     def __init__(self, dimensions=(1,1),tiles=""):
         """Creates board."""
-        self.random = random.Random()
+        self.randomState = random.getstate()
         self.dimensions = dimensions
         self.tilesFromString(tiles)
 
+    @property
+    def random(self):
+        random.setstate(self.randomState)
+        random.randint(0,1)
+        self.randomState = random.getstate()
+        return random
+
     def lightPickle(self):
-        return pickle.dumps((self.random, self.tiles, self.dimensions),-1)
+        return pickle.dumps((self.randomState, self.tiles, self.dimensions),-1)
 
     @staticmethod
     def lightUnpickle(pickleString):
         b = Board()
-        b.random, b.tiles, b.dimensions = pickle.loads(pickleString)
+        b.randomState, b.tiles, b.dimensions = pickle.loads(pickleString)
         return b
 
     def tilesFromString(self,s):
@@ -383,7 +390,8 @@ class OooMan(GameObject):
         for o in player.oooMen:
             if o.kind in kinds:
                 kinds.remove(o.kind)
-        return OooMan(player.board.randomPosition(),0,player.board.random.choice(kinds),player)
+        k = player.board.random.choice(kinds)
+        return OooMan(player.board.randomPosition(), 0, k, player)
     def __init__(self,position,rotation,kind,player):
         GameObject.__init__(self,position,rotation)
         self.kind = kind
