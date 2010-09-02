@@ -23,7 +23,8 @@ spriteSize = 128
 """Screen size:"""
 #screenSize = 1280,800
 #screenSize = 1024,756
-screenSize = 800,600
+#screenSize = 800,600
+screenSize = 640,480
 
 """Full screen mode:"""
 #fullScreen = True

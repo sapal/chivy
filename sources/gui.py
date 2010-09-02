@@ -96,13 +96,14 @@ class Client(object):
             self.sprites[f] = MySprite(config.imagesDir+os.sep+f+str(config.spriteSize)+".png")
             #print(f)
 
-    def __init__(self,controller):
+    def __init__(self,controller,players = None):
         self.sprites = {}
         self.loadSprites(["glow","cheatSheet"])
         self.loadSpritesRegex("tile.*")
         self.loadSpritesRegex("OooMan.*")
         self.loadSpritesRegex("action.*")
         self.controller = controller
+        controller.clients.append(self)
         self.game = self.controller.game
         clock.set_fps_limit(50)
         w,h = config.screenSize
@@ -110,12 +111,13 @@ class Client(object):
             self.window = Window(width=w, height=h)
         else:
             self.window = Window(fullscreen=True)
+            w,h = self.window.width,self.window.height
+            config.screenSize = w,h
         rabbyt.set_default_attribs()
         self.window.set_caption("NoTitle!")
         self.window.on_close = sys.exit
-        self.playersInput = [ PlayerControl(controller,i,keyBindings.preconfigured[i]) for i in range(len(controller.game.players))]
-        for i in self.playersInput:
-            self.window.push_handlers(i)
+        self.playersInput = {}
+        self.controlPlayers = controller.controlPlayers
         bw,bh = self.game.board.dimensions
         gl.glEnable(gl.GL_MULTISAMPLE)
         self.camera = Camera(self.window, position=(bw/2,bh/2), zoom=0.3)
@@ -126,6 +128,32 @@ class Client(object):
 
     def addTime(self,dt):
         self.dt = dt
+
+    def bindingOk(self,binding):
+        for i in self.playersInput.values():
+            b = i.keyBinding
+            for k in b:
+                if k in binding:
+                    return False
+        return True
+
+    def getControlPlayers(self):
+        return self.playersInput.keys()
+
+    def setControlPlayers(self,controls):
+        rem = [ k for k in self.playersInput.keys() if k not in controls]
+        for k in rem:
+            self.window.remove_handlers(self.playersInput[k])
+            del self.playersInput[k]
+        bindings = [ b for b in keyBindings.preconfigured if self.bindingOk(b) ]
+        idx = 0
+        for p in controls:
+            if p not in self.playersInput and idx < len(bindings):
+                self.playersInput[p] = PlayerControl(self.controller, p, bindings[idx])
+                self.window.push_handlers(self.playersInput[p])
+                idx += 1
+                
+    controlPlayers = property(getControlPlayers,setControlPlayers)
 
     def toScreenCoords(self,pos):
         x,y = pos
@@ -201,7 +229,7 @@ class Client(object):
             sK.scale = scale
             sK.render()
     def drawOooMen(self):
-        for p in self.game.players:
+        for p in self.game.players.values():
             for o in p.oooMen:
                 if o is not p.activeOooMan:
                     self.drawOooMan(p,o)
@@ -209,7 +237,7 @@ class Client(object):
 
     def drawScores(self):
         txt = ["<font size=6>Scores</font><br/>"]
-        for p in self.game.players:
+        for p in self.game.players.values():
             txt.append("<font size=5 color='{color}'>{name}: {score}</font><br/>".format(color=colors.htmlColor(p.color), name=p.name, score=p.score))
         txt = "".join(txt)
         if self.scores.text != txt:
@@ -278,14 +306,13 @@ def main():
     #b = game.Board(tiles="I0L0\nT0T0")
     """b = game.Board()
     b.generateBoard("T+LI"*30,random.randint(0,123412341))
-    p = game.Player(b,"red","Michal")
-    q = game.Player(b,"green","Szymon")
+    p = game.Player(b,"red","Szymon")
+    q = game.Player(b,"green","Michal")
     r = game.Player(b,"blue","Ewa")
 
-    g = game.Game(board=b, players=[p,q,r])
+    g = game.Game(board=b, players={0:p,1:q,2:r})
     ctrl = controller.Controller(g)"""
-    ctrl = controller.Controller()
-    #ctrl.simpleGame(3)
+    ctrl = controller.Controller(game.Game.simpleGame(3))
     c = Client(ctrl)
     c.run()
 

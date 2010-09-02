@@ -10,6 +10,8 @@ colors = {
         "cyan":(0,255,255)}
 def htmlColor(colorName):
     r,g,b = colors[colorName]
-    return "#{0:x}{1:x}{2:x}".format(r,g,b)
+    if colorName == "white":
+        r,g,b = 190,190,190
+    return "#{0:02x}{1:02x}{2:02x}".format(r,g,b)
 
 

@@ -63,7 +63,7 @@ class Board(object):
     """
     def __init__(self, dimensions=(8,8),tiles=""):
         """Creates board."""
-
+        self.random = random.Random()
         self.dimensions = dimensions
         self.tilesFromString(tiles)
 
@@ -89,11 +89,11 @@ class Board(object):
     def generateBoard(self,tiles,seed=0):
         que = [(0,0)]
         self.tiles = {}
-        random.seed(seed)
+        self.random.seed(seed)
         tiles = list(tiles)
-        random.shuffle(tiles)
+        self.random.shuffle(tiles)
         for t in tiles:
-            random.shuffle(que)
+            self.random.shuffle(que)
             while que:
                 if que[-1] in self.tiles.keys():
                     que.pop()
@@ -101,7 +101,7 @@ class Board(object):
             if not que:break
             pos = que.pop()
             dirs = list(BoardTile.directions)
-            random.shuffle(dirs)
+            self.random.shuffle(dirs)
             for d in dirs:
                 self.tiles[pos] = BoardTile(pos,0,'+')
                 if self.getTile(pos,d) or pos == (0,0):
@@ -154,7 +154,7 @@ class Board(object):
 
     def randomPosition(self):
         pos = [ p for p in self.tiles.keys() if not self.tiles[p].border]
-        return random.choice(pos)
+        return self.random.choice(pos)
     def __repr__(self):
         resLst = []
         for y in range(self.height):
@@ -340,7 +340,7 @@ class OooMan(GameObject):
         for o in player.oooMen:
             if o.kind in kinds:
                 kinds.remove(o.kind)
-        return OooMan(player.board.randomPosition(),0,random.choice(kinds),player)
+        return OooMan(player.board.randomPosition(),0,player.board.random.choice(kinds),player)
     def __init__(self,position,rotation,kind,player):
         GameObject.__init__(self,position,rotation)
         self.kind = kind
@@ -428,6 +428,12 @@ class Player(object):
                 "rotateCCW": (self.addAction, {'kind':ActionFactory.ROTATE_CCW}),
                 "switchActive": (self.switchActiveOooMan, {})
                 }
+    """def lightPickle(self):
+        "Returns lightweight pickle of this player"
+        return pickle.sdump((self.score,[ o.lightPickle() for o in self.oooMen ]))
+    def lightUnpickle(self,dump):
+        self.score,oo = pickle.sload(dump)
+        self.oooMen = [ """
 
     @property
     def alive(self):
@@ -477,7 +483,7 @@ class Game(object):
     """Class representing game
     
     board - Board
-    players - list of Players
+    players - dictionary  id -> Player
     time - in-game time
     """
     def _setAttr(self,kwargs,attrName,default):
@@ -492,17 +498,17 @@ class Game(object):
         players - Players to play the game (list of Players)."""
         self.time = 0
         self._setAttr(kwargs,"board",Board())
-        self._setAttr(kwargs,"players",[])
+        self._setAttr(kwargs,"players",{})
 
     def update(self,dt):
         self.time += dt
-        for p in self.players:
+        for p in self.players.values():
             p.update(self.time)
-        oooMen = [o for p in self.players for o in p.alive ]
+        oooMen = [o for p in self.players.values() for o in p.alive ]
         for man in oooMen:
             for other in oooMen:
                 man.collideOooMan(other,self.time)
-        activeOooMen = [p.activeOooMan for p in self.players]
+        activeOooMen = [p.activeOooMan for p in self.players.values()]
         for man in oooMen:
             man.updateCanDie(activeOooMen)
 
@@ -513,9 +519,12 @@ class Game(object):
         b = Board()
         b.generateBoard("T+LI"*10*players,seed)
         colors = ["red","blue","green","cyan","black","white","purple"]
+        random.seed(seed)
         random.shuffle(colors)
-        playerList = [ Player(b,colors[i],"Player {0}".format(i)) for i in range(players)]
-        return Game(board=b, players=playerList)
+        playerDict = {} 
+        for i in range(players):
+            playerDict[i] = Player(b,colors[i],"Player {0}".format(i)) 
+        return Game(board=b, players=playerDict)
 
 if __name__ == "__main__":
     Board._test()
