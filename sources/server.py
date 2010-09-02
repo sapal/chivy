@@ -68,7 +68,10 @@ class OooServer(Server):
             #else:print("not send")
             
     def gameUpdate(self):
-        return {"action":"updateGame", "game":pickle.dumps(self.game,-1)}
+        return {"action":"gameUpdate", "game":pickle.dumps(self.game,-1)}
+
+    def lightGameUpdate(self):
+        return {"action":"lightGameUpdate", "game":self.game.lightPickle()}
 
     def Launch(self):
         print("Server started")
@@ -79,9 +82,11 @@ class OooServer(Server):
             clicks += 1
             clock.tick()
             self.game.update(self.dt)
-            if True or clicks >= clock.get_fps_limit(): #TODO!
-                self.sendToAll(self.gameUpdate())
+            if clicks >= clock.get_fps_limit()*3: #TODO!
+                self.sendToAll(self.gameUpdate(),True)
                 clicks = 0
+            else:
+                self.sendToAll(self.lightGameUpdate())
             self.Pump()
     
 if __name__=="__main__":

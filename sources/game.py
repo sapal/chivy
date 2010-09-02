@@ -2,6 +2,7 @@
 from __future__ import division,print_function
 import random
 import kinds
+import pickle
 
 class GameObject(object):
     """Base class for other objects in game."""
@@ -45,6 +46,13 @@ class BoardTile(GameObject):
         self.upSide = upSide
         self.border = border
 
+    def lightPickle(self):
+        return pickle.dumps((self.position, self.upSide, self.kind, self.border),-1)
+    @staticmethod
+    def lightUnpickle(pickleString):
+        pos, up, kind, border = pickle.loads(pickleString)
+        return BoardTile(pos, up, kind, border)
+
     def canGo(self,direction):
         """Checks if it is possible to move in "direction" from this tile."""
         return BoardTile.kinds[self.kind][(direction+self.upSide)%4]
@@ -61,11 +69,20 @@ class Board(object):
     dimensions = (width,height)
     tiles - dictionary: (x,y) -> BoardTile
     """
-    def __init__(self, dimensions=(8,8),tiles=""):
+    def __init__(self, dimensions=(1,1),tiles=""):
         """Creates board."""
         self.random = random.Random()
         self.dimensions = dimensions
         self.tilesFromString(tiles)
+
+    def lightPickle(self):
+        return pickle.dumps((self.random, self.tiles, self.dimensions),-1)
+
+    @staticmethod
+    def lightUnpickle(pickleString):
+        b = Board()
+        b.random, b.tiles, b.dimensions = pickle.loads(pickleString)
+        return b
 
     def tilesFromString(self,s):
         """Creates array of tiles (self.tiles) from string s.
@@ -219,6 +236,17 @@ class OooManAction(object):
         self.ended = False
         self.started = False
         self.kind = kind
+        self.discarded = False
+
+    def lightPickle(self):
+        return pickle.dumps((self.startTime, self.progress, self.speed, self.ended, self.started, self.kind, self.discarded), -1)
+
+    @staticmethod
+    def lightUnpickle(pickleString,oooMan):
+        a = OooManAction(oooMan,"")
+        a.startTime, a.progress, a.speed, a.ended, a.started, a.kind, a.discarded = pickle.loads(pickleString)
+        return a
+
     def start(self,time):
         self.startTime = time
         self.started = True
@@ -256,8 +284,20 @@ class OooManMoveRotate(OooManAction):
         self.move = move
         self.rotate = rotate
         self.startPosition = None
+        self.startRotation = None
         self.relative = relative
-        self.discarded = False
+
+    def lightPickle(self):
+        return pickle.dumps((OooManAction.lightPickle(self), self.move, self.rotate, self.startPosition, self.startRotation, self.relative), -1)
+
+    @staticmethod
+    def lightUnpickle(pickleString,oooMan):
+        atr = pickle.loads(pickleString)
+        a = OooManAction.lightUnpickle(atr[0],oooMan)
+        a.__class__ = OooManMoveRotate
+        s, a.move, a.rotate, a.startPosition, a.startRotation, a.relative = atr
+        return a
+
     def start(self,time):
         OooManAction.start(self,time)
         self.startPosition = self.oooMan.position
@@ -265,11 +305,13 @@ class OooManMoveRotate(OooManAction):
         self.direction =  (4+int(round(self.oooMan.rotation/90.0))%4)%4
         if OooManAction.discardImpossible and not self.canPerform():
             self.discard()
+
     def discard(self):
         self.discarded = True
         self.roatate = 0
         self.relative = True
         self.move = None
+
     def update(self,time):
         #print((self.started,self.ended,self.canPerform(),self.getEndPosition()))
         if not OooManAction.update(self,time):
@@ -318,10 +360,11 @@ class ActionFactory(object):
                 GO_SOUTH: (OooManMoveRotate,{'move':BoardTile.SOUTH,'rotate':0,'relative':False}),
                 GO_EAST: (OooManMoveRotate,{'move':BoardTile.EAST,'rotate':0,'relative':False})
             }
+
+    @staticmethod
     def createAction(oooMan,kind):
         actionC,kargs = ActionFactory.actionsConstructors[kind]
         return actionC(oooMan,kind,**kargs)
-    createAction = staticmethod(createAction)
 
 
 class OooMan(GameObject):
@@ -353,8 +396,22 @@ class OooMan(GameObject):
         self.dieStartTime = 0
         self.dieSpeed = 0.1
         self.canDie = False
+    
+    def lightPickle(self):
+        s = self
+        return pickle.dumps((s.position, s.rotation, s.kind, [(a.__class__, a.lightPickle()) for a in s.actionList], s.size, s.alive, s.dieProgress, s.dieStartTime, s.dieSpeed, s.canDie ), -1)
+    @staticmethod
+
+    def lightUnpickle(pickleString,player):
+        arg = pickle.loads(pickleString)
+        o = OooMan(arg[0], arg[1], arg[2], player)
+        o.actionList = [ c.lightUnpickle(s,o) for c,s in arg[3] ]
+        o.size, o.alive, o.dieProgress, o.dieStartTime, o.dieSpeed, o.canDie = arg[4:]
+        return o
+
     def __str__(self):
         return str(self.position)+" "+self.kind
+
     def collide(self,gameObject):
         if gameObject is self:
             return False
@@ -362,6 +419,7 @@ class OooMan(GameObject):
         ox,oy = gameObject.position
         #print("{0}\t{1}\t{2}".format(self,gameObject,(self.size**2, (ox-x)**2 , (oy-y)**2)))
         return (self.size**2 >= (ox-x)**2+(oy-y)**2)
+
     def collideOooMan(self,other,time):
         if not self.collide(other):
             return
@@ -369,20 +427,24 @@ class OooMan(GameObject):
         if (other.player is not self.player) and other.kind in OooMan.kinds[self.kind]:
             other.die(time)
             self.player.score += 2
+
     def die(self,time):
         self.dieStartTime = time
         self.alive = False
         self.player.score -= 1
+
     def actionEnded(self,time):
         if self.actionList:
             self.actionList.pop(0)
             self.update(time)
+
     def addAction(self,kind):
         """kind should be one fo OooMan.actionKinds"""
         if len(self.actionList) >= OooMan.maxActions:
             return
         action = ActionFactory.createAction(self,kind)
         self.actionList.append(action)
+
     def update(self,time):
         if not self.alive:
             self.actionList = []
@@ -392,6 +454,7 @@ class OooMan(GameObject):
             if not a.started:
                 a.start(time)
             a.update(time)
+
     def updateCanDie(self,activeOooMen):
         self.canDie = False
         for a in activeOooMen:
@@ -399,6 +462,7 @@ class OooMan(GameObject):
                 continue
             if self.kind in OooMan.kinds[a.kind]:
                 self.canDie = True
+
     def removeAction(self):
         if self.actionList:
             self.actionList.pop()
@@ -428,16 +492,28 @@ class Player(object):
                 "rotateCCW": (self.addAction, {'kind':ActionFactory.ROTATE_CCW}),
                 "switchActive": (self.switchActiveOooMan, {})
                 }
-    """def lightPickle(self):
+
+    def lightPickle(self):
         "Returns lightweight pickle of this player"
-        return pickle.sdump((self.score,[ o.lightPickle() for o in self.oooMen ]))
-    def lightUnpickle(self,dump):
-        self.score,oo = pickle.sload(dump)
-        self.oooMen = [ """
+        activeIdx = -1
+        if self.activeOooMan in self.oooMen:
+            activeIdx = self.oooMen.index(self.activeOooMan)
+        return pickle.dumps((self.name, [ o.lightPickle() for o in self.oooMen ], self.color, activeIdx, self.score), -1)
+
+    @staticmethod
+    def lightUnpickle(pickleString, board):
+        arg = pickle.loads(pickleString)
+        p = Player(board, arg[2], arg[0])
+        p.oooMen = [ OooMan.lightUnpickle(o, p) for o in arg[1] ] 
+        if arg[3] != -1:
+            p.activeOooMan = p.oooMen[arg[3]]
+        p.score = arg[4]
+        return p
 
     @property
     def alive(self):
         return [o for o in self.oooMen if o.alive]
+
     def addOooMan(self):
         o = OooMan.create(self)
         self.oooMen.append(o)
@@ -448,6 +524,7 @@ class Player(object):
             self.activeOooMan = None
         if self.alive and not self.activeOooMan: 
             self.activeOooMan = self.alive[0]
+
     def removeOooMan(self,oooMan):
         self.oooMen.remove(oooMan)
         self.updateActiveOooMan()
@@ -472,9 +549,11 @@ class Player(object):
         """Adds action to active oooMan"""
         if self.activeOooMan:
             self.activeOooMan.addAction(kind)
+
     def removeAction(self):
         if self.activeOooMan:
             self.activeOooMan.removeAction()
+
     def sendInput(self,action):
         f,kwargs = self.actions[action]
         f(**kwargs)
@@ -491,6 +570,18 @@ class Game(object):
             self.__dict__[attrName] = kwargs[attrName]
         else:
             self.__dict__[attrName] = default
+
+    def lightPickle(self):
+        return pickle.dumps((self.time, [ (i, p.lightPickle()) for i, p in self.players.items()], self.board.lightPickle()), -1)
+
+    def lightUnpickle(self,pickleString):
+        print("Unpickle")
+        self.time, pl , self.board = pickle.loads(pickleString)
+        self.board = Board.lightUnpickle(self.board)
+        self.players = {}
+        for k,v in pl:
+            self.players[k] = Player.lightUnpickle(v,self.board)
+
     def __init__(self,**kwargs):
         """Creates new Game.
         Possible kwargs:
@@ -514,6 +605,7 @@ class Game(object):
 
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
+
     @staticmethod
     def simpleGame(players=2, seed=random.randint(1,10000)):
         b = Board()

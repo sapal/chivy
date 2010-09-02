@@ -64,9 +64,12 @@ class NetworkedController(Controller,ConnectionListener):
         connection.Pump()
         self.Pump()
 
-    def Network_updateGame(self,data):
+    def Network_gameUpdate(self,data):
         self._game = pickle.loads(data['game'])
         self.ready = True
+
+    def Network_lightGameUpdate(self,data):
+        self._game.lightUnpickle(data['game'])
 
 if __name__=="__main__":
     ctrl = NetworkedController()
