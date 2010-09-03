@@ -351,6 +351,14 @@ class Shield(OwnedItem):
     def owner_die(self, die, *args, **kwargs):
         return False
 
+class MasterSword(OwnedItem):
+    def __init__(self, position, activeTime=30, owner=None, *args, **kwargs):
+        OwnedItem.__init__(self, position, activeTime, owner, *args, **kwargs)
+        self.kind = "masterSword"
+
+    def owner_killsKinds(self, killsKinds, *args, **kwargs):
+        return OooMan.kinds.keys()
+
 class OooManAction(object):
     """ Base class for various actions.
     kind - one of ActionFactory.kinds
@@ -520,10 +528,11 @@ class ActionFactory(object):
 class ItemFactory(object):
     """Object used for creating items."""
     """Kinds of items:"""
-    kinds = ("speedBoots","shield")
+    kinds = ("speedBoots","shield","masterSword")
     itemsConstructors = {
             "speedBoots": (SpeedBoots, {'activeTime':30, 'speed':1.5}),
-            "shield": (Shield, {})
+            "shield": (Shield, {}),
+            "masterSword": (MasterSword, {})
             }
     @staticmethod
     def createItem(position, kind):
@@ -590,9 +599,13 @@ class OooMan(GameObject):
     def collideOooMan(self,other,time):
         if not self.collide(other):
             return
-        if (other.player is not self.player) and other.kind in OooMan.kinds[self.kind]:
+        if (other.player is not self.player) and other.kind in self.killsKinds():
             if other.die(time):
                 self.kill()
+
+    @itemAffected
+    def killsKinds(self):
+        return OooMan.kinds[self.kind]
 
     @itemAffected
     def kill(self):
