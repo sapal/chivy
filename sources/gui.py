@@ -237,7 +237,8 @@ class Client(object):
             sI.alpha = s.alpha
             sI.render()
 
-        kills = game.OooMan.kinds[oooMan.kind]
+        #kills = game.OooMan.kinds[oooMan.kind]
+        kills = oooMan.killsKinds()
         scale = 0.5*s.scale
         width = scale * config.spriteSize*oooMan.size*(1.2)
         w = len(kills)*width
