@@ -101,7 +101,7 @@ class Client(object):
     def __init__(self,controller,players = None):
         pyglet.font.add_directory(config.fontsDir)
         self.sprites = {}
-        self.loadSprites(["glow","cheatSheet"])
+        self.loadSprites(["glow","cheatSheet","speedBoots"])
         self.loadSpritesRegex("tile.*")
         self.loadSpritesRegex("teleport.*")
         self.loadSpritesRegex("OooMan.*")
@@ -126,7 +126,7 @@ class Client(object):
         gl.glEnable(gl.GL_MULTISAMPLE)
         zoom = min( w/(config.spriteSize*bw), h/(config.spriteSize*bh))*0.95
         self.camera = Camera(self.window, position=((bw-1)/2,(bh-1)/2), zoom=zoom)
-        self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=300),format='FPS: %(fps).2f')
+        self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=200),format='FPS: %(fps).2f')
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
 
     def bindingOk(self,binding):
@@ -196,7 +196,6 @@ class Client(object):
             a = oooMan.actionList[0]
             if a.started and not a.ended:
                 s.alpha = s.scale = 2* (abs(0.5 - a.progress))
-            
         if oooMan is player.activeOooMan:
             g = self.sprites["glow"]
             g.clear()
@@ -204,7 +203,9 @@ class Client(object):
             g.scale = s.scale
             g.render()
         s.render()
+
         sA = self.sprites["action0"]
+        sA.clear()
         height = (sA.top-sA.bottom)  
         width = (sA.right-sA.left) 
         w = len(oooMan.actionList)*width
@@ -218,13 +219,24 @@ class Client(object):
             sA.x = s.x - w/2 + width/2 + i*width
             sA.y = s.y+ oooMan.size*config.spriteSize/2 + height
             sA.scale = s.scale
-            sA.rot = 0
             sA.alpha = (1.0 - a.progress)*s.alpha
             if a.started and (not a.canPerform() or a.discarded):
                 sA.green = 0
                 sA.blue = 0
                 #print((a.direction,a.startPosition,a.getEndPosition()))
             sA.render()
+
+        w = len(oooMan.items)*width
+        for i in range(len(oooMan.items)):
+            it = oooMan.items[i]
+            sI = self.sprites[it.kind]
+            sI.clear()
+            sI.x = s.x - w/2 + width/2 + i*width
+            sI.y = s.y - oooMan.size * config.spriteSize/2 - height
+            sI.scale = s.scale * height / (sI.top - sI.bottom)
+            sI.alpha = s.alpha
+            sI.render()
+
         kills = game.OooMan.kinds[oooMan.kind]
         scale = 0.5*s.scale
         width = scale * config.spriteSize*oooMan.size*(1.2)

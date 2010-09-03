@@ -63,13 +63,16 @@ class Board(object):
     dimensions = (width,height)
     tiles - dictionary: (x,y) -> BoardTile
     items - list of Item
+    itemNumber - target number of items (excluding teleports)
+    teleports - number of teleports
     """
-    def __init__(self, dimensions=(1,1),tiles=""):
+    def __init__(self, dimensions=(1,1), tiles="", itemNumber=4):
         """Creates board."""
         self.randomState = random.getstate()
         self.dimensions = dimensions
         self.tilesFromString(tiles)
         self.items = []
+        self.itemNumber = itemNumber
 
     @property
     def random(self):
@@ -78,6 +81,9 @@ class Board(object):
         self.randomState = random.getstate()
         return random
 
+    @property
+    def teleports(self):
+        return len([t for t in self.items if t.kind[0:8] == "teleport"])
 
     def tilesFromString(self,s):
         """Creates array of tiles (self.tiles) from string s.
@@ -190,6 +196,8 @@ class Board(object):
         for i in self.items:
             i.update(time)
         self.items[:] = [ i for i in self.items if not i.deleteMe ]
+        while len(self.items) < self.teleports + self.itemNumber:
+            self.items.append(SpeedBoots(self.randomPosition(disallowed=[t.position for t in self.items if t.kind[0:8] == "teleport"])))
 
     def randomPosition(self, disallowed=[]):
         return self.randomPositions(1, disallowed)[0]
@@ -266,7 +274,7 @@ class Item(GameObject):
         pass
 
     def canUse(self,oooMan):
-        return oooMan.actionList and oooMan.actionList[0].kind == ActionFactory.USE_ITEM and oooMan.collide(self)
+        return not self.deleteMe and oooMan.actionList and oooMan.actionList[0].kind == ActionFactory.USE_ITEM and oooMan.collide(self)
 
 class Teleport(Item):
     def __init__(self, position, oooManKind):
@@ -283,6 +291,53 @@ class Teleport(Item):
             t = ActionFactory.createAction(oooMan, ActionFactory.TELEPORT)
             t.target = self.target
             oooMan.actionList[0] = t
+
+class OwnedItem(Item):
+    """Item that can be owned by player."""
+    def __init__(self, position, activeTime=30, owner=None, *args, **kwargs):
+        """All derived classes should have constructor like this."""
+        Item.__init__(self, position)
+        self.kind = "ownedItem"
+        self.owner = owner
+        self.activeTime = activeTime
+        self.startTime = None
+        self.args = args
+        self.kwargs = kwargs
+
+    def canUse(self, oooMan):
+        return self.owner is None and Item.canUse(self, oooMan)
+    
+    def update(self, time):
+        if self.startTime is None:
+            self.startTime = time
+        if self.startTime + self.activeTime <= time:
+            #print("{0} + {1} >= {2}".format(self.startTime, self.activeTime, time))
+            self.deleteMe = True
+
+    def use(self, oooMan):
+        oooMan.items.append(self.__class__(None, 10, oooMan, *(self.args), **(self.kwargs)))
+        self.deleteMe = True
+
+class SpeedBoots(OwnedItem):
+    def __init__(self, position, activeTime=30, owner=None, *args, **kwargs):
+        """possible kwargs:
+        speed = 2 - player new speed
+        """
+        OwnedItem.__init__(self, position, activeTime, owner, *args, **kwargs)
+        self.speed = 1.5
+        self.kind = "speedBoots"
+        if "speed" in kwargs:
+            self.speed = kwargs["speed"]
+
+    def owner_update(self, update, *args, **kwargs):
+        a = self.owner.actionList
+        if a and "speed" in dir(a[0]):
+            s = a[0].speed
+            a[0].speed= self.speed
+        res = update(*args, **kwargs)
+        if a and "speed" in dir(a[0]):
+            a[0].speed = s
+        return res
 
 class OooManAction(object):
     """ Base class for various actions.
@@ -450,6 +505,18 @@ class ActionFactory(object):
         actionC,kargs = ActionFactory.actionsConstructors[kind]
         return actionC(oooMan,kind,**kargs)
 
+def itemAffected(f, *args, **kwargs):
+    def wrapped(*args, **kwargs):
+        #print("{0}({1},{2})".format(f, args, kwargs))
+        items = args[0].items
+        for i in items:
+            try:
+                return  getattr(i,"owner_"+f.__name__)(f, *args, **kwargs)
+            except Exception,e:
+                pass
+        return f(*args, **kwargs)
+    return wrapped
+
 class OooMan(GameObject):
     """Class representing OooMan - player's character.
 
@@ -480,10 +547,12 @@ class OooMan(GameObject):
         self.dieProgress = 0
         self.dieStartTime = 0
         self.dieSpeed = 0.1
-    
+        self.items = []
+
     def __str__(self):
         return str(self.position)+" "+self.kind
-
+    
+    @itemAffected
     def collide(self,gameObject):
         if gameObject is self:
             return False
@@ -491,7 +560,8 @@ class OooMan(GameObject):
         ox,oy = gameObject.position
         #print("{0}\t{1}\t{2}".format(self,gameObject,(self.size**2, (ox-x)**2 , (oy-y)**2)))
         return (((self.size+gameObject.size)/2)**2 >= (ox-x)**2+(oy-y)**2)
-
+    
+    @itemAffected
     def collideOooMan(self,other,time):
         if not self.collide(other):
             return
@@ -500,16 +570,19 @@ class OooMan(GameObject):
             other.die(time)
             self.player.score += 2
 
+    @itemAffected
     def die(self,time):
         self.dieStartTime = time
         self.alive = False
         self.player.score -= 1
 
+    @itemAffected
     def actionEnded(self,time):
         if self.actionList:
             self.actionList.pop(0)
             self.update(time)
 
+    @itemAffected
     def addAction(self,kind):
         """kind should be one fo OooMan.actionKinds"""
         if len(self.actionList) >= OooMan.maxActions:
@@ -517,16 +590,22 @@ class OooMan(GameObject):
         action = ActionFactory.createAction(self,kind)
         self.actionList.append(action)
 
+    @itemAffected
     def update(self,time):
         if not self.alive:
-            self.actionList = []
+            self.actionList[:] = []
+            self.items[:] = []
             self.dieProgress += self.dieSpeed*(time - self.dieStartTime)
         if self.actionList:
             a = self.actionList[0]
             if not a.started:
                 a.start(time)
             a.update(time)
+        for i in self.items:
+            i.update(time)
+        self.items[:] = [ i for i in self.items if not i.deleteMe ]
 
+    @itemAffected
     def removeAction(self):
         if self.actionList:
             self.actionList.pop()
