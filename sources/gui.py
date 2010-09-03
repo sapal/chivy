@@ -101,7 +101,7 @@ class Client(object):
     def __init__(self,controller,players = None):
         pyglet.font.add_directory(config.fontsDir)
         self.sprites = {}
-        self.loadSprites(["glow","cheatSheet","speedBoots"])
+        self.loadSprites(["glow","cheatSheet","speedBoots","shield"])
         self.loadSpritesRegex("tile.*")
         self.loadSpritesRegex("teleport.*")
         self.loadSpritesRegex("OooMan.*")

@@ -197,7 +197,11 @@ class Board(object):
             i.update(time)
         self.items[:] = [ i for i in self.items if not i.deleteMe ]
         while len(self.items) < self.teleports + self.itemNumber:
-            self.items.append(SpeedBoots(self.randomPosition(disallowed=[t.position for t in self.items if t.kind[0:8] == "teleport"])))
+            self.items.extend(self.randomItems(self.teleports + self.itemNumber - len(self.items)))
+
+    def randomItems(self, count):
+        disallowed = [t.position for t in self.items if t.kind[0:8] == "teleport"]
+        return [ ItemFactory.createItem(self.randomPosition(disallowed), self.random.choice(ItemFactory.kinds)) for i in range(count) ]
 
     def randomPosition(self, disallowed=[]):
         return self.randomPositions(1, disallowed)[0]
@@ -338,6 +342,14 @@ class SpeedBoots(OwnedItem):
         if a and "speed" in dir(a[0]):
             a[0].speed = s
         return res
+
+class Shield(OwnedItem):
+    def __init__(self, position, activeTime=30, owner=None, *args, **kwargs):
+        OwnedItem.__init__(self, position, activeTime, owner, *args, **kwargs)
+        self.kind = "shield"
+
+    def owner_die(self, die, *args, **kwargs):
+        return False
 
 class OooManAction(object):
     """ Base class for various actions.
@@ -487,7 +499,7 @@ class OooManTeleport(OooManAction):
                 self.oooMan.position = self.target
 
 class ActionFactory(object):
-    """Object used to create actions."""
+    """Object used for creating actions."""
     """Kinds of actions:"""
     kinds = (MOVE,ROTATE_CW,ROTATE_CCW,GO_NORTH,GO_WEST,GO_SOUTH,GO_EAST,USE_ITEM,TELEPORT) = range(9)
     """Actions arguments:"""
@@ -504,6 +516,19 @@ class ActionFactory(object):
     def createAction(oooMan,kind):
         actionC,kargs = ActionFactory.actionsConstructors[kind]
         return actionC(oooMan,kind,**kargs)
+
+class ItemFactory(object):
+    """Object used for creating items."""
+    """Kinds of items:"""
+    kinds = ("speedBoots","shield")
+    itemsConstructors = {
+            "speedBoots": (SpeedBoots, {'activeTime':30, 'speed':1.5}),
+            "shield": (Shield, {})
+            }
+    @staticmethod
+    def createItem(position, kind):
+        itemC,kwargs = ItemFactory.itemsConstructors[kind]
+        return itemC(position, **kwargs)
 
 def itemAffected(f, *args, **kwargs):
     def wrapped(*args, **kwargs):
@@ -565,16 +590,20 @@ class OooMan(GameObject):
     def collideOooMan(self,other,time):
         if not self.collide(other):
             return
-        #print("COLLIDE!")
         if (other.player is not self.player) and other.kind in OooMan.kinds[self.kind]:
-            other.die(time)
-            self.player.score += 2
+            if other.die(time):
+                self.kill()
+
+    @itemAffected
+    def kill(self):
+        self.player.score += 2
 
     @itemAffected
     def die(self,time):
         self.dieStartTime = time
         self.alive = False
         self.player.score -= 1
+        return True
 
     @itemAffected
     def actionEnded(self,time):
