@@ -92,17 +92,18 @@ class Client(object):
         end = str(config.spriteSize)+".png"
         r = re.compile(regexString+end)
         self.loadSprites([ f[:f.rfind(end)] for f in os.listdir(config.imagesDir) if r.match(f)])
+
     def loadSprites(self,spriteList):
         for f in spriteList:
             self.sprites[f] = MySprite(config.imagesDir+os.sep+f+str(config.spriteSize)+".png")
             #print(f)
-
 
     def __init__(self,controller,players = None):
         pyglet.font.add_directory(config.fontsDir)
         self.sprites = {}
         self.loadSprites(["glow","cheatSheet"])
         self.loadSpritesRegex("tile.*")
+        self.loadSpritesRegex("teleport.*")
         self.loadSpritesRegex("OooMan.*")
         self.loadSpritesRegex("action.*")
         self.controller = controller
@@ -168,26 +169,40 @@ class Client(object):
         s.x,s.y = self.toScreenCoords(tile.position)
         s.rot = -tile.rotation
         s.render()
+    
+    def drawItem(self, item):
+        s = self.sprites[item.kind]
+        s.clear()
+        s.x,s.y = self.toScreenCoords(item.position)
+        s.rot = -item.rotation
+        s.render()
 
     def drawBoard(self):
         tiles = self.game.board.tiles
         for x,y in tiles.keys():
             self.drawTile(tiles[x,y])
+        for i in self.game.board.items:
+            self.drawItem(i)
 
     def drawOooMan(self, player, oooMan):
         s = self.sprites["OooMan-"+player.color+"-"+oooMan.kind]
         s.clear()
         s.xy = self.toScreenCoords(oooMan.position)
         s.rot = oooMan.rotation
+            #print(oooMan.position)
+        if not oooMan.alive:
+            s.alpha = s.scale = 1.0 - oooMan.dieProgress
+        if oooMan.actionList and oooMan.actionList[0].kind == game.ActionFactory.TELEPORT:
+            a = oooMan.actionList[0]
+            if a.started and not a.ended:
+                s.alpha = s.scale = 2* (abs(0.5 - a.progress))
+            
         if oooMan is player.activeOooMan:
             g = self.sprites["glow"]
             g.clear()
             g.xy = s.xy
+            g.scale = s.scale
             g.render()
-            #print(oooMan.position)
-        if not oooMan.alive:
-            s.alpha = s.scale = 1.0 - oooMan.dieProgress
-            
         s.render()
         sA = self.sprites["action0"]
         height = (sA.top-sA.bottom)  

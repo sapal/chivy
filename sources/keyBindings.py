@@ -1,12 +1,13 @@
 # coding=utf-8
 from pyglet.window import key
 
-def createAbsoluteBindings(goNorth=key.UP, goWest=key.LEFT, goSouth=key.DOWN, goEast=key.RIGHT, switchActive=key.RCTRL):
+def createAbsoluteBindings(goNorth=key.UP, goWest=key.LEFT, goSouth=key.DOWN, goEast=key.RIGHT, switchActive=key.RCTRL, useItem=key.RSHIFT):
     return {goNorth:"goNorth", 
         goWest:"goWest",
         goSouth:"goSouth",
         goEast:"goEast",
-        switchActive:"switchActive"}
+        switchActive:"switchActive",
+        useItem:"useItem"}
 
 def createRelativeBindings(switchActive=key.RCTRL, move=key.UP, rotateCW=key.RIGHT, rotateCCW=key.LEFT):
     return {switchActive:"switchActive",
@@ -25,5 +26,5 @@ def add(bindings, action, key):
 
 preconfigured = (ARROWS,WSAD,IJKL) = (
         createAbsoluteBindings(),
-        createAbsoluteBindings(key.W, key.A, key.S, key.D, key.LCTRL),
-        createAbsoluteBindings(key.I, key.J, key.K, key.L, key.SPACE))
+        createAbsoluteBindings(key.W, key.A, key.S, key.D, key.LCTRL, key.LSHIFT),
+        createAbsoluteBindings(key.I, key.J, key.K, key.L, key.SPACE, key.RALT))

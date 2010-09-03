@@ -18,7 +18,6 @@ class GameObject(object):
     def y(self):
         return self.position[1]
 
-
 class BoardTile(GameObject):
     """Class descripting single board-tile.
     
@@ -48,13 +47,6 @@ class BoardTile(GameObject):
         self.upSide = upSide
         self.border = border
 
-    def lightPickle(self):
-        return pickle.dumps((self.position, self.upSide, self.kind, self.border),-1)
-    @staticmethod
-    def lightUnpickle(pickleString):
-        pos, up, kind, border = pickle.loads(pickleString)
-        return BoardTile(pos, up, kind, border)
-
     def canGo(self,direction):
         """Checks if it is possible to move in "direction" from this tile."""
         return BoardTile.kinds[self.kind][(direction+self.upSide)%4]
@@ -70,28 +62,22 @@ class Board(object):
     
     dimensions = (width,height)
     tiles - dictionary: (x,y) -> BoardTile
+    items - list of Item
     """
     def __init__(self, dimensions=(1,1),tiles=""):
         """Creates board."""
         self.randomState = random.getstate()
         self.dimensions = dimensions
         self.tilesFromString(tiles)
+        self.items = []
 
     @property
     def random(self):
-        random.setstate(self.randomState)
-        random.randint(0,1)
+        #random.setstate(self.randomState)
+        random.seed(self.randomState)
         self.randomState = random.getstate()
         return random
 
-    def lightPickle(self):
-        return pickle.dumps((self.randomState, self.tiles, self.dimensions),-1)
-
-    @staticmethod
-    def lightUnpickle(pickleString):
-        b = Board()
-        b.randomState, b.tiles, b.dimensions = pickle.loads(pickleString)
-        return b
 
     def tilesFromString(self,s):
         """Creates array of tiles (self.tiles) from string s.
@@ -118,10 +104,9 @@ class Board(object):
         to build a string which is tileNumber long."""
         if tileNumber and tileNumber>0:
             n = tileNumber
-            t = [tiles for i in range(0,n,len(tiles))]
-            if n % len(tiles):
-                t.append(tiles[:(n % len(tiles))])
-            tiles = "".join(t)
+            l = len(tiles)
+            t = [tiles for i in range(0,n,l)]
+            tiles = ("".join(t))[:n]
         que = [(0,0)]
         self.tiles = {}
         random.seed(seed)
@@ -187,9 +172,32 @@ class Board(object):
             nTiles[nx,ny] = BoardTile((nx,ny),t.upSide,t.kind,t.border)
         self.tiles = nTiles
 
-    def randomPosition(self):
-        pos = [ p for p in self.tiles.keys() if not self.tiles[p].border]
-        return self.random.choice(pos)
+    def addTeleports(self, kind, count):
+        count = min(len(self.getNormalTiles()),count)
+        pos = self.randomPositions(count)
+        for p in pos:
+            self.items.append(Teleport(p,kind))
+        tel = [ t for t in self.items if t.kind == "teleport-"+kind]
+        if tel:
+            for i in range(len(tel)):
+                tel[i-1].target = tel[i].position
+
+    def addAllTeleports(self, count=3):
+        for k in OooMan.kinds.keys():
+            self.addTeleports(k, count)
+
+    def update(self,time):
+        for i in self.items:
+            i.update(time)
+        self.items[:] = [ i for i in self.items if not i.deleteMe ]
+
+    def randomPosition(self, disallowed=[]):
+        return self.randomPositions(1, disallowed)[0]
+
+    def randomPositions(self, count, disallowed=[]):
+        pos = [ p for p in self.tiles.keys() if not self.tiles[p].border and p not in disallowed]
+        return self.random.sample(pos, count)
+
     def __repr__(self):
         resLst = []
         for y in range(self.height):
@@ -222,6 +230,10 @@ class Board(object):
         except BaseException,e:
             return None
 
+    def getNormalTiles(self):
+        """Returns normal tiles (all but border tiles)"""
+        return [ p for p in self.tiles.values() if not p.border ]
+
     @property
     def width(self):
         return self.dimensions[0]
@@ -240,6 +252,38 @@ class Board(object):
         print(str(b) == str(a))
         #print(a)
 
+class Item(GameObject):
+    def __init__(self, position):
+        GameObject.__init__(self, position)
+        self.size = 0.6
+        self.kind = "item"
+        self.deleteMe = False
+
+    def update(self, time):
+        pass
+
+    def use(self, oooMan):
+        pass
+
+    def canUse(self,oooMan):
+        return oooMan.actionList and oooMan.actionList[0].kind == ActionFactory.USE_ITEM and oooMan.collide(self)
+
+class Teleport(Item):
+    def __init__(self, position, oooManKind):
+        Item.__init__(self, position)
+        self.oooManKind = oooManKind
+        self.target = None
+        self.kind = "teleport-"+oooManKind
+
+    def canUse(self, oooMan):
+        return self.oooManKind == oooMan.kind and Item.canUse(self,oooMan)
+
+    def use(self, oooMan):
+        if self.target:
+            t = ActionFactory.createAction(oooMan, ActionFactory.TELEPORT)
+            t.target = self.target
+            oooMan.actionList[0] = t
+
 class OooManAction(object):
     """ Base class for various actions.
     kind - one of ActionFactory.kinds
@@ -256,35 +300,32 @@ class OooManAction(object):
         self.kind = kind
         self.discarded = False
 
-    def lightPickle(self):
-        return pickle.dumps((self.startTime, self.progress, self.speed, self.ended, self.started, self.kind, self.discarded), -1)
-
-    @staticmethod
-    def lightUnpickle(pickleString,oooMan):
-        a = OooManAction(oooMan,"")
-        a.startTime, a.progress, a.speed, a.ended, a.started, a.kind, a.discarded = pickle.loads(pickleString)
-        return a
-
     def start(self,time):
         self.startTime = time
         self.started = True
+        if OooManAction.discardImpossible and not self.canPerform():
+            self.discard()
+
     def update(self,time):
         """This method should return if update was performed."""
-        dt = time - self.startTime
+        if self.started:
+            dt = time - self.startTime
+            self.progress = min(1.0,dt*self.speed)
+        if self.progress == 1.0 and not self.ended:
+            self.end(time)
         if (not self.started) or self.ended or (not self.canPerform()):
             return False
         else:
-            self.progress = min(1.0,dt*self.speed)
-        dt = time - self.startTime
-        if self.progress == 1.0:
-            self.end(time)
-        return True
+            return True
+
+    def discard(self):
+        self.discarded = True
+
     def canPerform(self):
         return True
+
     def end(self,time):
         self.ended = True
-        self.oooMan.position = self.getEndPosition()
-        self.oooMan.rotation = self.rotate
         self.oooMan.actionEnded(time)
 
 class OooManMoveRotate(OooManAction):
@@ -305,27 +346,14 @@ class OooManMoveRotate(OooManAction):
         self.startRotation = None
         self.relative = relative
 
-    def lightPickle(self):
-        return pickle.dumps((OooManAction.lightPickle(self), self.move, self.rotate, self.startPosition, self.startRotation, self.relative), -1)
-
-    @staticmethod
-    def lightUnpickle(pickleString,oooMan):
-        atr = pickle.loads(pickleString)
-        a = OooManAction.lightUnpickle(atr[0],oooMan)
-        a.__class__ = OooManMoveRotate
-        s, a.move, a.rotate, a.startPosition, a.startRotation, a.relative = atr
-        return a
-
     def start(self,time):
-        OooManAction.start(self,time)
         self.startPosition = self.oooMan.position
         self.startRotation = self.oooMan.rotation
         self.direction =  (4+int(round(self.oooMan.rotation/90.0))%4)%4
-        if OooManAction.discardImpossible and not self.canPerform():
-            self.discard()
+        OooManAction.start(self,time)
 
     def discard(self):
-        self.discarded = True
+        OooManAction.discard(self)
         self.roatate = 0
         self.relative = True
         self.move = None
@@ -367,23 +395,60 @@ class OooManMoveRotate(OooManAction):
     def canPerform(self):
         return not (self.getEndPosition() is None)
 
+    def end(self, time):
+        self.oooMan.position = self.getEndPosition()
+        self.oooMan.rotation = self.rotate
+        OooManAction.end(self, time)
+
+class OooManUseItem(OooManAction):
+    def canPerform(self):
+        for i in self.oooMan.board.items:
+            if i.canUse(self.oooMan):
+                return True
+        return False
+
+    def start(self, time):
+        OooManAction.start(self, time)
+        for i in self.oooMan.board.items:
+            if i.canUse(self.oooMan):
+                i.use(self.oooMan)
+                break
+
+class OooManTeleport(OooManAction):
+    def __init__(self, oooMan, kind, target=None):
+        OooManAction.__init__(self, oooMan, kind)
+        self.target = target
+
+    def start(self, time):
+        self.startPosition = self.oooMan.position
+        OooManAction.start(self, time)
+
+    def update(self, time):
+        OooManAction.update(self, time)
+        if self.target:
+            if self.progress <=0.5:
+                self.oooMan.position = self.startPosition
+            else:
+                self.oooMan.position = self.target
+
 class ActionFactory(object):
     """Object used to create actions."""
     """Kinds of actions:"""
-    kinds = (MOVE,ROTATE_CW,ROTATE_CCW,GO_NORTH,GO_WEST,GO_SOUTH,GO_EAST) = range(7)
+    kinds = (MOVE,ROTATE_CW,ROTATE_CCW,GO_NORTH,GO_WEST,GO_SOUTH,GO_EAST,USE_ITEM,TELEPORT) = range(9)
     """Actions arguments:"""
     actionsConstructors = {
                 MOVE: (OooManMoveRotate,{'move':True,'rotate':0,'relative':True}),
                 ROTATE_CW: (OooManMoveRotate,{'move':False,'rotate':-90,'relative':True}), ROTATE_CCW: (OooManMoveRotate,{'move':False,'rotate':+90,'relative':True}), GO_NORTH: (OooManMoveRotate,{'move':BoardTile.NORTH,'rotate':0,'relative':False}), GO_WEST: (OooManMoveRotate,{'move':BoardTile.WEST,'rotate':0,'relative':False}),
                 GO_SOUTH: (OooManMoveRotate,{'move':BoardTile.SOUTH,'rotate':0,'relative':False}),
-                GO_EAST: (OooManMoveRotate,{'move':BoardTile.EAST,'rotate':0,'relative':False})
+                GO_EAST: (OooManMoveRotate,{'move':BoardTile.EAST,'rotate':0,'relative':False}),
+                USE_ITEM: (OooManUseItem,{}),
+                TELEPORT: (OooManTeleport,{})
             }
 
     @staticmethod
     def createAction(oooMan,kind):
         actionC,kargs = ActionFactory.actionsConstructors[kind]
         return actionC(oooMan,kind,**kargs)
-
 
 class OooMan(GameObject):
     """Class representing OooMan - player's character.
@@ -416,18 +481,6 @@ class OooMan(GameObject):
         self.dieStartTime = 0
         self.dieSpeed = 0.1
     
-    def lightPickle(self):
-        s = self
-        return pickle.dumps((s.position, s.rotation, s.kind, [(a.__class__, a.lightPickle()) for a in s.actionList], s.size, s.alive, s.dieProgress, s.dieStartTime, s.dieSpeed), -1)
-    @staticmethod
-
-    def lightUnpickle(pickleString,player):
-        arg = pickle.loads(pickleString)
-        o = OooMan(arg[0], arg[1], arg[2], player)
-        o.actionList = [ c.lightUnpickle(s,o) for c,s in arg[3] ]
-        o.size, o.alive, o.dieProgress, o.dieStartTime, o.dieSpeed = arg[4:]
-        return o
-
     def __str__(self):
         return str(self.position)+" "+self.kind
 
@@ -437,7 +490,7 @@ class OooMan(GameObject):
         x,y = self.position
         ox,oy = gameObject.position
         #print("{0}\t{1}\t{2}".format(self,gameObject,(self.size**2, (ox-x)**2 , (oy-y)**2)))
-        return (self.size**2 >= (ox-x)**2+(oy-y)**2)
+        return (((self.size+gameObject.size)/2)**2 >= (ox-x)**2+(oy-y)**2)
 
     def collideOooMan(self,other,time):
         if not self.collide(other):
@@ -501,25 +554,9 @@ class Player(object):
                 "move": (self.addAction, {'kind':ActionFactory.MOVE}),
                 "rotateCW": (self.addAction, {'kind':ActionFactory.ROTATE_CW}),
                 "rotateCCW": (self.addAction, {'kind':ActionFactory.ROTATE_CCW}),
-                "switchActive": (self.switchActiveOooMan, {})
+                "switchActive": (self.switchActiveOooMan, {}),
+                "useItem": (self.addAction, {'kind':ActionFactory.USE_ITEM})
                 }
-
-    def lightPickle(self):
-        "Returns lightweight pickle of this player"
-        activeIdx = -1
-        if self.activeOooMan in self.oooMen:
-            activeIdx = self.oooMen.index(self.activeOooMan)
-        return pickle.dumps((self.name, [ o.lightPickle() for o in self.oooMen ], self.color, activeIdx, self.score), -1)
-
-    @staticmethod
-    def lightUnpickle(pickleString, board):
-        arg = pickle.loads(pickleString)
-        p = Player(board, arg[2], arg[0])
-        p.oooMen = [ OooMan.lightUnpickle(o, p) for o in arg[1] ] 
-        if arg[3] != -1:
-            p.activeOooMan = p.oooMen[arg[3]]
-        p.score = arg[4]
-        return p
 
     @property
     def alive(self):
@@ -582,17 +619,6 @@ class Game(object):
         else:
             self.__dict__[attrName] = default
 
-    def lightPickle(self):
-        return pickle.dumps((self.time, [ (i, p.lightPickle()) for i, p in self.players.items()], self.board.lightPickle()), -1)
-
-    def lightUnpickle(self,pickleString):
-        print("Unpickle")
-        self.time, pl , self.board = pickle.loads(pickleString)
-        self.board = Board.lightUnpickle(self.board)
-        self.players = {}
-        for k,v in pl:
-            self.players[k] = Player.lightUnpickle(v,self.board)
-
     def __init__(self,**kwargs):
         """Creates new Game.
         Possible kwargs:
@@ -601,9 +627,11 @@ class Game(object):
         self.time = 0
         self._setAttr(kwargs,"board",Board())
         self._setAttr(kwargs,"players",{})
+        self.board.addAllTeleports()
 
     def update(self,dt):
         self.time += dt
+        self.board.update(self.time)
         for p in self.players.values():
             p.update(self.time)
         oooMen = [o for p in self.players.values() for o in p.alive ]
@@ -632,12 +660,12 @@ class Game(object):
     def simpleGame(players=2, seed=random.randint(1,10000)):
         b = Board()
         b.generateBoard("T+LI"*10*players,seed)
-        colors = ["red","blue","green","cyan","black","white","purple"]
+        col = list(colors.colors.keys())
         random.seed(seed)
-        random.shuffle(colors)
+        random.shuffle(col)
         playerDict = {} 
         for i in range(players):
-            playerDict[i] = Player(b,colors[i],"Player {0}".format(i)) 
+            playerDict[i] = Player(b,col[i],"Player {0}".format(i)) 
         return Game(board=b, players=playerDict)
 
 if __name__ == "__main__":

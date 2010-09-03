@@ -23,17 +23,17 @@ userDir = os.path.expanduser("~"+os.sep+"NoName"+os.sep)
 spriteSize = 128
 
 """Sample player names:"""
-samplePlayerNames = [u"Michał","Ewa","Szymon","Bob","Alice"]
+samplePlayerNames = ["Michał","Ewa","Szymon","Bob","Alice"]
 
 """Screen size:"""
 #screenSize = 1280,800
-#screenSize = 1024,756
+screenSize = 1024,756
 #screenSize = 800,600
-screenSize = 640,480
+#screenSize = 640,480
 
 """Full screen mode:"""
-fullScreen = True
-#fullScreen = False
+#fullScreen = True
+fullScreen = False
 
 """Debug:"""
 dbg = False
