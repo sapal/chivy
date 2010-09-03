@@ -126,7 +126,7 @@ class Client(object):
         gl.glEnable(gl.GL_MULTISAMPLE)
         zoom = min( w/(config.spriteSize*bw), h/(config.spriteSize*bh))*0.95
         self.camera = Camera(self.window, position=((bw-1)/2,(bh-1)/2), zoom=zoom)
-        self.fps = clock.ClockDisplay()
+        self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=300),format='FPS: %(fps).2f')
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
 
     def bindingOk(self,binding):

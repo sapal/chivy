@@ -32,8 +32,8 @@ screenSize = 1024,756
 #screenSize = 640,480
 
 """Full screen mode:"""
-#fullScreen = True
-fullScreen = False
+fullScreen = True
+#fullScreen = False
 
 """Debug:"""
 dbg = False

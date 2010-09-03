@@ -619,7 +619,7 @@ class Game(object):
         else:
             self.__dict__[attrName] = default
 
-    def __init__(self,**kwargs):
+    def __init__(self, teleports=3, **kwargs):
         """Creates new Game.
         Possible kwargs:
         board - Board to be used in this game.
@@ -627,7 +627,7 @@ class Game(object):
         self.time = 0
         self._setAttr(kwargs,"board",Board())
         self._setAttr(kwargs,"players",{})
-        self.board.addAllTeleports()
+        self.board.addAllTeleports(teleports)
 
     def update(self,dt):
         self.time += dt
