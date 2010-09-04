@@ -44,8 +44,7 @@ def startLocalGame(argv):
     gui.initialize()
     ctrl = controller.Controller(g)
     c = gui.Client(ctrl)
-    cocos.director.director.run(cocos.scene.Scene(c))
-
+    cocos.director.director.run(c)
 
 def startServer(argv):
     parser = OptionParser()

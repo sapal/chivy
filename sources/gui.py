@@ -9,10 +9,10 @@ import sys
 import os
 import pyglet
 import re
-import rabbyt
 import controller
 import keyBindings
 import colors
+import rabbyt 
 from pyglet import gl, clock, font
 from pyglet.window import Window,key
 from pyglet.text import Label,HTMLLabel
@@ -33,13 +33,14 @@ def initialize():
     BoardSprite.loadSpritesRegex("OooMan.*")
     BoardSprite.loadSpritesRegex("action.*")
     clock.set_fps_limit(50)
-    gl.glEnable(gl.GL_MULTISAMPLE)
-    #rabbyt.init_display()
+    #rabbyt.set_default_attribs()
+    #gl.glEnable(gl.GL_MULTISAMPLE)
 
-class BoardSprite(rabbyt.Sprite):
+class BoardSprite(game.GameObject):
     """This sprite's size and position is in game.Board units (1 == tile size)."""
     """Dictionary of loaded sprites:"""
     sprites = {} 
+    sizes = {}
 
     @staticmethod
     def loadSpritesRegex(regexString):
@@ -54,54 +55,54 @@ class BoardSprite(rabbyt.Sprite):
 
     @staticmethod
     def loadSprite(spriteName):
-        pic = pyglet.image.load(config.imagesDir+os.sep+spriteName+str(config.spriteSize)+".png")
-        #BoardSprite.sprites[spriteName] = BoardSprite(pic, (pic.width/config.spriteSize, pic.height/config.spriteSize))
-        BoardSprite.sprites[spriteName] = BoardSprite((config.imagesDir+os.sep+spriteName+str(config.spriteSize)+".png"), (pic.width/config.spriteSize, pic.height/config.spriteSize))
+        path = config.imagesDir+spriteName+str(config.spriteSize)+".png"
+        pic = pyglet.image.load(path)
+        pic.anchor_x = int(pic.width/2)
+        pic.anchor_y = int(pic.height/2)
+        #BoardSprite.sprites[spriteName] = pyglet.sprite.Sprite(pic)
+        BoardSprite.sprites[spriteName] = rabbyt.Sprite(path)
+        BoardSprite.sizes[spriteName] =  (pic.width/config.spriteSize, pic.height/config.spriteSize)
         
-    def __init__(self, image, size):
-        super(BoardSprite, self).__init__(image)
-        self.size = size
+    def __init__(self, name):
+        super(BoardSprite, self).__init__()
+        self.name = name
 
     def clear(self):
-        self.rot = 0
-        self.x = 0
-        self.y = 0
+        self.position = (0,0)
+        self.rotation = 0
         self.color = (255, 255, 255)
-        self.alpha = 1
+        self.opacity = 1.0
         self.scale = 1
+        self.visible = True
 
-    def draw(self):
-        x, y = self.xy
-        self.xy = x*config.spriteSize, y*config.spriteSize
-        super(BoardSprite, self).render()
-        self.xy = x, y
+    def draw(self): 
+        s = BoardSprite.sprites[self.name]
+        size = config.spriteSize
+        #s.set_position(self.x*size, self.y*size)
+        #s.rotation = self.rotation
+        #s.color = self.color
 
-    def getPosition(self):
-        return self.xy
-    def setPosition(self,pos):
-        self.xy = pos
-    position = property(getPosition, setPosition)
-
-    def getColor(self):
-        return self.red*255, self.green*255, self.blue*255
-    def setColor(self,color):
-        r,g,b = color
-        self.rgb = r/255, g/255, b/255
-    color = property(getColor, setColor)
-
-    def getRotation(self):
-        return self.rot
-    def setRotation(self,rot):
-        self.rot = rot
-    rotation = property(getRotation, setRotation)
+        #s.opacity = self.opacity
+        #s.scale = self.scale
+        #s.draw()
+        s.xy = self.x*size, self.y*size
+        s.rot = -self.rotation
+        r, g, b = self.color
+        s.rgb = r/255, g/255, b/255
+        s.scale = self.scale
+        s.alpha = self.opacity
+        s.render()
 
     @property
-    def width(self):
-        return self.size[0]
+    def size(self):
+        return BoardSprite.sizes[self.name]
 
     @property
     def height(self):
         return self.size[1]
+    @property
+    def widht(self):
+        return self.size[0]
 
 class HudLayer(cocos.layer.Layer):
     def __init__(self, client):
@@ -132,9 +133,11 @@ class BoardLayer(cocos.layer.Layer):
     def __init__(self, client):
         super(BoardLayer, self).__init__()
         self.client = client
-        self.cameraPosition = self.game.board.width/2, self.game.board.height/2
-        #self.cameraPosition = (0,0)
-        self.cameraZoom = 0.3
+        bw, bh = self.game.board.width, self.game.board.height
+        self.cameraPosition = bw/2, bh/2
+        w,h = config.screenSize
+        s = config.spriteSize
+        self.cameraZoom = min(w/(bw*s),h/(bh*s))
 
     @property
     def game(self):
@@ -143,16 +146,15 @@ class BoardLayer(cocos.layer.Layer):
     def toScreenCoords(self,pos):
         x, y = pos
         cx, cy = self.cameraPosition
-        w,h = cocos.director.director.get_window_size()
-        return (x-cx)*self.cameraZoom+(w/2/config.spriteSize), (y-cy)*self.cameraZoom+(h/2/config.spriteSize)
-
+        w,h = config.screenSize
+        s = config.spriteSize
+        return (x-cx)*self.cameraZoom+w/s/2, (y-cy)*self.cameraZoom+h/s/2
     
     def renderSprite(self, sprite):
-        #print("draw({0})".format(sprite))
         x, y = sprite.position
         scale = sprite.scale
 
-        sprite.position = self.toScreenCoords(sprite.position)
+        sprite.position = self.toScreenCoords((x,y))
         sprite.scale *= self.cameraZoom
         sprite.draw()
 
@@ -160,17 +162,17 @@ class BoardLayer(cocos.layer.Layer):
         sprite.scale = scale
 
     def drawTile(self,tile):
-        s = BoardSprite.sprites["tile{0}".format(tile.kind)]
+        s = BoardSprite("tile{0}".format(tile.kind))
         s.clear()
         s.position = tile.position
-        s.rotation = -tile.rotation
+        s.rotation = tile.rotation
         self.renderSprite(s)
     
     def drawItem(self, item):
-        s = BoardSprite.sprites[item.kind]
+        s = BoardSprite(item.kind)
         s.clear()
         s.position = item.position
-        s.rotation = item.rotation
+        s.rotation = -item.rotation
         self.renderSprite(s)
 
     def drawBoard(self):
@@ -181,18 +183,18 @@ class BoardLayer(cocos.layer.Layer):
             self.drawItem(i)
 
     def drawOooMan(self, player, oooMan):
-        s = BoardSprite.sprites["OooMan-"+player.color+"-"+oooMan.kind]
+        s = BoardSprite("OooMan-"+player.color+"-"+oooMan.kind)
         s.clear()
         s.position = oooMan.position
         s.rot = oooMan.rotation
         if not oooMan.alive:
-            s.alpha = s.scale = 1.0 - oooMan.dieProgress
+            s.opacity = s.scale = 1.0 - oooMan.dieProgress
         if oooMan.actionList and oooMan.actionList[0].kind == game.ActionFactory.TELEPORT:
             a = oooMan.actionList[0]
             if a.started and not a.ended:
-                s.alpha = s.scale = 2* (abs(0.5 - a.progress))
+                s.opacity = s.scale = 2* (abs(0.5 - a.progress))
         if oooMan is player.activeOooMan:
-            g = BoardSprite.sprites["glow"]
+            g = BoardSprite("glow")
             g.clear()
             g.position = s.position
             g.rotation = s.rotation
@@ -200,7 +202,7 @@ class BoardLayer(cocos.layer.Layer):
             self.renderSprite(g)
         self.renderSprite(s)
 
-        sA = BoardSprite.sprites["action0"]
+        sA = BoardSprite("action0")
         sA.clear()
         height, width = sA.size
         w = len(oooMan.actionList)*width
@@ -209,11 +211,11 @@ class BoardLayer(cocos.layer.Layer):
                 w += width*a.progress
         for i in range(len(oooMan.actionList)):
             a = oooMan.actionList[i]
-            sA = BoardSprite.sprites["action{0}".format(a.kind)]
+            sA = BoardSprite("action{0}".format(a.kind))
             sA.clear()
             sA.position = s.x - w/2 + width/2 + i*width, s.y+ oooMan.size/2 + 0.03
             sA.scale = s.scale
-            sA.alpha = (1.0 - a.progress)*s.alpha
+            sA.opacity = (1.0 - a.progress)*s.opacity
             if a.started and (not a.canPerform() or a.discarded):
                 sA.color = (255,0,0)
             self.renderSprite(sA)
@@ -222,12 +224,11 @@ class BoardLayer(cocos.layer.Layer):
         w = len(oooMan.items)*width
         for i in range(len(oooMan.items)):
             it = oooMan.items[i]
-            sI = BoardSprite.sprites[it.kind]
+            sI = BoardSprite(it.kind)
             sI.clear()
-            sI.x = s.x - w/2 + width/2 + i*width
-            sI.y = s.y - oooMan.size/2 - height/2 - 0.03
+            sI.position = s.x - w/2 + width/2 + i*width, s.y - oooMan.size/2 - height/2 - 0.03
             sI.scale = s.scale * height / (sI.height)
-            sI.alpha = s.alpha
+            sI.opacity = s.opacity
             self.renderSprite(sI)
 
         #kills = game.OooMan.kinds[oooMan.kind]
@@ -237,11 +238,10 @@ class BoardLayer(cocos.layer.Layer):
         w = len(kills)*width
         for i in range(len(kills)):
             k = kills[i]
-            sK = BoardSprite.sprites["OooMan-white-"+k]
+            sK = BoardSprite("OooMan-white-"+k)
             sK.clear()
-            sK.x = s.x - w/2 + width*(i+0.5)
-            sK.y = s.y - scale/2
-            sK.alpha = 0.8*s.alpha
+            sK.position = s.x - w/2 + width*(i+0.5), s.y - scale/2
+            sK.opacity = 0.8*s.opacity
             sK.scale = scale
             self.renderSprite(sK)
 
@@ -257,7 +257,7 @@ class BoardLayer(cocos.layer.Layer):
         gl.glPushMatrix()
         self.transform()
 
-        rabbyt.clear((1,1,1,1))
+        rabbyt.clear((1,1,1))
         self.drawBoard()
         self.drawOooMen()
 
@@ -299,20 +299,17 @@ class InputLayer(cocos.layer.Layer):
         for i in self.playersInput.values():
             i.on_key_press(key, modyfiers)
 
-class Client(cocos.layer.Layer):
+class Client(cocos.scene.Scene):
     """Client for viewing game."""
 
     def __init__(self, controller, players = None):
-        super(Client, self).__init__()
         w,h = config.screenSize
 
         self.controller = controller
         controller.clients.append(self)
+        #super(Client, self).__init__(cocos.layer.util_layers.ColorLayer(255,255,255,255),BoardLayer(self),HudLayer(self),InputLayer(self))
+        super(Client, self).__init__(BoardLayer(self),HudLayer(self),InputLayer(self))
         self.schedule(self.update)
-        #self.add(cocos.layer.util_layers.ColorLayer(255,255,255,255))
-        self.add(BoardLayer(self))
-        self.add(HudLayer(self))
-        self.add(InputLayer(self))
 
     def update(self, dt):
         self.controller.update()
@@ -343,7 +340,6 @@ class InputListener(pyglet.event.EventDispatcher):
         if symbol in self.keyBindings:
             f,kwargs = self.keyBindings[symbol]
             f(**kwargs)
-
 
 if __name__ == "__main__":
     import start
