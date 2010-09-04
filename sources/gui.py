@@ -132,7 +132,7 @@ class BoardLayer(cocos.layer.Layer):
         super(BoardLayer, self).__init__()
         self.client = client
         self.cameraPosition = self.game.board.width/2, self.game.board.height/2
-        self.cameraZoom = 1.0
+        self.cameraZoom = 0.3
 
     @property
     def game(self):
@@ -141,7 +141,7 @@ class BoardLayer(cocos.layer.Layer):
     def toScreenCoords(self,pos):
         x, y = pos
         cx, cy = self.cameraPosition
-        return (x-cx)/self.cameraZoom, (y-cy)/self.cameraZoom
+        return (x-cx)*self.cameraZoom, (y-cy)*self.cameraZoom
     
     def renderSprite(self, sprite):
         #print("draw({0})".format(sprite))
