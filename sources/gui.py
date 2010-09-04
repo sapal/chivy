@@ -137,7 +137,7 @@ class BoardLayer(cocos.layer.Layer):
         self.cameraPosition = bw/2, bh/2
         w,h = config.screenSize
         s = config.spriteSize
-        self.cameraZoom = min(w/(bw*s),h/(bh*s))
+        self.cameraZoom = min(w/(bw*s),h/(bh*s))*0.95
 
     @property
     def game(self):
@@ -148,7 +148,7 @@ class BoardLayer(cocos.layer.Layer):
         cx, cy = self.cameraPosition
         w,h = config.screenSize
         s = config.spriteSize
-        return (x-cx)*self.cameraZoom+w/s/2, (y-cy)*self.cameraZoom+h/s/2
+        return (x-cx+0.5)*self.cameraZoom+w/s/2, (y-cy+0.5)*self.cameraZoom+h/s/2
     
     def renderSprite(self, sprite):
         x, y = sprite.position

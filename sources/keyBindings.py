@@ -26,5 +26,6 @@ def add(bindings, action, key):
 
 preconfigured = (ARROWS,WSAD,IJKL) = (
         createAbsoluteBindings(),
-        createAbsoluteBindings(key.W, key.A, key.S, key.D, key.LCTRL, key.Z),
-        createAbsoluteBindings(key.I, key.J, key.K, key.L, key.SPACE, key.RALT))
+        createAbsoluteBindings(key.W, key.A, key.S, key.D, key.Q, key.E),
+        createAbsoluteBindings(key.I, key.J, key.K, key.L, key.U, key.O))
+
