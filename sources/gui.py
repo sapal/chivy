@@ -226,13 +226,14 @@ class Client(object):
                 #print((a.direction,a.startPosition,a.getEndPosition()))
             sA.render()
 
+        width, height = 2*width, 2*height
         w = len(oooMan.items)*width
         for i in range(len(oooMan.items)):
             it = oooMan.items[i]
             sI = self.sprites[it.kind]
             sI.clear()
             sI.x = s.x - w/2 + width/2 + i*width
-            sI.y = s.y - oooMan.size * config.spriteSize/2 - height
+            sI.y = s.y - oooMan.size * config.spriteSize/2 - height/2 - 5
             sI.scale = s.scale * height / (sI.top - sI.bottom)
             sI.alpha = s.alpha
             sI.render()
