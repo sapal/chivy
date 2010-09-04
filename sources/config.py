@@ -32,8 +32,8 @@ samplePlayerNames = ["Michał","Ewa","Szymon","Bob","Alice"]
 screenSize = 640,480
 
 """Full screen mode:"""
-#fullScreen = True
-fullScreen = False
+fullScreen = True
+#fullScreen = False
 
 """Debug:"""
 dbg = False

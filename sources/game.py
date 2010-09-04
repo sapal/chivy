@@ -196,11 +196,13 @@ class Board(object):
         for i in self.items:
             i.update(time)
         self.items[:] = [ i for i in self.items if not i.deleteMe ]
-        while len(self.items) < self.teleports + self.itemNumber:
+        if len(self.items) < self.teleports + self.itemNumber:
             self.items.extend(self.randomItems(self.teleports + self.itemNumber - len(self.items)))
 
     def randomItems(self, count):
-        disallowed = [t.position for t in self.items if t.kind[0:8] == "teleport"]
+        disallowed = set([t.position for t in self.items if t.kind[0:8] == "teleport"])
+        if len(disallowed) >= len(self.getNormalTiles()):
+            return []
         return [ ItemFactory.createItem(self.randomPosition(disallowed), self.random.choice(ItemFactory.kinds)) for i in range(count) ]
 
     def randomPosition(self, disallowed=[]):

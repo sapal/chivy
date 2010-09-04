@@ -10,6 +10,7 @@ import random
 def startClient(argv):
     import controller
     import gui
+    import cocos
     parser = OptionParser()
     parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
     parser.add_option("-a", "--address", default="localhost", help="Server address.")
@@ -17,9 +18,11 @@ def startClient(argv):
     options, args = parser.parse_args()
     if not options.players:
         options.players = [random.choice(config.samplePlayerNames)]
+
+    gui.initialize()
     ctrl = controller.NetworkedController(options.address, options.port, options.players)
     c = gui.Client(ctrl)
-    c.run()
+    cocos.director.director.run(c)
 
 def startLocalGame(argv):
     import controller
