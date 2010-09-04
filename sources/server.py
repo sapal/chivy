@@ -19,12 +19,12 @@ class ClientChannel(Channel):
             del self.game.players[p]
 
     def Network(self,data):
-        #print(self.game.time)
-        #print(data)
         #print()
         pass
 
     def Network_sendInput(self,data):
+        #print("{0:.2f}:{1}".format(self.game.time, data))
+        data["time"] = self.game.time
         self.server.sendToAll(data,True)
         self.game.sendInput(data["playerId"],data["inputAction"])
 
@@ -75,7 +75,7 @@ class OooServer(Server):
             #else:print("not send")
             
     def gameUpdate(self):
-        #print("gameUpdate")
+        #print("{0:.2f}".format(self.game.time))
         return {"action":"gameUpdate", "game":pickle.dumps(self.game,-1)}
 
     def lightGameUpdate(self):
@@ -90,6 +90,7 @@ class OooServer(Server):
             clicks += 1
             clock.tick()
             self.game.update(self.dt)
+            #print("update({0:.2f})".format(self.game.time))
             if clicks+1 >= clock.get_fps()*0.5:
                 self.sendToAll(self.gameUpdate(),True)
                 clicks = 0

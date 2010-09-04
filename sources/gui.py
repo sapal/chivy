@@ -312,8 +312,7 @@ class Client(cocos.scene.Scene):
         self.schedule(self.update)
 
     def update(self, dt):
-        self.controller.update()
-        self.game.update(dt)
+        self.controller.update(dt)
 
     @property
     def game(self):

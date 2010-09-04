@@ -8,7 +8,8 @@ import sys
 import config
 import pickle
 import methodPickle
-from time import sleep
+from pyglet import clock
+from time import sleep,time
 from optparse import OptionParser
 from PodSixNet.Connection import connection, ConnectionListener
 
@@ -26,8 +27,8 @@ class Controller(object):
         return self._game
     def sendInput(self,playerId,action):
         self._game.sendInput(playerId,action)
-    def update(self):
-        pass
+    def update(self,dt):
+        self._game.update(dt)
 
 class NetworkedController(Controller,ConnectionListener):
     def __init__(self, host="localhost", port=9999, players=[random.choice(config.samplePlayerNames)]):
@@ -36,6 +37,7 @@ class NetworkedController(Controller,ConnectionListener):
         self.Connect((host, port))
         self.controlPlayers = []
         self.ready = False
+        self.lastUpdate = time()
         print("Connecting...")
         connection.Send({"action":"requestPlayers", "players":players})
         while not self.ready:
@@ -63,20 +65,32 @@ class NetworkedController(Controller,ConnectionListener):
         for c in self.clients:
             c.controlPlayers = self.controlPlayers
 
-    def Network_sendInput(self,data):
+    def sendInputDt(self, dt, data):
         self._game.sendInput(data["playerId"], data["inputAction"])
 
-    def update(self):
+    def Network_sendInput(self,data):
+        #print("{0:.2f}:{1}".format(self._game.time, data))
+        t = time()
+        if self._game.time + t - self.lastUpdate < data["time"]:
+            clock.schedule_once(self.sendInputDt, data["time"] - (self._game.time + t - self.lastUpdate), data=data)
+        else:
+            self.sendInputDt(0, data)
+
+    def update(self,dt):
+        t = time()
+        #print((t,dt,t-self.lastUpdate))
+        self._game.update(t - self.lastUpdate)
+        self.lastUpdate = t
+        #print("update({0:.2f})".format(self._game.time))
         connection.Pump()
         self.Pump()
 
     def Network_gameUpdate(self,data):
         t = self._game.time
         self._game = pickle.loads(data['game'])
-        if abs(t-self._game.time) < 0.1: 
-            self._game.time = t
-        else:
+        if abs(t-self._game.time) > 0.1: 
             print("lag:{0:.2f}s".format(t - self._game.time))
+        self.lastUpdate = time()
         self.ready = True
 
     def Network_lightGameUpdate(self,data):
