@@ -24,7 +24,7 @@ def initialize():
         cocos.director.director.init(width=w, height=h)
     else:
         cocos.director.director.init(fullscreen=True)
-        w,h = self.width,self.height
+        w,h = cocos.director.director.get_window_size()
         config.screenSize = w,h
     pyglet.font.add_directory(config.fontsDir)
     BoardSprite.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword"])
@@ -83,9 +83,10 @@ class BoardSprite(rabbyt.Sprite):
     position = property(getPosition, setPosition)
 
     def getColor(self):
-        return self.red, self.green, self.blue
+        return self.red*255, self.green*255, self.blue*255
     def setColor(self,color):
-        self.red, self.green, self.blue = color
+        r,g,b = color
+        self.rgb = r/255, g/255, b/255
     color = property(getColor, setColor)
 
     def getRotation(self):
@@ -132,6 +133,7 @@ class BoardLayer(cocos.layer.Layer):
         super(BoardLayer, self).__init__()
         self.client = client
         self.cameraPosition = self.game.board.width/2, self.game.board.height/2
+        #self.cameraPosition = (0,0)
         self.cameraZoom = 0.3
 
     @property
@@ -141,14 +143,16 @@ class BoardLayer(cocos.layer.Layer):
     def toScreenCoords(self,pos):
         x, y = pos
         cx, cy = self.cameraPosition
-        return (x-cx)*self.cameraZoom, (y-cy)*self.cameraZoom
+        w,h = cocos.director.director.get_window_size()
+        return (x-cx)*self.cameraZoom+(w/2/config.spriteSize), (y-cy)*self.cameraZoom+(h/2/config.spriteSize)
+
     
     def renderSprite(self, sprite):
         #print("draw({0})".format(sprite))
         x, y = sprite.position
         scale = sprite.scale
 
-        sx, sy = self.toScreenCoords(sprite.position)
+        sprite.position = self.toScreenCoords(sprite.position)
         sprite.scale *= self.cameraZoom
         sprite.draw()
 
@@ -305,7 +309,7 @@ class Client(cocos.layer.Layer):
         self.controller = controller
         controller.clients.append(self)
         self.schedule(self.update)
-        self.add(cocos.layer.util_layers.ColorLayer(255,255,255,255))
+        #self.add(cocos.layer.util_layers.ColorLayer(255,255,255,255))
         self.add(BoardLayer(self))
         self.add(HudLayer(self))
         self.add(InputLayer(self))
