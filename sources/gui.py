@@ -4,7 +4,7 @@ from __future__ import division,print_function
 import random
 import game
 import config
-import rabbyt
+import cocos
 import sys
 import os
 import pyglet
@@ -17,117 +17,254 @@ from pyglet.window import Window,key
 from pyglet.text import Label,HTMLLabel
 from optparse import OptionParser
 
-class MySprite(rabbyt.Sprite):
+def initialize():
+    w,h = config.screenSize
+    if not config.fullScreen:
+        cocos.director.director.init(width=w, height=h)
+    else:
+        cocos.director.director.init(fullscreen=True)
+        w,h = self.width,self.height
+        config.screenSize = w,h
+    pyglet.font.add_directory(config.fontsDir)
+    BoardSprite.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword"])
+    BoardSprite.loadSpritesRegex("tile.*")
+    BoardSprite.loadSpritesRegex("teleport.*")
+    BoardSprite.loadSpritesRegex("OooMan.*")
+    BoardSprite.loadSpritesRegex("action.*")
+    clock.set_fps_limit(50)
+    gl.glEnable(gl.GL_MULTISAMPLE)
+
+class BoardSprite(cocos.sprite.Sprite):
+    """This sprite's size and position is in game.Board units (1 == tile size)."""
+    """Dictionary of loaded sprites:"""
+    sprites = {} 
+
+    @staticmethod
+    def loadSpritesRegex(regexString):
+        end = str(config.spriteSize)+".png"
+        r = re.compile(regexString+end)
+        BoardSprite.loadSprites([ f[:f.rfind(end)] for f in os.listdir(config.imagesDir) if r.match(f)])
+
+    @staticmethod
+    def loadSprites(spriteList):
+        for f in spriteList:
+            BoardSprite.loadSprite(f)
+
+    @staticmethod
+    def loadSprite(spriteName):
+        pic = pyglet.image.load(config.imagesDir+os.sep+spriteName+str(config.spriteSize)+".png")
+        BoardSprite.sprites[spriteName] = BoardSprite(pic, (pic.width/config.spriteSize, pic.height/config.spriteSize))
+
+    def __init__(self, image, size):
+        super(BoardSprite, self).__init__(image)
+        self.size = size
+
     def clear(self):
         self.rot = 0
         self.x = 0
         self.y = 0
-        self.red = 1
-        self.green = 1
-        self.blue = 1
-        self.alpha = 1
+        self.color = (255, 255, 255)
+        self.opacity = 1
         self.scale = 1
 
+    def draw(self):
+        self.position = (100,100)
+        print("draw {0} {1}".format(self.position, dir(self)))
+        super(BoardSprite, self).draw()
 
-class Camera(object):
-
-    def __init__(self, win, position=(0,0), zoom = 1.0, follow=None):
-        self.win = win
-        self.zoom = zoom
-        self.follow = follow
-        self.position = position
-        self.dimensions = (0,0,0,0)
-
-    @property
-    def x(self):
-        s = config.spriteSize*self.zoom
-        return self.position[0]*s
+        """x, y = self.position
+        self.position = x*config.spriteSize, y*config.spriteSize
+        super(BoardSprite, self).draw()
+        self.position = x, y"""
 
     @property
-    def y(self):
-        s = config.spriteSize*self.zoom
-        return self.position[1]*s
-
-    def update(self):
-        if self.follow:
-            self.position = self.follow.position
-
-    def worldProjection(self):
-        gl.glMatrixMode(gl.GL_PROJECTION)
-        gl.glLoadIdentity()
-        w,h = config.screenSize
-        gl.gluOrtho2D(
-            (self.x - w/2)/self.zoom,
-            (self.x + w/2)/self.zoom,
-            (self.y - h/2)/self.zoom,
-            (self.y + h/2)/self.zoom)
-        x,y = self.position
-        s = 2*config.spriteSize/self.zoom
-        self.dimensions = (x-w/s, x+w/s, y-h/s, y+h/s)
-        #gl.glScissor(100,100,400,400)
-        #gl.glEnable(gl.GL_SCISSOR_TEST)
+    def width(self):
+        return self.size[0]
 
     @property
-    def left(self):
-        return self.dimensions[0]
-    @property
-    def right(self):
-        return self.dimensions[1]
-    @property
-    def bottom(self):
-        return self.dimensions[2]
-    @property
-    def top(self):
-        return self.dimensions[3]
+    def height(self):
+        return self.size[1]
 
-    def hudProjection(self):
-        #gl.glDisable(gl.GL_SCISSOR_TEST)
-        gl.glMatrixMode(gl.GL_PROJECTION)
-        gl.glLoadIdentity()
-        gl.gluOrtho2D(0, self.win.width, 0, self.win.height)
-
-class Client(object):
-    """Client for viewing game."""
-    def loadSpritesRegex(self,regexString):
-        end = str(config.spriteSize)+".png"
-        r = re.compile(regexString+end)
-        self.loadSprites([ f[:f.rfind(end)] for f in os.listdir(config.imagesDir) if r.match(f)])
-
-    def loadSprites(self,spriteList):
-        for f in spriteList:
-            self.sprites[f] = MySprite(config.imagesDir+os.sep+f+str(config.spriteSize)+".png")
-            #print(f)
-
-    def __init__(self,controller,players = None):
-        pyglet.font.add_directory(config.fontsDir)
-        self.sprites = {}
-        self.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword"])
-        self.loadSpritesRegex("tile.*")
-        self.loadSpritesRegex("teleport.*")
-        self.loadSpritesRegex("OooMan.*")
-        self.loadSpritesRegex("action.*")
-        self.controller = controller
-        controller.clients.append(self)
-        self.game = self.controller.game
-        clock.set_fps_limit(50)
-        w,h = config.screenSize
-        if not config.fullScreen:
-            self.window = Window(width=w, height=h)
-        else:
-            self.window = Window(fullscreen=True)
-            w,h = self.window.width,self.window.height
-            config.screenSize = w,h
-        rabbyt.set_default_attribs()
-        self.window.set_caption("NoTitle!")
-        self.window.on_close = sys.exit
-        self.playersInput = {}
-        self.controlPlayers = controller.controlPlayers
-        bw,bh = self.game.board.dimensions
-        gl.glEnable(gl.GL_MULTISAMPLE)
-        zoom = min( w/(config.spriteSize*bw), h/(config.spriteSize*bh))*0.95
-        self.camera = Camera(self.window, position=((bw-1)/2,(bh-1)/2), zoom=zoom)
+class HudLayer(cocos.layer.Layer):
+    def __init__(self, client):
+        super(HudLayer, self).__init__()
+        self.client = client
         self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=200),format='FPS: %(fps).2f')
-        self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=h)
+        self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=config.screenSize[1])
+
+    def drawScores(self):
+        txt = ["<b><font face='Edmunds' size=6>Scores</font><br/></b>"]
+        for p in self.client.game.players.values():
+            txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
+        txt = u"".join(txt)
+        if self.scores.text != txt:
+            self.scores.text = unicode(txt)
+        self.scores.draw()
+
+    def draw(self):
+        gl.glPushMatrix()
+        self.transform()
+
+        self.fps.draw()
+        self.drawScores()
+
+        gl.glPopMatrix()
+
+class BoardLayer(cocos.layer.Layer):
+    def __init__(self, client):
+        super(BoardLayer, self).__init__()
+        self.client = client
+        self.cameraPosition = self.game.board.width/2, self.game.board.height/2
+        self.cameraZoom = 1.0
+        self.add(BoardSprite.sprites["glow"])
+
+    @property
+    def game(self):
+        return self.client.game
+
+    def toScreenCoords(self,pos):
+        x, y = pos
+        cx, cy = self.cameraPosition
+        return (x-cx)/self.cameraZoom, (y-cy)/self.cameraZoom
+    
+    def renderSprite(self, sprite):
+        print("draw({0})".format(sprite))
+        x, y = sprite.position
+        scale = sprite.scale
+
+        sx, sy = self.toScreenCoords(sprite.position)
+        sprite.scale *= self.cameraZoom
+        sprite.draw()
+
+        sprite.position = x, y
+        sprite.scale = scale
+
+    def drawTile(self,tile):
+        s = BoardSprite.sprites["tile{0}".format(tile.kind)]
+        s.clear()
+        s.position = tile.position
+        s.rotation = -tile.rotation
+        self.renderSprite(s)
+    
+    def drawItem(self, item):
+        s = BoardSprite.sprites[item.kind]
+        s.clear()
+        s.position = item.position
+        s.rotation = item.rotation
+        self.renderSprite(s)
+
+    def drawBoard(self):
+        tiles = self.game.board.tiles
+        for t in tiles.values():
+            self.drawTile(t)
+        for i in self.game.board.items:
+            self.drawItem(i)
+
+    def drawOooMan(self, player, oooMan):
+        s = BoardSprite.sprites["OooMan-"+player.color+"-"+oooMan.kind]
+        s.clear()
+        s.position = oooMan.position
+        s.rot = oooMan.rotation
+        if not oooMan.alive:
+            s.opacity = s.scale = 1.0 - oooMan.dieProgress
+        if oooMan.actionList and oooMan.actionList[0].kind == game.ActionFactory.TELEPORT:
+            a = oooMan.actionList[0]
+            if a.started and not a.ended:
+                s.opacity = s.scale = 2* (abs(0.5 - a.progress))
+        if oooMan is player.activeOooMan:
+            g = BoardSprite.sprites["glow"]
+            g.clear()
+            g.position = s.position
+            g.rotation = s.rotation
+            g.scale = s.scale
+            self.renderSprite(g)
+        self.renderSprite(s)
+
+        sA = BoardSprite.sprites["action0"]
+        sA.clear()
+        height, width = sA.size
+        w = len(oooMan.actionList)*width
+        for a in oooMan.actionList:
+            if a.started:
+                w += width*a.progress
+        for i in range(len(oooMan.actionList)):
+            a = oooMan.actionList[i]
+            sA = BoardSprite.sprites["action{0}".format(a.kind)]
+            sA.clear()
+            sA.position = s.x - w/2 + width/2 + i*width, s.y+ oooMan.size/2 + 0.03
+            sA.scale = s.scale
+            sA.opacity = (1.0 - a.progress)*s.opacity
+            if a.started and (not a.canPerform() or a.discarded):
+                sA.color = (255,0,0)
+            self.renderSprite(sA)
+
+        width, height = 2*width, 2*height
+        w = len(oooMan.items)*width
+        for i in range(len(oooMan.items)):
+            it = oooMan.items[i]
+            sI = BoardSprite.sprites[it.kind]
+            sI.clear()
+            sI.x = s.x - w/2 + width/2 + i*width
+            sI.y = s.y - oooMan.size/2 - height/2 - 0.03
+            sI.scale = s.scale * height / (sI.height)
+            sI.opacity = s.opacity
+            self.renderSprite(sI)
+
+        #kills = game.OooMan.kinds[oooMan.kind]
+        kills = oooMan.killsKinds()
+        scale = 0.5*s.scale
+        width = scale*oooMan.size*(1.2)
+        w = len(kills)*width
+        for i in range(len(kills)):
+            k = kills[i]
+            sK = BoardSprite.sprites["OooMan-white-"+k]
+            sK.clear()
+            sK.x = s.x - w/2 + width*(i+0.5)
+            sK.y = s.y - scale/2
+            sK.opacity = 0.8*s.opacity
+            sK.scale = scale
+            self.renderSprite(sK)
+
+    def drawOooMen(self):
+        for p in self.game.players.values():
+            for o in p.oooMen:
+                if o is not p.activeOooMan:
+                    self.drawOooMan(p,o)
+            if p.activeOooMan:
+                self.drawOooMan(p,p.activeOooMan)
+
+"""    def draw(self):
+        gl.glPushMatrix()
+        self.transform()
+
+        #self.drawBoard()
+        #self.drawOooMen()
+
+        gl.glPopMatrix()"""
+
+class InputLayer(cocos.layer.Layer):
+    is_event_handler = True
+    def __init__(self, client):
+        super(InputLayer, self).__init__()
+        self.client = client
+        self.playersInput = {}
+        self.controlPlayers = client.controller.controlPlayers
+
+    def getControlPlayers(self):
+        return self.playersInput.keys()
+
+    def setControlPlayers(self,controls):
+        rem = [ k for k in self.playersInput.keys() if k not in controls]
+        for k in rem:
+            del self.playersInput[k]
+        bindings = [ b for b in keyBindings.preconfigured if self.bindingOk(b) ]
+        idx = 0
+        for p in controls:
+            if p not in self.playersInput and idx < len(bindings):
+                self.playersInput[p] = PlayerControl(self.client.controller, p, bindings[idx])
+                idx += 1
+
+    controlPlayers = property(getControlPlayers,setControlPlayers)
 
     def bindingOk(self,binding):
         for i in self.playersInput.values():
@@ -137,170 +274,32 @@ class Client(object):
                     return False
         return True
 
-    def getControlPlayers(self):
-        return self.playersInput.keys()
+    def on_key_press(self, key, modyfiers):
+        for i in self.playersInput.values():
+            i.on_key_press(key, modyfiers)
 
-    def setControlPlayers(self,controls):
-        rem = [ k for k in self.playersInput.keys() if k not in controls]
-        for k in rem:
-            self.window.remove_handlers(self.playersInput[k])
-            del self.playersInput[k]
-        bindings = [ b for b in keyBindings.preconfigured if self.bindingOk(b) ]
-        idx = 0
-        for p in controls:
-            if p not in self.playersInput and idx < len(bindings):
-                self.playersInput[p] = PlayerControl(self.controller, p, bindings[idx])
-                self.window.push_handlers(self.playersInput[p])
-                idx += 1
-                
-    controlPlayers = property(getControlPlayers,setControlPlayers)
+class Client(cocos.layer.Layer):
+    """Client for viewing game."""
 
-    def toScreenCoords(self,pos):
-        x,y = pos
-        b = self.game.board
-        size = config.spriteSize
-        #return ((x-b.width/2+0.5)*size, (y-b.height/2+0.5)*size)
-        return x*size, y*size
+    def __init__(self, controller, players = None):
+        super(Client, self).__init__()
+        w,h = config.screenSize
 
-    def drawTile(self,tile):
-        s = self.sprites["tile{0}".format(tile.kind)]
-        s.clear()
-        size = s.top-s.bottom
-        s.x,s.y = self.toScreenCoords(tile.position)
-        s.rot = -tile.rotation
-        s.render()
-    
-    def drawItem(self, item):
-        s = self.sprites[item.kind]
-        s.clear()
-        s.x,s.y = self.toScreenCoords(item.position)
-        s.rot = -item.rotation
-        s.render()
+        self.controller = controller
+        controller.clients.append(self)
+        self.schedule(self.update)
+        self.add(cocos.layer.util_layers.ColorLayer(255,255,255,255))
+        self.add(BoardLayer(self))
+        self.add(HudLayer(self))
+        self.add(InputLayer(self))
 
-    def drawBoard(self):
-        tiles = self.game.board.tiles
-        for x,y in tiles.keys():
-            self.drawTile(tiles[x,y])
-        for i in self.game.board.items:
-            self.drawItem(i)
-
-    def drawOooMan(self, player, oooMan):
-        s = self.sprites["OooMan-"+player.color+"-"+oooMan.kind]
-        s.clear()
-        s.xy = self.toScreenCoords(oooMan.position)
-        s.rot = oooMan.rotation
-            #print(oooMan.position)
-        if not oooMan.alive:
-            s.alpha = s.scale = 1.0 - oooMan.dieProgress
-        if oooMan.actionList and oooMan.actionList[0].kind == game.ActionFactory.TELEPORT:
-            a = oooMan.actionList[0]
-            if a.started and not a.ended:
-                s.alpha = s.scale = 2* (abs(0.5 - a.progress))
-        if oooMan is player.activeOooMan:
-            g = self.sprites["glow"]
-            g.clear()
-            g.xy = s.xy
-            g.scale = s.scale
-            g.render()
-        s.render()
-
-        sA = self.sprites["action0"]
-        sA.clear()
-        height = (sA.top-sA.bottom)  
-        width = (sA.right-sA.left) 
-        w = len(oooMan.actionList)*width
-        for a in oooMan.actionList:
-            if a.started:
-                w += width*a.progress
-        for i in range(len(oooMan.actionList)):
-            a = oooMan.actionList[i]
-            sA = self.sprites["action{0}".format(a.kind)]
-            sA.clear()
-            sA.x = s.x - w/2 + width/2 + i*width
-            sA.y = s.y+ oooMan.size*config.spriteSize/2 + height
-            sA.scale = s.scale
-            sA.alpha = (1.0 - a.progress)*s.alpha
-            if a.started and (not a.canPerform() or a.discarded):
-                sA.green = 0
-                sA.blue = 0
-                #print((a.direction,a.startPosition,a.getEndPosition()))
-            sA.render()
-
-        width, height = 2*width, 2*height
-        w = len(oooMan.items)*width
-        for i in range(len(oooMan.items)):
-            it = oooMan.items[i]
-            sI = self.sprites[it.kind]
-            sI.clear()
-            sI.x = s.x - w/2 + width/2 + i*width
-            sI.y = s.y - oooMan.size * config.spriteSize/2 - height/2 - 5
-            sI.scale = s.scale * height / (sI.top - sI.bottom)
-            sI.alpha = s.alpha
-            sI.render()
-
-        #kills = game.OooMan.kinds[oooMan.kind]
-        kills = oooMan.killsKinds()
-        scale = 0.5*s.scale
-        width = scale * config.spriteSize*oooMan.size*(1.2)
-        w = len(kills)*width
-        for i in range(len(kills)):
-            k = kills[i]
-            sK = self.sprites["OooMan-white-"+k]
-            sK.clear()
-            sK.x = s.x - w/2 + width*(i+0.5)
-            #sK.y = s.y - oooMan.size*config.spriteSize/2 -config.spriteSize*scale/2
-            sK.y = s.y - config.spriteSize*scale/2
-            sK.alpha = 0.8*s.alpha
-            sK.scale = scale
-            sK.render()
-    def drawOooMen(self):
-        for p in self.game.players.values():
-            for o in p.oooMen:
-                if o is not p.activeOooMan:
-                    self.drawOooMan(p,o)
-            if p.activeOooMan:
-                self.drawOooMan(p,p.activeOooMan)
-
-    def drawScores(self):
-        txt = ["<b><font face='Edmunds' size=6>Scores</font><br/></b>"]
-        for p in self.game.players.values():
-            txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
-        txt = u"".join(txt)
-        if self.scores.text != txt:
-            self.scores.text = unicode(txt)
-        self.scores.draw()
-        """s = self.sprites["cheatSheet"]
-        s.x = 256
-        s.y = 512
-        s.alpha = 0.5
-        s.render()"""
-
-
-    def draw(self):
-        rabbyt.clear((1,1,1,1))
-        self.camera.worldProjection()
-        self.drawBoard()
-        self.drawOooMen()
-        self.camera.hudProjection()
-        self.drawScores()
-        self.fps.draw()
-
-    def loop(self):
-        dt = clock.tick()
-        self.window.dispatch_events()
+    def update(self, dt):
         self.controller.update()
-        self.game = self.controller.game
         self.game.update(dt)
-        rabbyt.set_time(self.game.time)
-        #self.camera.follow = self.game.players[0].activeOooMan
-        self.camera.update()
-        self.draw()
-        self.window.flip()
 
-    def run(self):
-        while True:
-            self.loop()
-
+    @property
+    def game(self):
+        return self.controller.game
 
 class PlayerControl(pyglet.event.EventDispatcher):
     def __init__(self, controller, playerId, keyBindings):

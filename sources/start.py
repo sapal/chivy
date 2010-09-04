@@ -24,6 +24,7 @@ def startClient(argv):
 def startLocalGame(argv):
     import controller
     import gui
+    import cocos
     parser = OptionParser()
     parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
     parser.add_option("-t", "--teleports", default=3, type="int", help="Number of teleports of each kind")
@@ -40,9 +41,11 @@ def startLocalGame(argv):
     for name in options.players:
         g.addPlayer(name=name)
 
+    gui.initialize()
     ctrl = controller.Controller(g)
     c = gui.Client(ctrl)
-    c.run()
+    cocos.director.director.run(cocos.scene.Scene(c))
+
 
 def startServer(argv):
     parser = OptionParser()
