@@ -31,7 +31,7 @@ class Controller(object):
         self._game.update(dt)
 
 class NetworkedController(Controller,ConnectionListener):
-    def __init__(self, host="localhost", port=9999, players=[random.choice(config.samplePlayerNames)]):
+    def __init__(self, host="localhost", port=9999, players={random.choice(config.samplePlayerNames):random.choice(colors.colors)}):
         Controller.__init__(self)
         self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.Connect((host, port))

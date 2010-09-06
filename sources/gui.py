@@ -33,6 +33,7 @@ def initialize():
     BoardSprite.loadSpritesRegex("OooMan.*")
     BoardSprite.loadSpritesRegex("action.*")
     clock.set_fps_limit(50)
+    cocos.director.director.window.set_exclusive_keyboard()
     #rabbyt.set_default_attribs()
     #gl.glEnable(gl.GL_MULTISAMPLE)
 
@@ -297,7 +298,8 @@ class InputLayer(cocos.layer.Layer):
 
     def on_key_press(self, key, modyfiers):
         for i in self.playersInput.values():
-            i.on_key_press(key, modyfiers)
+            if i.on_key_press(key, modyfiers):return True
+        return False
 
 class Client(cocos.scene.Scene):
     """Client for viewing game."""
@@ -327,6 +329,8 @@ class PlayerControl(pyglet.event.EventDispatcher):
     def on_key_press(self, symbol, modifiers):
         if symbol in self.keyBindings:
             self.controller.sendInput(self.playerId, self.keyBindings[symbol])
+            return True
+        return False
 
 class InputListener(pyglet.event.EventDispatcher):
     """Class that translates user input to events.
@@ -339,6 +343,8 @@ class InputListener(pyglet.event.EventDispatcher):
         if symbol in self.keyBindings:
             f,kwargs = self.keyBindings[symbol]
             f(**kwargs)
+            return True
+        return False
 
 if __name__ == "__main__":
     import start

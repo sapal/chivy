@@ -8,10 +8,14 @@ colors = {
         "black":(0,0,0),
         "purple":(160,32,240),
         "cyan":(0,255,255)}
+
 def htmlColor(colorName):
     r,g,b = colors[colorName]
     if colorName == "white":
         r,g,b = 190,190,190
     return "#{0:02x}{1:02x}{2:02x}".format(r,g,b)
 
+def rgba(colorName, alpha=255):
+    r,g,b = colors[colorName]
+    return (r,g,b,alpha)
 

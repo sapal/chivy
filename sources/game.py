@@ -66,9 +66,9 @@ class Board(object):
     itemNumber - target number of items (excluding teleports)
     teleports - number of teleports
     """
-    def __init__(self, dimensions=(1,1), tiles="", itemNumber=4):
+    def __init__(self, dimensions=(1,1), tiles="", itemNumber=4, seed=random.random()):
         """Creates board."""
-        self.randomState = random.getstate()
+        self.seed = seed
         self.dimensions = dimensions
         self.tilesFromString(tiles)
         self.items = []
@@ -77,8 +77,8 @@ class Board(object):
     @property
     def random(self):
         #random.setstate(self.randomState)
-        random.seed(self.randomState)
-        self.randomState = random.getstate()
+        random.seed(self.seed)
+        self.seed = random.random()
         return random
 
     @property
@@ -105,7 +105,7 @@ class Board(object):
                 if k != '_':
                     self.tiles[(x,y)] = BoardTile((x,y),u,k,b)
                     
-    def generateBoard(self,tiles,seed=0,tileNumber=None):
+    def generateBoard(self,tiles,seed=0,tileNumber=None, teleports=3):
         """If tileNumber is positive number, tiles is repeated
         to build a string which is tileNumber long."""
         if tileNumber and tileNumber>0:
@@ -115,11 +115,11 @@ class Board(object):
             tiles = ("".join(t))[:n]
         que = [(0,0)]
         self.tiles = {}
-        random.seed(seed)
+        self.seed = seed
         tiles = list(tiles)
-        random.shuffle(tiles)
+        self.random.shuffle(tiles)
         for t in tiles:
-            random.shuffle(que)
+            self.random.shuffle(que)
             while que:
                 if que[-1] in self.tiles.keys():
                     que.pop()
@@ -127,7 +127,7 @@ class Board(object):
             if not que:break
             pos = que.pop()
             dirs = list(BoardTile.directions)
-            random.shuffle(dirs)
+            self.random.shuffle(dirs)
             for d in dirs:
                 self.tiles[pos] = BoardTile(pos,0,'+')
                 if self.getTile(pos,d) or pos == (0,0):
@@ -177,6 +177,8 @@ class Board(object):
             nx,ny = x-left,y-bottom
             nTiles[nx,ny] = BoardTile((nx,ny),t.upSide,t.kind,t.border)
         self.tiles = nTiles
+        self.items[:] = []
+        self.addAllTeleports(teleports)
 
     def addTeleports(self, kind, count):
         count = min(len(self.getNormalTiles()),count)
@@ -742,7 +744,7 @@ class Game(object):
         else:
             self.__dict__[attrName] = default
 
-    def __init__(self, teleports=3, **kwargs):
+    def __init__(self, **kwargs):
         """Creates new Game.
         Possible kwargs:
         board - Board to be used in this game.
@@ -750,7 +752,6 @@ class Game(object):
         self.time = 0
         self._setAttr(kwargs,"board",Board())
         self._setAttr(kwargs,"players",{})
-        self.board.addAllTeleports(teleports)
 
     def update(self,dt):
         self.time += dt
@@ -772,7 +773,7 @@ class Game(object):
         playerId = 0
         while playerId in self.players:
             playerId += 1
-        if color is None:
+        if color is None or color in [p.color for p in self.players.values()]:
             color = random.choice([ k for k in colors.colors.keys() if k not in [p.color for p in self.players.values()] ])
         if name is None:
             name = random.choice([ n for n in config.samplePlayerNames if n not in [p.name for p in self.players.values()] ])
@@ -781,10 +782,10 @@ class Game(object):
 
     @staticmethod
     def simpleGame(players=2, seed=random.randint(1,10000)):
+        random.seed(seed)
         b = Board()
         b.generateBoard("T+LI"*10*players,seed)
         col = list(colors.colors.keys())
-        random.seed(seed)
         random.shuffle(col)
         playerDict = {} 
         for i in range(players):

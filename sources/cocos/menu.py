@@ -69,7 +69,7 @@ __all__ = [ 'Menu',                                         # menu class
 
             'MenuItem', 'ToggleMenuItem',  # menu items classes
             'MultipleMenuItem', 'EntryMenuItem', 'ImageMenuItem',
-            'ColorMenuItem',
+            'ColorMenuItem', 'IntegerMenuItem',
             'verticalMenuLayout', 'fixedPositionMenuLayout',   # Different menu layou functions
             'CENTER', 'LEFT', 'RIGHT', 'TOP', 'BOTTOM',     # menu aligment
 
@@ -225,6 +225,7 @@ class Menu(Layer):
         layout_strategy(self)
         self.selected_index = 0
         self.children[ self.selected_index ][1].is_selected = True
+        #self.children[ self.selected_index ][1].on_selected()
 
     def _select_item(self, new_idx):
         if new_idx == self.selected_index:
@@ -594,6 +595,38 @@ class MultipleMenuItem( MenuItem ):
             self.callback_func( self.idx )
             return True
 
+class IntegerMenuItem(MenuItem):
+    """callback_func will be given new value"""
+
+    def __init__(self, label, callback_func, minValue=0, maxValue=100, step=1, value=50):
+        self.my_label = label
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self._value = 0
+        self.value = value
+        self.step = step
+        super(IntegerMenuItem, self).__init__(self._get_label(), callback_func)
+
+    def _get_label(self):
+        return self.my_label+str(self.value)
+    
+    def getValue(self):
+        return self._value
+    def setValue(self, value):
+        self._value = max(min(value, self.maxValue), self.minValue)
+    value = property(getValue, setValue)
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.LEFT:
+            self.value -= self.step
+        elif symbol in (key.RIGHT, key.ENTER):
+            self.value += self.step
+        if symbol in (key.LEFT, key.RIGHT, key.ENTER):
+            self.item.text = self._get_label()
+            self.item_selected.text = self._get_label()
+            self.callback_func(self.value)
+            return True
+
 class ToggleMenuItem( MultipleMenuItem ):
     '''A menu item for a boolean toggle option.
 
@@ -632,8 +665,6 @@ class EntryMenuItem(MenuItem):
     When selected, ``self.value`` is toggled, the callback function is
     called with ``self.value`` as argument."""
 
-    value = property(lambda self: u''.join(self._value),
-                     lambda self, v: setattr(self, '_value', list(v)))
 
     def __init__(self, label, callback_func, value, max_length=0 ):
         """Creates an Entry Menu Item
@@ -673,6 +704,16 @@ class EntryMenuItem(MenuItem):
         self.item.text = new_text
         self.item_selected.text = new_text
         self.callback_func(self.value)
+
+    def getValue(self):
+        return u''.join(self._value)
+
+    def setValue(self,value):
+        setattr(self, '_value', list(value))
+        self._calculate_value()
+
+    value = property(getValue, setValue)
+
 
 class ColorMenuItem( MenuItem ):
     """A menu item for selecting a color.

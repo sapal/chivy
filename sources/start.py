@@ -39,8 +39,8 @@ def startLocalGame(argv):
         options.players = random.sample(config.samplePlayerNames,2)
 
     board = game.Board()
-    board.generateBoard(options.board, options.seed, options.number)
-    g = game.Game(board=board, players={}, teleports=options.teleports)
+    board.generateBoard(options.board, options.seed, options.number, teleports=options.teleports)
+    g = game.Game(board=board, players={})
     for name in options.players:
         g.addPlayer(name=name)
 
@@ -60,11 +60,18 @@ def startServer(argv):
     options, args = parser.parse_args(argv)
 
     board = game.Board()
-    board.generateBoard(options.board, options.seed, options.number)
-    g = game.Game(board=board, players={}, teleports=options.teleports)
+    board.generateBoard(options.board, options.seed, options.number, teleports=options.teleports)
+    g = game.Game(board=board, players={})
 
     s = server.OooServer(localaddr=(options.address, options.port), game=g)
     s.Launch()
+
+def startMenu():
+    import menu
+    import gui
+    import cocos
+    gui.initialize()
+    cocos.director.director.run(menu.getMenuScene())
 
 def printHelp():
     print("""Usage:
@@ -74,9 +81,12 @@ if __name__=="__main__":
     call = {"server":startServer,
             "client":startClient,
             "local":startLocalGame}
-    if len(sys.argv) < 2 or sys.argv[1] not in call.keys():
+    if len(sys.argv) < 2:
+        startMenu()
+    elif sys.argv[1] not in call.keys():
         printHelp()
         sys.exit()
-    call[sys.argv[1]](sys.argv[2:])
+    else:
+        call[sys.argv[1]](sys.argv[2:])
 
     

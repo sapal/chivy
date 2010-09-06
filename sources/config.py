@@ -23,13 +23,13 @@ userDir = os.path.expanduser("~"+os.sep+"NoName"+os.sep)
 spriteSize = 128
 
 """Sample player names:"""
-samplePlayerNames = ["Michał","Ewa","Szymon","Bob","Alice"]
+samplePlayerNames = ["Michał", "Ewa", "Szymon", "Bob", "Alice", "Jacek", "Placek", "Luna", "Hermiona", "Ginny"]
 
 """Screen size:"""
 #screenSize = 1280,800
 #screenSize = 1024,756
-#screenSize = 800,600
-screenSize = 640,480
+screenSize = 800,600
+#screenSize = 640,480
 
 """Full screen mode:"""
 fullScreen = True
@@ -39,8 +39,33 @@ fullScreen = True
 dbg = False
 #dbg = True
 
+"""Number of players:"""
+playerNumber = 2
+maxPlayerNumber = 3
+minPlayerNumber = 1
+
+"""Number of tiles:"""
+minTileNumber = 10
+maxTileNumber = 500
+tileNumber = 100
+
+"""Tiles:"""
+tiles = "TT++LI"
+
+"""Number of teleports:"""
+teleports=3
+minTeleports = 0
+maxTeleports = 10
+
+"""Number of non-teleport items on board:"""
+itemNumber = 4
+minItemNumber = 0
+maxItemNumber = 50
+
 if os.path.isfile(userDir+os.sep+"config.py"):
     try:
         exec open(userDir+os.sep+"config.py").read()
     except Exception,e:
         print(e)
+
+

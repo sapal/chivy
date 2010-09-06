@@ -30,9 +30,9 @@ class ClientChannel(Channel):
 
     def Network_requestPlayers(self,data):
         players = data["players"]
-        print("New players: {0}".format(" ".join(players)))
-        for name in players:
-            playerId = self.game.addPlayer(name=name)
+        print("New players: {0}".format(" ".join(players.keys())))
+        for name,color in players.items():
+            playerId = self.game.addPlayer(name=name,color=color)
             self.playerMap[self].append(playerId)
         self.Send({"action":"controlPlayers", "players":self.playerMap[self]})
         self.server.sendToAll(self.server.gameUpdate(),True)
