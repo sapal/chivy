@@ -583,6 +583,10 @@ class MultipleMenuItem( MenuItem ):
     def _get_label(self):
         return self.my_label+self.items[self.idx]
 
+    def update(self):
+        self.item.text = self._get_label()
+        self.item_selected.text = self._get_label()
+
     def on_key_press(self, symbol, modifiers):
         if symbol == key.LEFT:
             self.idx = max(0, self.idx-1)
@@ -590,8 +594,7 @@ class MultipleMenuItem( MenuItem ):
             self.idx = min(len(self.items)-1, self.idx+1)
 
         if symbol in (key.LEFT, key.RIGHT, key.ENTER):
-            self.item.text = self._get_label()
-            self.item_selected.text = self._get_label()
+            self.update()
             self.callback_func( self.idx )
             return True
 

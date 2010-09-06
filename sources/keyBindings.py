@@ -24,8 +24,9 @@ def add(bindings, action, key):
         bindings[key] = action
         return True
 
-preconfigured = (ARROWS,WSAD,IJKL) = (
+preconfigured = (ARROWS,WSAD,IJKL,NUMPAD) = (
         createAbsoluteBindings(),
         createAbsoluteBindings(key.W, key.A, key.S, key.D, key.Q, key.E),
-        createAbsoluteBindings(key.I, key.J, key.K, key.L, key.U, key.O))
+        createAbsoluteBindings(key.I, key.J, key.K, key.L, key.U, key.O),
+        createAbsoluteBindings(key.NUM_8, key.NUM_4, key.NUM_5, key.NUM_6, key.NUM_7, key.NUM_9))
 

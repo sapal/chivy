@@ -39,10 +39,13 @@ fullScreen = True
 dbg = False
 #dbg = True
 
-"""Number of players:"""
-playerNumber = 2
-maxPlayerNumber = 3
-minPlayerNumber = 1
+class PlayerConfig(object):
+    def __init__(self, name="Player", color="red", playing=True):
+        self.name = name
+        self.color = color
+        self.playing = playing
+
+players = [ PlayerConfig("Michał","green",True), PlayerConfig("Ewa","red",True), PlayerConfig("Szymon","blue",False), PlayerConfig("Bob","black",False)]
 
 """Number of tiles:"""
 minTileNumber = 10
