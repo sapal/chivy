@@ -6,6 +6,7 @@ from PodSixNet.Server import Server
 from time import sleep, localtime
 from pyglet import clock
 from optparse import OptionParser
+from multiprocessing import Queue
 import random
 import colors
 import pickle
@@ -30,9 +31,9 @@ class ClientChannel(Channel):
 
     def Network_requestPlayers(self,data):
         players = data["players"]
-        print("New players: {0}".format(" ".join(players.keys())))
-        for name,color in players.items():
-            playerId = self.game.addPlayer(name=name,color=color)
+        print("New players: {0}".format(" ".join([p["name"] for p in players])))
+        for p in players:
+            playerId = self.game.addPlayer(name=p["name"],color=p["color"])
             self.playerMap[self].append(playerId)
         self.Send({"action":"controlPlayers", "players":self.playerMap[self]})
         self.server.sendToAll(self.server.gameUpdate(),True)
@@ -48,9 +49,15 @@ class OooServer(Server):
         else:
             self.game = kwargs["game"]
             del kwargs["game"]
+        if "queue" in kwargs:
+            self.queue = kwargs["queue"]
+            del kwargs["queue"]
+        else:
+            self.queue = None
         Server.__init__(self, *args, **kwargs)
         self.clients = {}
         self.dt = 0
+        self.endPlease = False
 
     def Connected(self, channel, addr):
         print("{0} connected".format(addr))
@@ -86,7 +93,11 @@ class OooServer(Server):
         clock.set_fps_limit(100)
         clock.schedule(self.updateDt)
         clicks = 0
-        while True:
+        while not self.endPlease:
+            if self.queue and not self.queue.empty():
+                a = self.queue.get()
+                if a == "endPlease":
+                    break
             clicks += 1
             clock.tick()
             self.game.update(self.dt)

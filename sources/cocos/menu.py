@@ -506,6 +506,10 @@ class MenuItem (BaseMenuItem):
         font_item_selected['text'] = self.label
         self.item_selected = pyglet.text.Label( **font_item_selected )
 
+    def update(self):
+        self.item.text = self.label
+        self.item_selected.text = self.label
+
     def draw( self ):
         glPushMatrix()
         self.transform()

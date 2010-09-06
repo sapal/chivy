@@ -33,8 +33,8 @@ def initialize():
     BoardSprite.loadSpritesRegex("OooMan.*")
     BoardSprite.loadSpritesRegex("action.*")
     clock.set_fps_limit(50)
-    cocos.director.director.window.set_exclusive_keyboard()
-    #rabbyt.set_default_attribs()
+    #cocos.director.director.window.set_exclusive_keyboard()
+    rabbyt.set_default_attribs()
     #gl.glEnable(gl.GL_MULTISAMPLE)
 
 class BoardSprite(game.GameObject):

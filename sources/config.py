@@ -45,7 +45,14 @@ class PlayerConfig(object):
         self.color = color
         self.playing = playing
 
+"""Players:"""
 players = [ PlayerConfig("Michał","green",True), PlayerConfig("Ewa","red",True), PlayerConfig("Szymon","blue",False), PlayerConfig("Bob","black",False)]
+
+"""Host:"""
+host = "localhost"
+
+"""Server address:"""
+serverAddress = "localhost"
 
 """Number of tiles:"""
 minTileNumber = 10

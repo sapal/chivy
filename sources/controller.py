@@ -31,7 +31,13 @@ class Controller(object):
         self._game.update(dt)
 
 class NetworkedController(Controller,ConnectionListener):
-    def __init__(self, host="localhost", port=9999, players={random.choice(config.samplePlayerNames):random.choice(colors.colors.keys())}):
+    def __init__(self, host=None, port=9999, players=None):
+        """Passing None for host or players defaults to 
+        config.host and config.players"""
+        if not host:
+            host = config.host
+        if players is None:
+            players = [ {"name":p.name, "color":p.color} for p in config.players if p.playing]
         Controller.__init__(self)
         self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.Connect((host, port))

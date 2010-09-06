@@ -792,6 +792,20 @@ class Game(object):
             playerDict[i] = Player(b,col[i],"Player {0}".format(i)) 
         return Game(board=b, players=playerDict)
 
+    @staticmethod
+    def gameFromConfig(board=None, players=None):
+        """Passing non-None argument will override config"""
+        if board is None:
+            board = Board(itemNumber=config.itemNumber)
+            board.generateBoard(config.tiles, tileNumber=config.tileNumber, teleports=config.teleports)
+        g = Game(board=board)
+        if players is None:
+            players = config.players
+        for p in players:
+            if p.playing:
+                g.addPlayer(p.name, p.color)
+        return g
+
 if __name__ == "__main__":
     Board._test()
 
