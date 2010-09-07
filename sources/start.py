@@ -11,6 +11,7 @@ def startClient(argv):
     import controller
     import gui
     import cocos
+    import time
     parser = OptionParser()
     parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
     parser.add_option("-a", "--address", default="localhost", help="Server address.")
@@ -19,9 +20,20 @@ def startClient(argv):
     if not options.players:
         options.players = [random.choice(config.samplePlayerNames)]
 
+    class Runner(object):
+        def run(self):
+            self.ctrl = controller.NetworkedController(options.address, options.port, [ {"name":p, "color":"red"} for p in options.players], onSuccess=self.success)
+            self.started = False
+        def success(self):
+            print("Success!")
+            self.started = True
+    r = Runner()
+    r.run()
+    while not r.started:
+        time.sleep(0.01)
+        r.ctrl.update(0.01)
     gui.initialize()
-    ctrl = controller.NetworkedController(options.address, options.port, options.players)
-    c = gui.Client(ctrl)
+    c = gui.Client(r.ctrl)
     cocos.director.director.run(c)
 
 def startLocalGame(argv):

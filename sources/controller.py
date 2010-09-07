@@ -31,26 +31,33 @@ class Controller(object):
         self._game.update(dt)
 
 class NetworkedController(Controller,ConnectionListener):
-    def __init__(self, host=None, port=9999, players=None):
+    def __init__(self, host=None, port=9999, players=None, onFail=sys.exit, onSuccess=None):
         """Passing None for host or players defaults to 
-        config.host and config.players"""
+        config.host and config.players.
+        onFail is executed if it was impossible to estabilish connection.
+        If connection has been successfully estabilished onSuccess is called."""
         if not host:
             host = config.host
         if players is None:
             players = [ {"name":p.name, "color":p.color} for p in config.players if p.playing]
         Controller.__init__(self)
         self._game = game.Game(players=[],board=game.Board((1,1),""))
+        self.onFail = onFail
+        self.onSuccess = onSuccess
         self.Connect((host, port))
         self.controlPlayers = []
-        self.ready = False
+        self.gameReady = False
+        self.playersReady = False
         self.lastUpdate = time()
+        self.lastGameUpdate = time()
         print("Connecting...")
         connection.Send({"action":"requestPlayers", "players":players})
-        while not self.ready:
-            connection.Pump()
-            self.Pump()
-            sleep(0.01)
-        print("OK")
+        connection.Pump()
+        self.Pump()
+
+    @property
+    def ready(self):
+        return self.playersReady and self.gameReady
 
     def sendInput(self,playerId,action):
         #Controller.sendInput(self,playerId,action)
@@ -64,30 +71,38 @@ class NetworkedController(Controller,ConnectionListener):
         
     def Network_disconnected(self,data):
         print("Disconnected.")
-        sys.exit()
+        self.onFail()
 
     def Network_controlPlayers(self,data):
+        print("Controling players:{0}".format(data["players"]))
         self.controlPlayers = data["players"]
         for c in self.clients:
             c.controlPlayers = self.controlPlayers
+        if self.gameReady and not self.playersReady and self.onSuccess:
+            self.onSuccess()
+        self.playersReady = True
 
-    def sendInputDt(self, dt, data):
-        self._game.sendInput(data["playerId"], data["inputAction"])
+    def sendInputDt(self, dt, data, time):
+        if time > self.lastGameUpdate:
+            self._game.sendInput(data["playerId"], data["inputAction"])
 
     def Network_sendInput(self,data):
         #print("{0:.2f}:{1}".format(self._game.time, data))
         t = time()
-        if self._game.time + t - self.lastUpdate < data["time"]:
-            clock.schedule_once(self.sendInputDt, data["time"] - (self._game.time + t - self.lastUpdate), data=data)
+        dt = t - self.lastUpdate
+        gameT = self._game.time + dt
+        if gameT < data["time"]:
+            clock.schedule_once(self.sendInputDt, data["time"] - gameT, data=data, time=t+(data["time"] -gameT))
         else:
-            self.sendInputDt(0, data)
+            self.sendInputDt(0, data,t)
 
     def update(self,dt):
-        t = time()
-        #print((t,dt,t-self.lastUpdate))
-        self._game.update(t - self.lastUpdate)
-        self.lastUpdate = t
-        #print("update({0:.2f})".format(self._game.time))
+        if self.ready:
+            t = time()
+            #print((t,dt,t-self.lastUpdate))
+            self._game.update(t - self.lastUpdate)
+            self.lastUpdate = t
+            #print("update({0:.2f})".format(self._game.time))
         connection.Pump()
         self.Pump()
 
@@ -97,7 +112,10 @@ class NetworkedController(Controller,ConnectionListener):
         if abs(t-self._game.time) > 0.1: 
             print("lag:{0:.2f}s".format(t - self._game.time))
         self.lastUpdate = time()
-        self.ready = True
+        self.lastGameUpdate = time()
+        if not self.gameReady and self.playersReady and self.onSuccess:
+            self.onSuccess()
+        self.gameReady = True
 
     def Network_lightGameUpdate(self,data):
         self._game.lightUnpickle(data['game'])
