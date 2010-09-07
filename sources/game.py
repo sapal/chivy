@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import division,print_function
 import random
+import random as rand
 import kinds
 import pickle
 import colors
@@ -82,8 +83,11 @@ class Board(object):
         return random
 
     @property
+    def teleportsPositions(self):
+        return [t.position for t in self.items if t.kind[0:8] == "teleport"]
+    @property
     def teleports(self):
-        return len([t for t in self.items if t.kind[0:8] == "teleport"])
+        return len(self.teleportsPositions)
 
     def tilesFromString(self,s):
         """Creates array of tiles (self.tiles) from string s.
@@ -105,7 +109,7 @@ class Board(object):
                 if k != '_':
                     self.tiles[(x,y)] = BoardTile((x,y),u,k,b)
                     
-    def generateBoard(self,tiles,seed=0,tileNumber=None, teleports=3):
+    def generateBoard(self,tiles,seed=rand.random(),tileNumber=None, teleports=3):
         """If tileNumber is positive number, tiles is repeated
         to build a string which is tileNumber long."""
         if tileNumber and tileNumber>0:
@@ -182,7 +186,7 @@ class Board(object):
 
     def addTeleports(self, kind, count):
         count = min(len(self.getNormalTiles()),count)
-        pos = self.randomPositions(count)
+        pos = self.randomPositions(count, self.teleportsPositions)
         for p in pos:
             self.items.append(Teleport(p,kind))
         tel = [ t for t in self.items if t.kind == "teleport-"+kind]
@@ -191,6 +195,8 @@ class Board(object):
                 tel[i-1].target = tel[i].position
 
     def addAllTeleports(self, count=3):
+        while count*6 > len(self.getNormalTiles()):
+            count -= 1
         for k in OooMan.kinds.keys():
             self.addTeleports(k, count)
 

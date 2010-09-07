@@ -808,7 +808,9 @@ def shake():
     '''Predefined action that performs a slight rotation and then goes back to the original rotation
     position.
     '''
-    angle = 05
+    #angle = 05
+    #duration = 0.05
+    angle = 2
     duration = 0.05
 
     rot = Accelerate(RotateBy( angle, duration ), 2)
@@ -818,6 +820,7 @@ def shake():
 def shake_back():
     '''Predefined action that rotates to 0 degrees in 0.1 seconds'''
     return RotateTo(0,0.1)
+    #return RotateTo(0,0.2)
 
 def zoom_in():
     '''Predefined action that scales to 1.5 factor in 0.2 seconds'''
