@@ -6,6 +6,7 @@ import kinds
 import pickle
 import colors
 import config
+import utils
 
 class GameObject(object):
     """Base class for other objects in game."""
@@ -117,15 +118,17 @@ class Board(object):
             l = len(tiles)
             t = [tiles for i in range(0,n,l)]
             tiles = ("".join(t))[:n]
-        que = [(0,0)]
-        self.tiles = {}
         self.seed = seed
+        que = utils.RandomQueue(self.random)
+        que.newType("vertical",1)
+        que.newType("horizontal",4)
+        que.push((0,0), "vertical")
+        self.tiles = {}
         tiles = list(tiles)
         self.random.shuffle(tiles)
         for t in tiles:
-            self.random.shuffle(que)
             while que:
-                if que[-1] in self.tiles.keys():
+                if que.top() in self.tiles.keys():
                     que.pop()
                 else:break
             if not que:break
@@ -144,10 +147,14 @@ class Board(object):
                 if self.getTile(pos,d) is None:
                     x,y = pos
                     dx,dy = BoardTile.delta[d]
-                    #print("dodaję d({0},{1})".format(dx,dy))
-                    que.append((x+dx,y+dy))
+                    #print("dodaję d={2} ({0},{1})".format(dx,dy,d))
+                    if d in (BoardTile.NORTH, BoardTile.SOUTH):
+                        que.push((x+dx,y+dy), "vertical")
+                    else:
+                        que.push((x+dx,y+dy), "horizontal")
             #print("t:{t},kind:{k} pos:{pos} up:{up}".format(t=t,pos=pos,up=self.tiles[pos].upSide,k=self.tiles[pos].kind))
-        for (x,y) in que:
+        while que:
+            (x,y) = que.pop()
             if (x,y) not in self.tiles:
                 for k in ("T","I","L","U","."):
                     okKind = False
@@ -803,7 +810,7 @@ class Game(object):
         """Passing non-None argument will override config"""
         if board is None:
             board = Board(itemNumber=config.itemNumber)
-            board.generateBoard(config.tiles, tileNumber=config.tileNumber, teleports=config.teleports)
+            board.generateBoard(config.tiles, tileNumber=config.tileNumber, teleports=config.teleports, seed=random.random())
         g = Game(board=board)
         if players is None:
             players = config.players
