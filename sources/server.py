@@ -42,6 +42,10 @@ class OooServer(Server):
     channelClass = ClientChannel
     NIL = -1
     def __init__(self, *args, **kwargs):
+        """Possible kwargs:
+        game
+        inQueue - queue for input commands
+        """
         if "game" not in kwargs:
             board = game.Board()
             board.generateBoard("TT++LI"*10,random.randint(0,123123))
@@ -49,11 +53,11 @@ class OooServer(Server):
         else:
             self.game = kwargs["game"]
             del kwargs["game"]
-        if "queue" in kwargs:
-            self.queue = kwargs["queue"]
-            del kwargs["queue"]
+        if "inQueue" in kwargs:
+            self.inQueue = kwargs["inQueue"]
+            del kwargs["inQueue"]
         else:
-            self.queue = None
+            self.inQueue = None
         Server.__init__(self, *args, **kwargs)
         self.clients = {}
         self.dt = 0
@@ -89,13 +93,13 @@ class OooServer(Server):
         return {"action":"lightGameUpdate", "game":self.game.lightPickle()}
 
     def Launch(self):
-        print("Server started")
+        if not self.endPlease:print("Server started")
         clock.set_fps_limit(100)
         clock.schedule(self.updateDt)
         clicks = 0
         while not self.endPlease:
-            if self.queue and not self.queue.empty():
-                a = self.queue.get()
+            if self.inQueue and not self.inQueue.empty():
+                a = self.inQueue.get()
                 if a == "endPlease":
                     break
             clicks += 1
