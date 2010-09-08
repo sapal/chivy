@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>Creating Maps With Tiled</title>
+	</head>
+	<body>
+		<ol>
+			<li> Getting Tiled: <a href="http://sourceforge.net/projects/tiled/">here</a></li>
+			<li> Setting up:
+			<ul>
+				<li> Go to Edit-&gt;Preferences... and change "Store tile layer data as:" to XML</li>
+				<li> Create new map: File-&gt;New... </li>
+				<li> Import tilesets (Map-&gt;Add External Tileset...) from files: Tiles.tsx, Teleports.tsx, Border.tsx in "tiled" directory</li>
+			</ul></li>
+			<li>
+			Create your board. It should contain layer named "Map", on wich "Tiles" tileset should be used.<br/> 
+			It can contain also layer named "Border", wich "Border" tileset should be used. If certain tile is marked as "Border" it will not be used for spawning players or items. <br/>
+			It is also possible to create one or more teleport layer (their names should begin with "Teleports", and tileset used should be "Teleports"). There should be at most one teleport of each kind on single teleport layer. The teleports will lead from layers with lower numbers to layers with higher numbers (Teleport from layer "Teleports1" will lead to teleport on "Teleports2" and so on). Teleport layer with highest number will lead to the layer with lowest number. If numbers are not used, the layers will be sorted lexicographically ("Teleportshaha", "Teleportslol", "Teleportswth" and so on).<br/></li>
+			<li> Save your board </li>
+			<li> Run "tmx2brd.py" script from "sources" directory on saved file </li>
+			<li> Put created *.brd file in "levels" directory</li>
+			<li> Have fun playing on your newly created board</li>
+		</ol>
+	</body>
+</html>

@@ -43,7 +43,8 @@ def startLocalGame(argv):
     parser = OptionParser()
     parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
     parser.add_option("-t", "--teleports", default=3, type="int", help="Number of teleports of each kind")
-    parser.add_option("-b", "--board", default="TT++LI", help="Tiles used to create board.")
+    parser.add_option("-b", "--board-file", default=None, help="Load board from file", dest="board")
+    parser.add_option("-g", "--generate-board", default="TT++LI", help="Tiles used to create board.", dest="tiles")
     parser.add_option("-o", "--number-of-tiles", default=100, type="int", help="Number of tiles on board", dest="number")
     parser.add_option("-s", "--random-seed", default=random.randint(0,100000), help="Random seed used to generate board", dest="seed")
     options, args = parser.parse_args(argv)
@@ -51,7 +52,10 @@ def startLocalGame(argv):
         options.players = random.sample(config.samplePlayerNames,2)
 
     board = game.Board()
-    board.generateBoard(options.board, options.seed, options.number, teleports=options.teleports)
+    if options.board:
+        board.loadFromXml(options.board)
+    else:
+        board.generateBoard(options.tiles, options.seed, options.number, teleports=options.teleports)
     g = game.Game(board=board, players={})
     for name in options.players:
         g.addPlayer(name=name)

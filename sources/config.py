@@ -19,6 +19,10 @@ levelsDir = codeDir+".."+os.sep+"levels"+os.sep
 fontsDir = codeDir+".."+os.sep+"fonts"+os.sep
 """User directory:"""
 userDir = os.path.expanduser("~"+os.sep+"NoName"+os.sep)
+
+"""Tiled directory:"""
+tiledDir = codeDir+".."+os.sep+"tiled"+os.sep
+
 """Sprite size:"""
 spriteSize = 128
 
