@@ -522,6 +522,7 @@ class OooManTeleport(OooManAction):
                 self.oooMan.position = self.startPosition
             else:
                 self.oooMan.position = self.target
+            self.oooMan.size = 0.6*2*abs(0.5 - self.progress)
 
 class ActionFactory(object):
     """Object used for creating actions."""
