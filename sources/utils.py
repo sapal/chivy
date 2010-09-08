@@ -61,4 +61,16 @@ class RandomQueue(object):
             l += len(q)
         return l
 
+def str2tuple(s):
+    """Convert tuple-like strings to real tuples.
+    eg '(1,2,3,4)' -> (1, 2, 3, 4)
+    """
+    if s[0] + s[-1] != "()":
+        raise ValueError("Badly formatted string (missing brackets).")
+    items = s[1:-1] # removes the leading and trailing brackets
+    items = items.split(',')
+    L = [int(x.strip()) for x in items] # clean up spaces, convert to ints
+    return tuple(L)
 
+def str2bool(s):
+    return s == "True" or s == "1"

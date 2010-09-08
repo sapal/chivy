@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import division,print_function
+from xml.etree import cElementTree as ET
 import random
 import random as rand
 import kinds
@@ -66,7 +67,7 @@ class Board(object):
     tiles - dictionary: (x,y) -> BoardTile
     items - list of Item
     itemNumber - target number of items (excluding teleports)
-    teleports - number of teleports
+    teleportCount - number of teleports
     """
     def __init__(self, dimensions=(1,1), tiles="", itemNumber=4, seed=random.random()):
         """Creates board."""
@@ -76,6 +77,46 @@ class Board(object):
         self.items = []
         self.itemNumber = itemNumber
 
+    def saveAsXml(self, fileName):
+        board = ET.Element("board")
+        board.set("dimensions", str(self.dimensions))
+        for tile in self.tiles.values():
+            t = ET.SubElement(board, "tile")
+            t.set("position", str(tile.position))
+            t.set("kind", str(tile.kind))
+            t.set("upSide", str(tile.upSide))
+            t.set("border", str(tile.border))
+        for teleport in self.teleports:
+            t = ET.SubElement(board, "teleport")
+            t.set("position", str(teleport.position))
+            t.set("target", str(teleport.position))
+            t.set("kind", str(teleport.kind))
+        tree = ET.ElementTree(board)
+        tree.write(fileName,"utf-8")
+
+    def loadFromXml(self, fileName):
+        self.items[:] = []
+        self.tiles = {}
+        tree = ET.parse(fileName)
+        board = tree.getroot()
+        self.dimensions = utils.str2tuple(board.get("dimensions", "(1,1)"))
+        for item in board:
+            if item.tag == "tile":
+                position = utils.str2tuple(item.get("position", "(0,0)"))
+                kind = item.get("kind", ".")
+                upSide = int(item.get("upSide", 0))
+                border = utils.str2bool(item.get("border", True))
+                self.tiles[position] = BoardTile(position, upSide, kind, border)
+            elif item.tag == "teleport":
+                position = utils.str2tuple(item.get("position", "(0,0)"))
+                target = utils.str2tuple(item.get("target", "(0,0)"))
+                kind = item.get("kind", "item")
+                teleport = Teleport((0,0), "circle")
+                teleport.kind = kind
+                teleport.position = position
+                teleport.target = target
+                self.items.append(teleport)
+
     @property
     def random(self):
         #random.setstate(self.randomState)
@@ -84,10 +125,13 @@ class Board(object):
         return random
 
     @property
+    def teleports(self):
+        return [t for t in self.items if t.kind[0:8] == "teleport"]
+    @property
     def teleportsPositions(self):
         return [t.position for t in self.items if t.kind[0:8] == "teleport"]
     @property
-    def teleports(self):
+    def teleportCount(self):
         return len(self.teleportsPositions)
 
     def tilesFromString(self,s):
@@ -211,8 +255,8 @@ class Board(object):
         for i in self.items:
             i.update(time)
         self.items[:] = [ i for i in self.items if not i.deleteMe ]
-        if len(self.items) < self.teleports + self.itemNumber:
-            self.items.extend(self.randomItems(self.teleports + self.itemNumber - len(self.items)))
+        if len(self.items) < self.teleportCount + self.itemNumber:
+            self.items.extend(self.randomItems(self.teleportCount + self.itemNumber - len(self.items)))
 
     def randomItems(self, count):
         disallowed = set([t.position for t in self.items if t.kind[0:8] == "teleport"])
