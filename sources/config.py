@@ -10,7 +10,8 @@ class Config(object):
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames',
-            'screenSize', 'fullScreen',  'players', 'host', 'serverAddress',
+            'screenSize', 'fullScreen',  'players', 'host', 'serverAddress', 'botNames',
+            'minBots', 'maxBots', 'bots',
             'boardFilename', 'minTileNumber', 'maxTileNumber', 'tileNumber', 
             'tiles', 'minTeleports', 'maxTeleports', 'teleports', 'minItemNumber',
             'maxItemNumber', 'itemNumber']
@@ -39,6 +40,9 @@ class Config(object):
 
     """Sample player names:"""
     samplePlayerNames = ["Michał", "Ewa", "Szymon", "Bob", "Alice", "Jacek", "Placek", "Luna", "Hermiona", "Ginny"]
+
+    """Bot names:"""
+    botNames = [".:^LoL bOt^:.", "c_style_bot", "camelCaseBot", "h^bot", "#@$!!&^*", "CONSTANT_BOT" ]
 
     """Screen size:"""
     #screenSize = 1280,800
@@ -71,6 +75,11 @@ class Config(object):
 
     """Server address:"""
     serverAddress = "localhost"
+
+    """Number of bots:"""
+    minBots = 0
+    maxBots = 6
+    bots = 3
 
     """Board filename: (None value indicates that board should be generated)"""
     boardFilename = None

@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import ai
 import game
 import gui
 import random
@@ -17,18 +18,38 @@ class Controller(object):
     def __init__(self,game=game.Game.simpleGame()):
         self._game = game
         self.clients = []
-        self.controlPlayers = list(range(len(game.players)))
+        self.controlPlayers = list(game.players.keys())
+        self.bots = []
+        for name in self.randomBotNames(config.bots):
+            self.addBot(name)
+
+    def randomBotNames(self, count):
+        return random.sample([name for name in config.botNames if name not in [p.name for p in self.game.players.values()]], count)
+
+    def addBot(self, name=None, color=None):
+        """Passing None for name or color will result in random one."""
+        if name is None:
+            name = self.randomBotNames(1)[0]
+        id = self.game.addPlayer(name,color)
+        self.bots.append(ai.RandomAI(self, id))
+
     def setGame(self,game):
         self._game = game
+
     @property
     def game(self):
         return self.getGame()
+
     def getGame(self):
         return self._game
+
     def sendInput(self,playerId,action):
         self._game.sendInput(playerId,action)
+
     def update(self,dt):
         self._game.update(dt)
+        for b in self.bots:
+            b.update(dt)
 
 class NetworkedController(Controller,ConnectionListener):
     def __init__(self, host=None, port=9999, players=None, onFail=sys.exit, onSuccess=None):
@@ -40,20 +61,25 @@ class NetworkedController(Controller,ConnectionListener):
             host = config.host
         if players is None:
             players = [ {"name":p["name"], "color":p["color"]} for p in config.players if p["playing"]]
-        Controller.__init__(self)
-        self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.onFail = onFail
         self.onSuccess = onSuccess
-        self.Connect((host, port))
         self.controlPlayers = []
         self.gameReady = False
         self.playersReady = False
+        self.Connect((host, port))
+        print("Connecting...")
+        super(NetworkedController, self).__init__(self)
+        self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.lastUpdate = time()
         self.lastGameUpdate = time()
-        print("Connecting...")
-        connection.Send({"action":"requestPlayers", "players":players})
+        connection.Send({"action":"requestPlayers", "players":players, "bots":False})
         connection.Pump()
         self.Pump()
+
+    def addBot(self, name=None, color=None):
+        if name is None:
+            name = self.randomBotNames(1)[0]
+        connection.Send({"action":"requestPlayers", "players":[{"name":name, "color":color}], "bots":True})
 
     @property
     def ready(self):
@@ -75,9 +101,12 @@ class NetworkedController(Controller,ConnectionListener):
 
     def Network_controlPlayers(self,data):
         print("Controling players:{0}".format(data["players"]))
-        self.controlPlayers = data["players"]
-        for c in self.clients:
-            c.controlPlayers = self.controlPlayers
+        if data["bots"]:
+            self.bots.extend([ ai.RandomBot(self, id) for id in data["players"]])
+        else:
+            self.controlPlayers.extend(data["players"])
+            for c in self.clients:
+                c.controlPlayers = self.controlPlayers
         if self.gameReady and not self.playersReady and self.onSuccess:
             self.onSuccess()
         self.playersReady = True
@@ -100,7 +129,7 @@ class NetworkedController(Controller,ConnectionListener):
         if self.ready:
             t = time()
             #print((t,dt,t-self.lastUpdate))
-            self._game.update(t - self.lastUpdate)
+            super(NetworkedController, self).update(t - self.lastUpdate)
             self.lastUpdate = t
             #print("update({0:.2f})".format(self._game.time))
         connection.Pump()

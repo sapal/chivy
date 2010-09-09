@@ -56,6 +56,8 @@ class GameMenu(menu.Menu):
 
         items.append(IntegerMenuItem('Items: ', self.onItemsChange, config.minItemNumber, config.maxItemNumber, 1, config.itemNumber))
 
+        items.append(IntegerMenuItem('Bots: ', self.onBotsChange, config.minBots, config.maxBots, 1, config.bots))
+
         self.createBoardMenu()
         items.append(self.boardMenu)
 
@@ -71,6 +73,9 @@ class GameMenu(menu.Menu):
         items.append(MenuItem('Back', self.on_quit))
 
         createMenuLook(self, items)
+
+    def onBotsChange(self, value):
+        config.bots = value
 
     def createBoardMenu(self):
         self.boardList = [ "Generate Board" ]

@@ -35,7 +35,7 @@ class ClientChannel(Channel):
         for p in players:
             playerId = self.game.addPlayer(name=p["name"],color=p["color"])
             self.playerMap[self].append(playerId)
-        self.Send({"action":"controlPlayers", "players":self.playerMap[self]})
+        self.Send({"action":"controlPlayers", "players":self.playerMap[self], "bots":data["bots"]})
         self.server.sendToAll(self.server.gameUpdate(),True)
 
 class OooServer(Server):
