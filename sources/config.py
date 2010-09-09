@@ -58,6 +58,9 @@ host = "localhost"
 """Server address:"""
 serverAddress = "localhost"
 
+"""Board filename: (None value indicates that board should be generated)"""
+boardFilename = None
+
 """Number of tiles:"""
 minTileNumber = 10
 maxTileNumber = 500

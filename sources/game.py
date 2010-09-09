@@ -855,7 +855,10 @@ class Game(object):
         """Passing non-None argument will override config"""
         if board is None:
             board = Board(itemNumber=config.itemNumber)
-            board.generateBoard(config.tiles, tileNumber=config.tileNumber, teleports=config.teleports, seed=random.random())
+            if config.boardFilename:
+                board.loadFromXml(config.boardFilename)
+            else:
+                board.generateBoard(config.tiles, tileNumber=config.tileNumber, teleports=config.teleports, seed=random.random())
         g = Game(board=board)
         if players is None:
             players = config.players
