@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
 from PIL import Image, ImageMath
-import config
 import kinds
 import game
+from config import Config as config
 from generateColors import replaceColor
 
 def concatenate(imageList, rotate=False):

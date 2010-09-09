@@ -9,13 +9,13 @@ from gui import Client
 from pyglet import gl,clock
 from cocos.menu import Menu, MenuItem, EntryMenuItem, MultipleMenuItem, ToggleMenuItem, IntegerMenuItem
 from multiprocessing import Process,Queue
+from config import Config as config
 import server
 import keyBindings
 import controller
 import game
 import colors
 import pyglet
-import config
 import rabbyt
 import re
 import os
@@ -216,12 +216,11 @@ class PlayerMenu(menu.Menu):
         self.choosePlayer = MultipleMenuItem("", self.onPlayerChange, ["Player {0}".format(i+1) for i in range(len(config.players)) ], 0)
         items.append(self.choosePlayer)
 
-        self.playerName = EntryMenuItem("    Name: ", self.onPlayerNameChange, unicode(config.players[0].name,"utf-8"))
+        self.playerName = EntryMenuItem("    Name: ", self.onPlayerNameChange, unicode(config.players[0]["name"],"utf-8"))
         items.append(self.playerName)
 
         self.colors = list(colors.colors.keys())
-        #print((self.colors,config.players[0].color))
-        self.playerColor = MultipleMenuItem("    Color: ", self.onPlayerColorChange, self.colors, self.colors.index(config.players[0].color))
+        self.playerColor = MultipleMenuItem("    Color: ", self.onPlayerColorChange, self.colors, self.colors.index(config.players[0]["color"]))
         items.append(self.playerColor)
 
         self.playerPlaying = MultipleMenuItem("    Playing: ", self.onPlayerPlayingChange, ["False", "True"], 1)
@@ -232,24 +231,24 @@ class PlayerMenu(menu.Menu):
         createMenuLook(self, items)
 
     def onPlayerChange(self, idx):
-        self.playerName.value = unicode(config.players[idx].name,"utf-8")
-        self.playerColor.idx = self.colors.index(config.players[idx].color)
+        self.playerName.value = unicode(config.players[idx]["name"],"utf-8")
+        self.playerColor.idx = self.colors.index(config.players[idx]["color"])
         self.playerColor.update()
-        if config.players[idx].playing:
+        if config.players[idx]["playing"]:
             self.playerPlaying.idx = 1
         else:
             self.playerPlaying.idx = 0
         self.playerPlaying.update()
 
     def onPlayerNameChange(self, value):
-        config.players[self.choosePlayer.idx].name = value.encode("utf-8")
+        config.players[self.choosePlayer.idx]["name"] = value.encode("utf-8")
 
     def onPlayerColorChange(self, idx):
-        config.players[self.choosePlayer.idx].color = self.colors[idx]
+        config.players[self.choosePlayer.idx]["color"] = self.colors[idx]
 
     def onPlayerPlayingChange(self, idx):
         value = (idx == 1)
-        config.players[self.choosePlayer.idx].playing = value
+        config.players[self.choosePlayer.idx]["playing"] = value
     
     def on_quit(self):
         self.parent.switch_to(0)

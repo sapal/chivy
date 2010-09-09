@@ -3,7 +3,6 @@
 from __future__ import division,print_function
 import random
 import game
-import config
 import cocos
 import sys
 import os
@@ -13,6 +12,7 @@ import controller
 import keyBindings
 import colors
 import rabbyt 
+from config import Config as config
 from pyglet import gl, clock, font
 from pyglet.window import Window,key
 from pyglet.text import Label,HTMLLabel

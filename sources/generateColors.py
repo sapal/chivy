@@ -4,7 +4,7 @@ from PIL import Image, ImageMath
 from PIL.ImageColor import getrgb
 from colors import colors
 import os
-import config
+from config import Config as config
 import re
 
 def difference1(source, color):

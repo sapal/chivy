@@ -2,7 +2,7 @@
 # coding=utf-8
 import sys
 from optparse import OptionParser
-import config
+from config import Config as config
 import game
 import server
 import random
@@ -103,8 +103,10 @@ if __name__=="__main__":
     call = {"server":startServer,
             "client":startClient,
             "local":startLocalGame}
+    config.loadConfig()
     if len(sys.argv) < 2:
         startMenu()
+        config.saveConfig()
     elif sys.argv[1] not in call.keys():
         printHelp()
         sys.exit()

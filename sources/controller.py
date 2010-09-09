@@ -5,9 +5,9 @@ import gui
 import random
 import colors
 import sys
-import config
 import pickle
 import methodPickle
+from config import Config as config
 from pyglet import clock
 from time import sleep,time
 from optparse import OptionParser
@@ -39,7 +39,7 @@ class NetworkedController(Controller,ConnectionListener):
         if not host:
             host = config.host
         if players is None:
-            players = [ {"name":p.name, "color":p.color} for p in config.players if p.playing]
+            players = [ {"name":p["name"], "color":p["color"]} for p in config.players if p["playing"]]
         Controller.__init__(self)
         self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.onFail = onFail

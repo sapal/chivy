@@ -6,8 +6,8 @@ import random as rand
 import kinds
 import pickle
 import colors
-import config
 import utils
+from config import Config as config
 
 class GameObject(object):
     """Base class for other objects in game."""
@@ -863,8 +863,8 @@ class Game(object):
         if players is None:
             players = config.players
         for p in players:
-            if p.playing:
-                g.addPlayer(p.name, p.color)
+            if p["playing"]:
+                g.addPlayer(p["name"], p["color"])
         return g
 
 if __name__ == "__main__":
