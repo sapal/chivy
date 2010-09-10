@@ -150,6 +150,9 @@ class NetworkedController(Controller,ConnectionListener):
     def Network_lightGameUpdate(self,data):
         self._game.lightUnpickle(data['game'])
 
+    def end(self):
+        connection.Close()
+
 if __name__=="__main__":
     import start
     start.startClient(sys.argv[1:])

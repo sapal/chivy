@@ -34,7 +34,7 @@ def startClient(argv):
         time.sleep(0.01)
         r.ctrl.update(0.01)
     gui.initialize()
-    c = gui.Client(r.ctrl)
+    c = gui.Client(r.ctrl, killController=True)
     cocos.director.director.run(c)
 
 def startLocalGame(argv):

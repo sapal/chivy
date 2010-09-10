@@ -144,7 +144,7 @@ class ConnectingMenu(menu.Menu):
     def onSuccess(self):
         clock.unschedule(self.ctrl.update)
         self.parent.switch_to(0)
-        director.push(Client(self.ctrl))
+        director.push(Client(self.ctrl, killController=True))
 
     def onFail(self):
         if self.ctrl:

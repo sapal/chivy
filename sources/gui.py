@@ -304,7 +304,7 @@ class InputLayer(cocos.layer.Layer):
 class Client(cocos.scene.Scene):
     """Client for viewing game."""
 
-    def __init__(self, controller, players = None):
+    def __init__(self, controller, players = None, killController=False):
         w,h = config.screenSize
 
         self.controller = controller
@@ -314,6 +314,11 @@ class Client(cocos.scene.Scene):
         #print(self.inputLayer.controlPlayers)
         super(Client, self).__init__(BoardLayer(self),HudLayer(self),self.inputLayer)
         self.schedule(self.update)
+        self.killController = killController
+
+    def on_exit(self):
+        if self.killController:
+            self.controller.end()
 
     def update(self, dt):
         self.controller.update(dt)
