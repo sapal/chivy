@@ -11,7 +11,7 @@ class Config(object):
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames',
             'screenSize', 'fullScreen',  'players', 'host', 'serverAddress', 'botNames',
-            'minBots', 'maxBots', 'bots',
+            'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
             'boardFilename', 'minTileNumber', 'maxTileNumber', 'tileNumber', 
             'tiles', 'minTeleports', 'maxTeleports', 'teleports', 'minItemNumber',
             'maxItemNumber', 'itemNumber']
@@ -80,6 +80,11 @@ class Config(object):
     minBots = 0
     maxBots = 6
     bots = 3
+
+    """Bot speed:"""
+    minBotSpeed = 1
+    maxBotSpeed = 6
+    botSpeed = 3
 
     """Board filename: (None value indicates that board should be generated)"""
     boardFilename = None

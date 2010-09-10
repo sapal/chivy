@@ -31,7 +31,7 @@ class Controller(object):
         if name is None:
             name = self.randomBotNames(1)[0]
         id = self.game.addPlayer(name,color)
-        self.bots.append(ai.RandomAI(self, id))
+        self.bots.append(ai.ProximityAI(self, id))
 
     def setGame(self,game):
         self._game = game
@@ -102,7 +102,7 @@ class NetworkedController(Controller,ConnectionListener):
     def Network_controlPlayers(self,data):
         print("Controling players:{0}".format(data["players"]))
         if data["bots"]:
-            self.bots.extend([ ai.RandomBot(self, id) for id in data["players"]])
+            self.bots.extend([ ai.ProximityAI(self, id) for id in data["players"]])
         else:
             self.controlPlayers.extend(data["players"])
             for c in self.clients:

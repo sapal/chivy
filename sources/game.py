@@ -22,7 +22,7 @@ class GameObject(object):
         return self.position[1]
 
 class BoardTile(GameObject):
-    """Class descripting single board-tile.
+    """Class dzoescripting single board-tile.
     
     position - position on board (x,y) - (0,0) is lower left corner
     upSide - rotation of tile (witch of the sides is facing NORTH - one of BoardTile.directions)
@@ -126,10 +126,10 @@ class Board(object):
 
     @property
     def teleports(self):
-        return [t for t in self.items if t.kind[0:8] == "teleport"]
+        return [t for t in self.items if isTeleport(t)]
     @property
     def teleportsPositions(self):
-        return [t.position for t in self.items if t.kind[0:8] == "teleport"]
+        return [t.position for t in self.items if isTeleport(t)]
     @property
     def teleportCount(self):
         return len(self.teleportsPositions)
@@ -240,7 +240,7 @@ class Board(object):
         pos = self.randomPositions(count, self.teleportsPositions)
         for p in pos:
             self.items.append(Teleport(p,kind))
-        tel = [ t for t in self.items if t.kind == "teleport-"+kind]
+        tel = [ t for t in self.items if t.oooManKind == kind]
         if tel:
             for i in range(len(tel)):
                 tel[i-1].target = tel[i].position
@@ -259,7 +259,7 @@ class Board(object):
             self.items.extend(self.randomItems(self.teleportCount + self.itemNumber - len(self.items)))
 
     def randomItems(self, count):
-        disallowed = set([t.position for t in self.items if t.kind[0:8] == "teleport"])
+        disallowed = set([t.position for t in self.items if isTeleport(t)])
         if len(disallowed) >= len(self.getNormalTiles()):
             return []
         return [ ItemFactory.createItem(self.randomPosition(disallowed), self.random.choice(ItemFactory.kinds)) for i in range(count) ]
@@ -340,6 +340,9 @@ class Item(GameObject):
 
     def canUse(self,oooMan):
         return not self.deleteMe and oooMan.actionList and oooMan.actionList[0].kind == ActionFactory.USE_ITEM and oooMan.collide(self)
+
+def isTeleport(item):
+    return item.kind[0:8] == "teleport"
 
 class Teleport(Item):
     def __init__(self, position, oooManKind):
