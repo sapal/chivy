@@ -32,10 +32,12 @@ class ClientChannel(Channel):
     def Network_requestPlayers(self,data):
         players = data["players"]
         print("New players: {0}".format(" ".join([p["name"] for p in players])))
+        playersId = []
         for p in players:
             playerId = self.game.addPlayer(name=p["name"],color=p["color"])
             self.playerMap[self].append(playerId)
-        self.Send({"action":"controlPlayers", "players":self.playerMap[self], "bots":data["bots"]})
+            playersId.append(playerId)
+        self.Send({"action":"controlPlayers", "players":playersId, "bots":data["bots"]})
         self.server.sendToAll(self.server.gameUpdate(),True)
 
 class OooServer(Server):

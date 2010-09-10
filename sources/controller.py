@@ -63,13 +63,13 @@ class NetworkedController(Controller,ConnectionListener):
             players = [ {"name":p["name"], "color":p["color"]} for p in config.players if p["playing"]]
         self.onFail = onFail
         self.onSuccess = onSuccess
-        self.controlPlayers = []
         self.gameReady = False
         self.playersReady = False
         self.Connect((host, port))
         print("Connecting...")
-        super(NetworkedController, self).__init__(self)
+        super(NetworkedController, self).__init__()
         self._game = game.Game(players=[],board=game.Board((1,1),""))
+        self.controlPlayers = []
         self.lastUpdate = time()
         self.lastGameUpdate = time()
         connection.Send({"action":"requestPlayers", "players":players, "bots":False})
@@ -102,14 +102,15 @@ class NetworkedController(Controller,ConnectionListener):
     def Network_controlPlayers(self,data):
         print("Controling players:{0}".format(data["players"]))
         if data["bots"]:
+            print("Adding bot")
             self.bots.extend([ ai.ProximityAI(self, id) for id in data["players"]])
         else:
             self.controlPlayers.extend(data["players"])
             for c in self.clients:
                 c.controlPlayers = self.controlPlayers
-        if self.gameReady and not self.playersReady and self.onSuccess:
-            self.onSuccess()
-        self.playersReady = True
+            if self.gameReady and not self.playersReady and self.onSuccess:
+                self.onSuccess()
+            self.playersReady = True
 
     def sendInputDt(self, dt, data, time):
         if time > self.lastGameUpdate:

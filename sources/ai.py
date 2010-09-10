@@ -169,7 +169,9 @@ class ProximityAI(BaseAI):
 
 
     def chooseAction(self):
-        if self.activeOooMan.actionList and [ m for m in self.oooMen if m and not m.actionList]:
+        if not self.activeOooMan:
+            return None
+        if self.activeOooMan.actionList and [ m for m in self.oooMen if not m.actionList]:
             return "switchActive"
         elif len(self.activeOooMan.actionList)<3:
             bestScore = self.score(self.getTarget(self.activeOooMan))
@@ -184,7 +186,7 @@ class ProximityAI(BaseAI):
                         best = self.goAction(d)
                         bestScore = s
             return best
-        elif [ m for m in self.oooMen if m and len(m.actionList)<2]:
+        elif [ m for m in self.oooMen if len(m.actionList)<2]:
             return "switchActive"
         else:
             return None

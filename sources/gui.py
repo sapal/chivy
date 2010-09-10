@@ -310,11 +310,20 @@ class Client(cocos.scene.Scene):
         self.controller = controller
         controller.clients.append(self)
         #super(Client, self).__init__(cocos.layer.util_layers.ColorLayer(255,255,255,255),BoardLayer(self),HudLayer(self),InputLayer(self))
-        super(Client, self).__init__(BoardLayer(self),HudLayer(self),InputLayer(self))
+        self.inputLayer = InputLayer(self)
+        #print(self.inputLayer.controlPlayers)
+        super(Client, self).__init__(BoardLayer(self),HudLayer(self),self.inputLayer)
         self.schedule(self.update)
 
     def update(self, dt):
         self.controller.update(dt)
+
+    def getControlPlayers(self):
+        return self.inputLayer.controlPlayers
+    def setControlPlayers(self, control):
+        self.inputLayer.controlPlayers = control
+        print("Controlling players: {0}".format(control))
+    controlPlayers = property(getControlPlayers, setControlPlayers)
 
     @property
     def game(self):
