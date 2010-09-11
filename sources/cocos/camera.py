@@ -72,7 +72,6 @@ class Camera(object):
         If you use the camera, for a while and you want to stop using it
         call this method.
         '''
-
         width, height = director.get_window_size()
 
         # tuple (x,y,z) that says where is the eye of the camera.

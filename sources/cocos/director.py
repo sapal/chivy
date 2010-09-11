@@ -313,6 +313,9 @@ class Director(event.EventDispatcher):
     #: a dict with locals for the interactive python interpreter (fill with what you need)
     interpreter_locals = {}
 
+    def __init__(self):
+        super(Director, self).__init__()
+
     def init(self, *args, **kwargs):
         """Initializes the Director creating the main window.
         Keyword arguments are passed to pyglet.window.Window().

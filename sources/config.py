@@ -3,10 +3,17 @@ import os
 import os.path
 import sys
 from ast import literal_eval
+import re
 """Game config."""
 
 class Config(object):
     """Class for storing config"""
+
+    """Game title:"""
+    title = "NoTitle"
+
+    """Game version:"""
+    version = "0.1"
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames',
@@ -19,8 +26,12 @@ class Config(object):
     """Localization:"""
     locale = "pl_PL"
 
+    """Entry directory:"""
+    entryDir = os.path.dirname(os.path.abspath(sys.argv[0]))+os.sep
     """Code directory:"""
-    codeDir = os.path.dirname(os.path.abspath(sys.argv[0]))+os.sep
+    codeDir = os.path.abspath(__file__)[:-10]
+    sys.path[0] = codeDir
+
     """Images directory:"""
     imagesDir = codeDir+".."+os.sep+"images"+os.sep
     """Fonts directory:"""
@@ -135,3 +146,4 @@ class Config(object):
         for c in Config.userConfig:
             if c in config:
                 setattr(Config, c, config[c])
+    #print(codeDir)

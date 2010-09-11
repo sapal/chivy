@@ -99,7 +99,7 @@ def printHelp():
     print("""Usage:
     start.py (server|client|local) [options]""")
 
-if __name__=="__main__":
+def main():
     call = {"server":startServer,
             "client":startClient,
             "local":startLocalGame}
@@ -112,5 +112,8 @@ if __name__=="__main__":
         sys.exit()
     else:
         call[sys.argv[1]](sys.argv[2:])
+
+if __name__=="__main__":
+    main()
 
     
