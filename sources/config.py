@@ -120,6 +120,8 @@ class Config(object):
 
     @staticmethod
     def saveConfig():
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         config = {}
         userDir = Config.userDir
         for c in Config.userConfig:
@@ -128,7 +130,7 @@ class Config(object):
             if not os.path.isdir(userDir):
                 os.makedirs(userDir)
             f = open(userDir+"config.py", 'w')
-            f.write(str(config))
+            f.write(pp.pformat(config))
             f.close()
         except Exception,e:
             print(e)

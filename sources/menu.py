@@ -58,7 +58,7 @@ class GameMenu(menu.Menu):
 
         items.append(IntegerMenuItem('Bots: ', self.onBotsChange, config.minBots, config.maxBots, 1, config.bots))
 
-        items.append(IntegerMenuItem('Bot speed: ', self.onBotSpeedChange, config.minBotSpeed, config.maxBotSpeed, 1, config.botSpeed))
+        items.append(IntegerMenuItem('Bot level: ', self.onBotSpeedChange, config.minBotSpeed, config.maxBotSpeed, 1, config.botSpeed))
 
         self.createBoardMenu()
         items.append(self.boardMenu)

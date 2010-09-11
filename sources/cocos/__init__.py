@@ -63,10 +63,10 @@ import sys
 
 # add the cocos resources path
 import os, pyglet
-pyglet.resource.path.append(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
-    )
-pyglet.resource.reindex()
+#pyglet.resource.path.append(
+#    os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources")
+#    )
+#pyglet.resource.reindex()
 
 try:
     unittesting = os.environ['cocos_utest']
