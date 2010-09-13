@@ -145,8 +145,8 @@ msgid "No"
 msgstr "Nie"
 
 #: menu.py:269
-msgid "NoTitle"
-msgstr "BezTytułu"
+msgid "Chivy"
+msgstr "Chivy"
 
 #: menu.py:271
 msgid "Start Local Game"

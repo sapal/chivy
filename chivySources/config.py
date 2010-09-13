@@ -10,10 +10,10 @@ class Config(object):
     """Class for storing config"""
 
     """Game title:"""
-    title = "NoTitle"
+    title = "Chivy"
 
     """Game version:"""
-    version = "0.1"
+    version = "0.2"
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames',
@@ -31,6 +31,7 @@ class Config(object):
     """Code directory:"""
     codeDir = os.path.abspath(__file__)[:-10]
     sys.path[0] = codeDir
+    codeDir += os.sep
 
     """Images directory:"""
     imagesDir = codeDir+".."+os.sep+"images"+os.sep
@@ -41,7 +42,7 @@ class Config(object):
     """Fonts directory:"""
     fontsDir = codeDir+".."+os.sep+"fonts"+os.sep
     """User directory:"""
-    userDir = os.path.expanduser("~"+os.sep+".NoName"+os.sep)
+    userDir = os.path.expanduser("~"+os.sep+".Chivy"+os.sep)
 
     """Tiled directory:"""
     tiledDir = codeDir+".."+os.sep+"tiled"+os.sep
@@ -151,3 +152,5 @@ class Config(object):
             if c in config:
                 setattr(Config, c, config[c])
     #print(codeDir)
+
+Config.loadConfig()

@@ -5,10 +5,10 @@ import os
 from config import Config as config
 
 APP_NAME = "base"
-langs = []
+langs = [config.locale]
 lc, encoding = locale.getdefaultlocale()
 if (lc):
-    langs = [lc]
+    langs += [lc]
 language = os.environ.get('LANGUAGE', None)
 if (language):
     langs += language.split(":")

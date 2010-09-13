@@ -145,7 +145,7 @@ msgid "No"
 msgstr ""
 
 #: menu.py:269
-msgid "NoTitle"
+msgid "Chivy"
 msgstr ""
 
 #: menu.py:271

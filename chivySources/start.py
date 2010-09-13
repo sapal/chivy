@@ -104,7 +104,7 @@ def main():
     call = {"server":startServer,
             "client":startClient,
             "local":startLocalGame}
-    config.loadConfig()
+    #config.loadConfig()
     if len(sys.argv) < 2:
         startMenu()
         config.saveConfig()

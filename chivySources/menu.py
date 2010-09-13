@@ -266,7 +266,7 @@ class PlayerMenu(menu.Menu):
 
 class MainMenu(menu.Menu):
     def __init__(self):
-        super(MainMenu, self).__init__(_('NoTitle'))
+        super(MainMenu, self).__init__(_('Chivy'))
         items = []
         items.append(MenuItem(_('Start Local Game'), self.onLocalGame))
         items.append(MenuItem(_('Join Network Game'), self.onNetworkGame))
