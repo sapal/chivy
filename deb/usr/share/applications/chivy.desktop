@@ -5,5 +5,5 @@ Comment=Small game
 Comment[pl]=Prosta gra
 Exec=chivy
 Icon=chivy
-Categories=Game;Arcade Game;
+Categories=Game;ArcadeGame;
 Terminal=false

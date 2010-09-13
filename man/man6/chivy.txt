@@ -1,0 +1,15 @@
+NAME
+	chivy - Small, multiplayer action game.
+SYNOPIS
+	chivy [client|local|server] [more options]
+DESCRIPTION
+	In Chivy every player is controlling three figures.
+	The objective is to eat otrer players' figures.
+	To run Chivy just type 'chivy' in console.
+
+	Run 'chivy client --help' for help on client-mode options,
+	'chivy server --help' for server-mode options and 
+	'chivy local --help' for local game mode options.
+	Note that all console options are also accessible through GUI.
+AUTHOR
+Michał Sapalski (sapalskimichal@gmail.com)
