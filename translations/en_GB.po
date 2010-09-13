@@ -1,0 +1,217 @@
+# English translations for PACKAGE package.
+# Copyright (C) 2010 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Michał Sapalski <sapalskimichal@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-13 09:44+0200\n"
+"PO-Revision-Date: 2010-09-13 10:21+0200\n"
+"Last-Translator: Micha Sapalski <sapalskimichal@gmail.com>\n"
+"Language-Team: English (British)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: controller.py:70 menu.py:134 menu.py:141
+msgid "Connecting..."
+msgstr "Connecting..."
+
+#: controller.py:96
+msgid "error: {0}"
+msgstr "error: {0}"
+
+#: controller.py:100
+msgid "Disconnected."
+msgstr "Disconnected."
+
+#: controller.py:104
+msgid "Controling players:{0}"
+msgstr "Controling players:{0}"
+
+#: controller.py:106
+msgid "Adding bot"
+msgstr "Adding bot"
+
+#: controller.py:144
+msgid "lag:{0:.2f}s"
+msgstr "lag:{0:.2f}s"
+
+#: gui.py:117
+msgid "Scores"
+msgstr "Scores"
+
+#: gui.py:331
+msgid "Controlling players: {0}"
+msgstr "Controlling players: {0}"
+
+#: menu.py:58
+msgid "Items: "
+msgstr "Items: "
+
+#: menu.py:60
+msgid "Bots: "
+msgstr "Bots: "
+
+#: menu.py:62
+msgid "Bot level: "
+msgstr "Bot level: "
+
+#: menu.py:67
+msgid "    Teleports: "
+msgstr "    Teleports: "
+
+#: menu.py:70
+msgid "    Tiles: "
+msgstr "    Tiles: "
+
+#: menu.py:73
+msgid "    Tiles kinds: "
+msgstr "    Tiles kinds: "
+
+#: menu.py:76 menu.py:166 menu.py:192 menu.py:240
+msgid "Back"
+msgstr "Back"
+
+#: menu.py:96
+msgid "Board: "
+msgstr "Board: "
+
+#: menu.py:154
+msgid "Failed to connect."
+msgstr "Failed to connect."
+
+#: menu.py:161 menu.py:272
+msgid "Join Network Game"
+msgstr "Join Network Game"
+
+#: menu.py:164
+msgid "Join"
+msgstr "Join"
+
+#: menu.py:165
+msgid "Host: "
+msgstr "Host: "
+
+#: menu.py:180 menu.py:273
+msgid "Start Server"
+msgstr "Start Server"
+
+#: menu.py:187
+msgid "Start"
+msgstr "Start"
+
+#: menu.py:190
+msgid "Host address: "
+msgstr "Host address: "
+
+#: menu.py:212
+msgid "Start (server already running)"
+msgstr "Start (server already running)"
+
+#: menu.py:214
+msgid "Start (failed to start server)"
+msgstr "Start (failed to start server)"
+
+#: menu.py:223 menu.py:274
+msgid "Players"
+msgstr "Players"
+
+#: menu.py:226
+msgid "Player {0}"
+msgstr "Player {0}"
+
+#: menu.py:229
+msgid "    Name: "
+msgstr "    Name: "
+
+#: menu.py:234
+msgid "    Color: "
+msgstr "    Color: "
+
+#: menu.py:237
+msgid "    Playing: "
+msgstr "    Playing: "
+
+#: menu.py:237
+msgid "Yes"
+msgstr "Yes"
+
+#: menu.py:237
+msgid "No"
+msgstr "No"
+
+#: menu.py:269
+msgid "NoTitle"
+msgstr "NoTitle"
+
+#: menu.py:271
+msgid "Start Local Game"
+msgstr "Start Local Game"
+
+#: menu.py:275
+msgid "Game Options"
+msgstr "Game Options"
+
+#: menu.py:276
+msgid "Quit"
+msgstr "Quit"
+
+#: server.py:19
+msgid "Connection end (disconnected players: {0})"
+msgstr "Connection end (disconnected players: {0})"
+
+#: server.py:35
+msgid "New players: {0}"
+msgstr "New players: {0}"
+
+#: server.py:99
+msgid "Server started"
+msgstr "Server started"
+
+#: start.py:18 start.py:46
+msgid "Specify player name."
+msgstr "Specify player name."
+
+#: start.py:19 start.py:72
+msgid "Server address."
+msgstr "Server address."
+
+#: start.py:20 start.py:73
+msgid "Server port."
+msgstr "Server port."
+
+#: start.py:47 start.py:76
+msgid "Number of teleports of each kind"
+msgstr "Number of teleports of each kind"
+
+#: start.py:48 start.py:74
+msgid "Load board from file"
+msgstr "Load board from file"
+
+#: start.py:49 start.py:75
+msgid "Tiles used to create board."
+msgstr "Tiles used to create board."
+
+#: start.py:50 start.py:77
+msgid "Number of tiles on board"
+msgstr "Number of tiles on board"
+
+#: start.py:51 start.py:78
+msgid "Random seed used to generate board"
+msgstr "Random seed used to generate board"
+
+#: start.py:100
+msgid ""
+"Usage:\n"
+"    start.py (server|client|local) [options]"
+msgstr ""
+"Usage:\n"
+"    start.py (server|client|local) [options]"
+
+#: tmx2brd.py:96
+msgid "Usage: {0} someBoard.tmx"
+msgstr "Usage: {0} someBoard.tmx"

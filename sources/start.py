@@ -6,6 +6,7 @@ from config import Config as config
 import game
 import server
 import random
+from translation import gettext as _
 
 
 def startClient(argv):
@@ -14,9 +15,9 @@ def startClient(argv):
     import cocos
     import time
     parser = OptionParser()
-    parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
-    parser.add_option("-a", "--address", default="localhost", help="Server address.")
-    parser.add_option("-p", "--port", default=9999, type="int", help="Server port.")
+    parser.add_option("-n", "--player-name", action="append", help=_("Specify player name."), dest="players")
+    parser.add_option("-a", "--address", default="localhost", help=_("Server address."))
+    parser.add_option("-p", "--port", default=9999, type="int", help=_("Server port."))
     options, args = parser.parse_args()
     if not options.players:
         options.players = [random.choice(config.samplePlayerNames)]
@@ -42,12 +43,12 @@ def startLocalGame(argv):
     import gui
     import cocos
     parser = OptionParser()
-    parser.add_option("-n", "--player-name", action="append", help="Specify player name.", dest="players")
-    parser.add_option("-t", "--teleports", default=3, type="int", help="Number of teleports of each kind")
-    parser.add_option("-b", "--board-file", default=None, help="Load board from file", dest="board")
-    parser.add_option("-g", "--generate-board", default="TT++LI", help="Tiles used to create board.", dest="tiles")
-    parser.add_option("-o", "--number-of-tiles", default=100, type="int", help="Number of tiles on board", dest="number")
-    parser.add_option("-s", "--random-seed", default=random.randint(0,100000), help="Random seed used to generate board", dest="seed")
+    parser.add_option("-n", "--player-name", action="append", help=_("Specify player name."), dest="players") 
+    parser.add_option("-t", "--teleports", default=3, type="int", help=_("Number of teleports of each kind"))
+    parser.add_option("-b", "--board-file", default=None, help=_("Load board from file"), dest="board")
+    parser.add_option("-g", "--generate-board", default="TT++LI", help=_("Tiles used to create board."), dest="tiles")
+    parser.add_option("-o", "--number-of-tiles", default=100, type="int", help=_("Number of tiles on board"), dest="number")
+    parser.add_option("-s", "--random-seed", default=random.randint(0,100000), help=_("Random seed used to generate board"), dest="seed")
     options, args = parser.parse_args(argv)
     if not options.players:
         options.players = random.sample(config.samplePlayerNames,2)
@@ -68,13 +69,13 @@ def startLocalGame(argv):
 
 def startServer(argv):
     parser = OptionParser()
-    parser.add_option("-a", "--address", default="localhost", help="Server address.")
-    parser.add_option("-p", "--port", default=9999, type="int", help="Server port.")
-    parser.add_option("-b", "--board-file", default=None, help="Load board from file", dest="board")
-    parser.add_option("-g", "--generate-board", default="TT++LI", help="Tiles used to create board.", dest="tiles")
-    parser.add_option("-t", "--teleports", default=3, type="int", help="Number of teleports of each kind")
-    parser.add_option("-n", "--number-of-tiles", default=100, type="int", help="Number of tiles on board", dest="number")
-    parser.add_option("-s", "--random-seed", type="int", default=random.randint(0,100000), help="Random seed used to generate board", dest="seed")
+    parser.add_option("-a", "--address", default="localhost", help=_("Server address."))
+    parser.add_option("-p", "--port", default=9999, type="int", help=_("Server port."))
+    parser.add_option("-b", "--board-file", default=None, help=_("Load board from file"), dest="board")
+    parser.add_option("-g", "--generate-board", default="TT++LI", help=_("Tiles used to create board."), dest="tiles")
+    parser.add_option("-t", "--teleports", default=3, type="int", help=_("Number of teleports of each kind"))
+    parser.add_option("-n", "--number-of-tiles", default=100, type="int", help=_("Number of tiles on board"), dest="number")
+    parser.add_option("-s", "--random-seed", type="int", default=random.randint(0,100000), help=_("Random seed used to generate board"), dest="seed")
     options, args = parser.parse_args(argv)
 
     board = game.Board()
@@ -96,8 +97,8 @@ def startMenu():
     cocos.director.director.run(menu.getMenuScene())
 
 def printHelp():
-    print("""Usage:
-    start.py (server|client|local) [options]""")
+    print(_("""Usage:
+    start.py (server|client|local) [options]"""))
 
 def main():
     call = {"server":startServer,

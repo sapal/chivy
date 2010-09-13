@@ -11,11 +11,12 @@ import random
 import colors
 import pickle
 import methodPickle
+from translation import gettext as _
 
 class ClientChannel(Channel):
     def Close(self):
         players = self.playerMap[self]
-        print("Connection end (disconnected players: {0})".format(" ".join([ self.game.players[p].name for p in players])))
+        print(_("Connection end (disconnected players: {0})").format(" ".join([ self.game.players[p].name for p in players])))
         for p in players:
             del self.game.players[p]
 
@@ -31,7 +32,7 @@ class ClientChannel(Channel):
 
     def Network_requestPlayers(self,data):
         players = data["players"]
-        print("New players: {0}".format(" ".join([p["name"] for p in players])))
+        print(_("New players: {0}").format(" ".join([p["name"] for p in players])))
         playersId = []
         for p in players:
             playerId = self.game.addPlayer(name=p["name"],color=p["color"])
@@ -95,7 +96,7 @@ class OooServer(Server):
         return {"action":"lightGameUpdate", "game":self.game.lightPickle()}
 
     def Launch(self):
-        if not self.endPlease:print("Server started")
+        if not self.endPlease:print(_("Server started"))
         clock.set_fps_limit(100)
         clock.schedule(self.updateDt)
         clicks = 0

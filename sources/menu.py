@@ -19,6 +19,7 @@ import pyglet
 import rabbyt
 import re
 import os
+from translation import gettext as _
 
 def deactivateItem(item):
     item.item.color = item.item_selected.color = (128,128,128,255)
@@ -54,25 +55,25 @@ class GameMenu(menu.Menu):
 
         items = []
 
-        items.append(IntegerMenuItem('Items: ', self.onItemsChange, config.minItemNumber, config.maxItemNumber, 1, config.itemNumber))
+        items.append(IntegerMenuItem(_('Items: '), self.onItemsChange, config.minItemNumber, config.maxItemNumber, 1, config.itemNumber))
 
-        items.append(IntegerMenuItem('Bots: ', self.onBotsChange, config.minBots, config.maxBots, 1, config.bots))
+        items.append(IntegerMenuItem(_('Bots: '), self.onBotsChange, config.minBots, config.maxBots, 1, config.bots))
 
-        items.append(IntegerMenuItem('Bot level: ', self.onBotSpeedChange, config.minBotSpeed, config.maxBotSpeed, 1, config.botSpeed))
+        items.append(IntegerMenuItem(_('Bot level: '), self.onBotSpeedChange, config.minBotSpeed, config.maxBotSpeed, 1, config.botSpeed))
 
         self.createBoardMenu()
         items.append(self.boardMenu)
 
-        self.teleports = IntegerMenuItem('    Teleports: ', self.onTeleportsChange, config.minTeleports, config.maxTeleports, 1, config.teleports)
+        self.teleports = IntegerMenuItem(_('    Teleports: '), self.onTeleportsChange, config.minTeleports, config.maxTeleports, 1, config.teleports)
         items.append(self.teleports)
 
-        self.tilesNumber = IntegerMenuItem('    Tiles: ', self.onTileNumberChange, config.minTileNumber, config.maxTileNumber, 10, config.tileNumber)
+        self.tilesNumber = IntegerMenuItem(_('    Tiles: '), self.onTileNumberChange, config.minTileNumber, config.maxTileNumber, 10, config.tileNumber)
         items.append(self.tilesNumber)
 
-        self.tilesMenu = EntryMenuItem('    Tiles kinds: ', self.onTilesChange, config.tiles)
+        self.tilesMenu = EntryMenuItem(_('    Tiles kinds: '), self.onTilesChange, config.tiles)
         items.append(self.tilesMenu)
 
-        items.append(MenuItem('Back', self.on_quit))
+        items.append(MenuItem(_('Back'), self.on_quit))
 
         createMenuLook(self, items)
 
@@ -82,7 +83,7 @@ class GameMenu(menu.Menu):
         config.bots = value
 
     def createBoardMenu(self):
-        self.boardList = [ "Generate Board" ]
+        self.boardList = [ _("Generate Board") ]
         for f in sorted(os.listdir(config.levelsDir)):
             if re.match(".*\\.brd$", f):
                 self.boardList.append(f[:-4])
@@ -92,7 +93,7 @@ class GameMenu(menu.Menu):
                 idx = self.boardList.find(config.boardFilename)
             except:
                 config.boardFilename = None
-        self.boardMenu = MultipleMenuItem("Board: ", self.onBoardChange, self.boardList, idx)
+        self.boardMenu = MultipleMenuItem(_("Board: "), self.onBoardChange, self.boardList, idx)
 
     def onBoardChange(self, idx):
         genBoardItems = (self.teleports, self.tilesNumber, self.tilesMenu)
@@ -130,14 +131,14 @@ class GameMenu(menu.Menu):
 
 class ConnectingMenu(menu.Menu):
     def __init__(self):
-        super(ConnectingMenu, self).__init__('Connecting...')
+        super(ConnectingMenu, self).__init__(_('Connecting...'))
         self.button = MenuItem("Back",self.on_quit)
         createMenuLook(self, [self.button])
         self.ctrl = None
 
     def on_enter(self):
         super(ConnectingMenu, self).on_enter()
-        self.title_label.text='Connecting...'
+        self.title_label.text = _('Connecting...')
         self.ctrl = controller.NetworkedController(onFail=self.onFail,onSuccess=self.onSuccess)
         clock.schedule(self.ctrl.update)
 
@@ -150,19 +151,19 @@ class ConnectingMenu(menu.Menu):
         if self.ctrl:
             clock.unschedule(self.ctrl.update)
             self.ctrl = None
-        self.title_label.text = "Failed to connect." 
+        self.title_label.text = _("Failed to connect.")
 
     def on_quit(self):
         self.parent.switch_to(3)
 
 class NetworkGameClientMenu(menu.Menu):
     def __init__(self):
-        super(NetworkGameClientMenu, self).__init__('Join Network Game')
+        super(NetworkGameClientMenu, self).__init__(_('Join Network Game'))
         items = []
 
-        items.append(MenuItem("Join", self.onJoin))
-        items.append(EntryMenuItem("Host: ",self.onHostChange, config.host))
-        items.append(MenuItem("Back", self.on_quit))
+        items.append(MenuItem(_("Join"), self.onJoin))
+        items.append(EntryMenuItem(_("Host: "),self.onHostChange, config.host))
+        items.append(MenuItem(_("Back"), self.on_quit))
         createMenuLook(self, items)
 
     def onHostChange(self,value):
@@ -176,19 +177,19 @@ class NetworkGameClientMenu(menu.Menu):
 
 class ServerMenu(menu.Menu):
     def __init__(self):
-        super(ServerMenu, self).__init__('Start Server')
+        super(ServerMenu, self).__init__(_('Start Server'))
         self.serverProcess = None
         self.server = None
         self.queue = None
         self.statusQueue = None
         items = []
 
-        self.startItem = MenuItem("Start", self.onStart)
+        self.startItem = MenuItem(_("Start"), self.onStart)
         items.append(self.startItem)
 
-        items.append(EntryMenuItem("Host address: ", self.onAddressChange, config.serverAddress))
+        items.append(EntryMenuItem(_("Host address: "), self.onAddressChange, config.serverAddress))
 
-        items.append(MenuItem("Back", self.on_quit))
+        items.append(MenuItem(_("Back"), self.on_quit))
 
         createMenuLook(self, items)
 
@@ -208,9 +209,9 @@ class ServerMenu(menu.Menu):
             self.serverProcess = Process(target=self.server.Launch)
             self.serverProcess.daemon = True
             self.serverProcess.start()
-            self.startItem.label = "Start (server already running)"
+            self.startItem.label = _("Start (server already running)")
         except Exception,e:
-            self.startItem.label = "Start (failed to start server)"
+            self.startItem.label = _("Start (failed to start server)")
             print(e)
         self.startItem.update()
 
@@ -219,23 +220,24 @@ class ServerMenu(menu.Menu):
 
 class PlayerMenu(menu.Menu):
     def __init__(self):
-        super(PlayerMenu, self).__init__('Players')
+        super(PlayerMenu, self).__init__(_('Players'))
         items = []
 
-        self.choosePlayer = MultipleMenuItem("", self.onPlayerChange, ["Player {0}".format(i+1) for i in range(len(config.players)) ], 0)
+        self.choosePlayer = MultipleMenuItem("", self.onPlayerChange, [_("Player {0}").format(i+1) for i in range(len(config.players)) ], 0)
         items.append(self.choosePlayer)
 
-        self.playerName = EntryMenuItem("    Name: ", self.onPlayerNameChange, unicode(config.players[0]["name"],"utf-8"))
+        self.playerName = EntryMenuItem(_("    Name: "), self.onPlayerNameChange, unicode(config.players[0]["name"],"utf-8"))
         items.append(self.playerName)
 
         self.colors = list(colors.colors.keys())
-        self.playerColor = MultipleMenuItem("    Color: ", self.onPlayerColorChange, self.colors, self.colors.index(config.players[0]["color"]))
+        self.colorNames = [ _(c) for c in self.colors ]
+        self.playerColor = MultipleMenuItem(_("    Color: "), self.onPlayerColorChange, self.colorNames, self.colors.index(config.players[0]["color"]))
         items.append(self.playerColor)
 
-        self.playerPlaying = MultipleMenuItem("    Playing: ", self.onPlayerPlayingChange, ["False", "True"], 1)
+        self.playerPlaying = MultipleMenuItem(_("    Playing: "), self.onPlayerPlayingChange, [_("No"), _("Yes")], int(config.players[0]["playing"]))
         items.append(self.playerPlaying)
 
-        items.append(MenuItem("Back", self.on_quit))
+        items.append(MenuItem(_("Back"), self.on_quit))
 
         createMenuLook(self, items)
 
@@ -264,14 +266,14 @@ class PlayerMenu(menu.Menu):
 
 class MainMenu(menu.Menu):
     def __init__(self):
-        super(MainMenu, self).__init__('NoTitle')
+        super(MainMenu, self).__init__(_('NoTitle'))
         items = []
-        items.append(MenuItem('Start Local Game', self.onLocalGame))
-        items.append(MenuItem('Join Network Game', self.onNetworkGame))
-        items.append(MenuItem('Start Server', self.onStartServer))
-        items.append(MenuItem('Players', self.onPlayers))
-        items.append(MenuItem('Game Options', self.onGameOptions))
-        items.append(MenuItem('Quit', self.on_quit))
+        items.append(MenuItem(_('Start Local Game'), self.onLocalGame))
+        items.append(MenuItem(_('Join Network Game'), self.onNetworkGame))
+        items.append(MenuItem(_('Start Server'), self.onStartServer))
+        items.append(MenuItem(_('Players'), self.onPlayers))
+        items.append(MenuItem(_('Game Options'), self.onGameOptions))
+        items.append(MenuItem(_('Quit'), self.on_quit))
         createMenuLook(self, items)
 
     def onLocalGame(self):

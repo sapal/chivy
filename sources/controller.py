@@ -13,6 +13,7 @@ from pyglet import clock
 from time import sleep,time
 from optparse import OptionParser
 from PodSixNet.Connection import connection, ConnectionListener
+from translation import gettext as _
 
 class Controller(object):
     def __init__(self,game=game.Game.simpleGame()):
@@ -66,7 +67,7 @@ class NetworkedController(Controller,ConnectionListener):
         self.gameReady = False
         self.playersReady = False
         self.Connect((host, port))
-        print("Connecting...")
+        print(_("Connecting..."))
         super(NetworkedController, self).__init__()
         self._game = game.Game(players=[],board=game.Board((1,1),""))
         self.controlPlayers = []
@@ -92,17 +93,17 @@ class NetworkedController(Controller,ConnectionListener):
         self.Pump()
 
     def Network_error(self,data):
-        print("error: {0}".format(data['error'][1]))
+        print(_("error: {0}").format(data['error'][1]))
         connection.Close()
         
     def Network_disconnected(self,data):
-        print("Disconnected.")
+        print(_("Disconnected."))
         self.onFail()
 
     def Network_controlPlayers(self,data):
-        print("Controling players:{0}".format(data["players"]))
+        print(_("Controlling players: {0}").format(data["players"]))
         if data["bots"]:
-            print("Adding bot")
+            print(_("Adding bot"))
             self.bots.extend([ ai.ProximityAI(self, id) for id in data["players"]])
         else:
             self.controlPlayers.extend(data["players"])
@@ -140,7 +141,7 @@ class NetworkedController(Controller,ConnectionListener):
         t = self._game.time
         self._game = pickle.loads(data['game'])
         if abs(t-self._game.time) > 0.1: 
-            print("lag:{0:.2f}s".format(t - self._game.time))
+            print(_("lag:{0:.2f}s").format(t - self._game.time))
         self.lastUpdate = time()
         self.lastGameUpdate = time()
         if not self.gameReady and self.playersReady and self.onSuccess:

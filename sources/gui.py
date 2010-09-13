@@ -17,6 +17,7 @@ from pyglet import gl, clock, font
 from pyglet.window import Window,key
 from pyglet.text import Label,HTMLLabel
 from optparse import OptionParser
+from translation import gettext as _
 
 def initialize():
     w,h = config.screenSize
@@ -113,7 +114,7 @@ class HudLayer(cocos.layer.Layer):
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=config.screenSize[1])
 
     def drawScores(self):
-        txt = ["<b><font face='Edmunds' size=6>Scores</font><br/></b>"]
+        txt = ["<b><font face='Edmunds' size=6>"+_("Scores")+"</font><br/></b>"]
         for p in self.client.game.players.values():
             txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
         txt = u"".join(txt)
@@ -327,7 +328,7 @@ class Client(cocos.scene.Scene):
         return self.inputLayer.controlPlayers
     def setControlPlayers(self, control):
         self.inputLayer.controlPlayers = control
-        print("Controlling players: {0}".format(control))
+        print(_("Controlling players: {0}").format(control))
     controlPlayers = property(getControlPlayers, setControlPlayers)
 
     @property

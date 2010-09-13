@@ -868,6 +868,7 @@ class Game(object):
         for p in players:
             if p["playing"]:
                 g.addPlayer(p["name"], p["color"])
+                print("Add {0}:{1}".format(p["name"], p["color"]))
         return g
 
 if __name__ == "__main__":

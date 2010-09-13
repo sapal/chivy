@@ -45,6 +45,8 @@ class Config(object):
 
     """Tiled directory:"""
     tiledDir = codeDir+".."+os.sep+"tiled"+os.sep
+    """Translations directory:"""
+    translationsDir = codeDir+".."+os.sep+"translations"+os.sep
 
     """Sprite size:"""
     spriteSize = 128

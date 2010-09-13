@@ -6,6 +6,7 @@ from colors import colors
 import os
 from config import Config as config
 import re
+from translation import gettext as _
 
 def difference1(source, color):
     """When source is bigger than color"""

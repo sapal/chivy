@@ -6,6 +6,7 @@ import xml.dom.minidom
 import re
 import kinds
 import sys
+from translation import gettext as _
 
 def parseDimensions(domMap, board):
     w = int(domMap.getAttribute("width"))
@@ -92,7 +93,7 @@ def getBoard(tmxFile):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: {0} someBoard.tmx".format(argv[0]))
+        print(_("Usage: {0} someBoard.tmx").format(argv[0]))
         sys.exit()
     tmxFile = sys.argv[1]
     outFile = tmxFile[0:-3] + "brd"
