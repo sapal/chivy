@@ -1,9 +1,10 @@
 [Desktop Entry]
-Type=Application
 Name=Chivy
 Comment=Small game
 Comment[pl]=Prosta gra
 Exec=chivy
 Icon=chivy
-Categories=Game;ArcadeGame;
 Terminal=false
+Type=Application
+Categories=Game;ArcadeGame;
+StartupNotify=false

@@ -1,0 +1,5 @@
+To create installer:
+	1. NSIS must be installed
+	2. python installation (with rabbyt, pygame and setuptools) must be placed in Python26
+	3. *.nsi scripts should be placed in main directory
+	4. installer.nsi has to be compiled
