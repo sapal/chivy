@@ -1,0 +1,8 @@
+Package: chivy
+Version: 0.2
+Priority: optional
+Architecture: all
+Section: games
+Depends: python (>= 2.6), python-rabbyt (>= 0.8.1), python-pyglet (>= 1.1.2)
+Maintainer: Michał Sapalski <sapalskimichal@gmail.com>
+Description: Simple game

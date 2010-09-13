@@ -1,6 +1,6 @@
 # coding=utf-8
 from setuptools import setup, find_packages
-from sources.config import Config as config
+from chivySources.config import Config as config
 import os
 
 def allDir(dirName):
@@ -19,7 +19,6 @@ setup(
     packages = find_packages(),
     include_package_data = True,
 
-
     author = "Michał Sapalski",
     author_email = "sapalskimichal@gmail.com",
     description = "Simple game.",
@@ -32,5 +31,4 @@ setup(
                 ('fonts', allDir('fonts')),
                 ('levels', allDir('levels')) ] + addTranslations(),
     py_modules = ['chivy']
-
 )
