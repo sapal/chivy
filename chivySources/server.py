@@ -16,7 +16,7 @@ from translation import gettext as _
 class ClientChannel(Channel):
     def Close(self):
         players = self.playerMap[self]
-        print(_("Connection end (disconnected players: {0})").format(" ".join([ self.game.players[p].name for p in players])))
+        print(_("Connection end (disconnected players: {0})").format(u" ".join([ unicode(self.game.players[p].name,"utf-8") for p in players])))
         for p in players:
             del self.game.players[p]
 
@@ -35,9 +35,12 @@ class ClientChannel(Channel):
         print(_(u"New players: {0}").format(u" ".join([unicode(p["name"],"utf-8") for p in players])))
         playersId = []
         for p in players:
-            playerId = self.game.addPlayer(name=p["name"],color=p["color"])
-            self.playerMap[self].append(playerId)
-            playersId.append(playerId)
+            try:
+                playerId = self.game.addPlayer(name=p["name"],color=p["color"])
+                self.playerMap[self].append(playerId)
+                playersId.append(playerId)
+            except:
+                break
         self.Send({"action":"controlPlayers", "players":playersId, "bots":data["bots"]})
         self.server.sendToAll(self.server.gameUpdate(),True)
 
