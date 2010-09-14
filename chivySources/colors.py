@@ -7,7 +7,9 @@ colors = {
         "white":(255,255,255),
         "black":(0,0,0),
         "purple":(160,32,240),
-        "cyan":(0,255,255)}
+        "cyan":(0,255,255),
+        "pink":(255,75,253),
+        "darkgreen":(39,92,0)}
 
 def htmlColor(colorName):
     r,g,b = colors[colorName]

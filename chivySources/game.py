@@ -798,6 +798,7 @@ class Game(object):
     board - Board
     players - dictionary  id -> Player
     time - in-game time
+    pointLimit - if any of players reaches this number of points, the game ends.
     """
     def _setAttr(self,kwargs,attrName,default):
         if attrName in kwargs.keys():
@@ -809,16 +810,21 @@ class Game(object):
         """Creates new Game.
         Possible kwargs:
         board - Board to be used in this game.
-        players - Players to play the game (list of Players)."""
+        players - Players to play the game (list of Players).
+        pointLimit - point limit"""
         self.time = 0
-        self._setAttr(kwargs,"board",Board())
-        self._setAttr(kwargs,"players",{})
+        self.ended = False
+        self._setAttr(kwargs, "board", Board())
+        self._setAttr(kwargs, "players", {})
+        self._setAttr(kwargs, "pointLimit", config.points);
 
     def update(self,dt):
         self.time += dt
         self.board.update(self.time)
         for p in self.players.values():
             p.update(self.time)
+            if p.score >= self.pointLimit:
+                self.ended = True
         oooMen = [o for p in self.players.values() for o in p.alive ]
         for man in oooMen:
             for other in oooMen:
@@ -862,13 +868,13 @@ class Game(object):
                 board.loadFromXml(config.boardFilename)
             else:
                 board.generateBoard(config.tiles, tileNumber=config.tileNumber, teleports=config.teleports, seed=random.random())
-        g = Game(board=board)
+        g = Game(board=board, pointLimit=config.points)
         if players is None:
             players = config.players
         for p in players:
             if p["playing"]:
                 g.addPlayer(p["name"], p["color"])
-                print("Add {0}:{1}".format(p["name"], p["color"]))
+                #print("Add {0}:{1}".format(p["name"], p["color"]))
         return g
 
 if __name__ == "__main__":

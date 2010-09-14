@@ -239,3 +239,15 @@ msgstr "fioletowy"
 
 msgid "cyan"
 msgstr "błękitny"
+
+msgid "pink"
+msgstr "różowy"
+
+msgid "darkgreen"
+msgstr "ciemnozielony"
+
+msgid "Point limit: "
+msgstr "Limit punktów: "
+
+msgid "GAME OVER"
+msgstr "KONIEC GRY"

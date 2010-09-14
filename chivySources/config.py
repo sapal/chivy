@@ -19,6 +19,7 @@ class Config(object):
     userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames',
             'screenSize', 'fullScreen',  'players', 'host', 'serverAddress', 'botNames',
             'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
+            'minPoints', 'maxPoints', 'points',
             'boardFilename', 'minTileNumber', 'maxTileNumber', 'tileNumber', 
             'tiles', 'minTeleports', 'maxTeleports', 'teleports', 'minItemNumber',
             'maxItemNumber', 'itemNumber']
@@ -89,6 +90,11 @@ class Config(object):
 
     """Server address:"""
     serverAddress = "localhost"
+
+    """Point limit:"""
+    minPoints = 10
+    maxPoints = 400
+    points = 100
 
     """Number of bots:"""
     minBots = 0

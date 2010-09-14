@@ -27,7 +27,7 @@ dist/Chivy_${VERSION}-1_all.deb: chivy.py ${SOURCES} ${DATA} man/man6/chivy.6.gz
 	#mkdir -p deb/usr/share/icons/hicolor/scalable/apps
 	mkdir -p deb/usr/share/app-install/icons/
 	mkdir -p deb/usr/share/pixmaps
-	cp chivy.py chivySources -R deb/usr/share/games/Chivy/
+	cp chivy.py chivySources images translations tiled levels fonts -R deb/usr/share/games/Chivy/
 	cp man/man6/chivy.6.gz deb/usr/share/man/man6/
 	#cp images/icon.svg deb/usr/share/icons/hicolor/scalable/apps/chivy.svg
 	cp images/icon.svg deb/usr/share/app-install/icons/chivy.svg

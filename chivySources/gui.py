@@ -28,7 +28,7 @@ def initialize():
         w,h = cocos.director.director.get_window_size()
         config.screenSize = w,h
     pyglet.font.add_directory(config.fontsDir)
-    BoardSprite.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword"])
+    BoardSprite.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword", "scoresbg"])
     BoardSprite.loadSpritesRegex("tile.*")
     BoardSprite.loadSpritesRegex("teleport.*")
     BoardSprite.loadSpritesRegex("OooMan.*")
@@ -112,15 +112,37 @@ class HudLayer(cocos.layer.Layer):
         self.client = client
         self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=200),format='FPS: %(fps).2f')
         self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=config.screenSize[1])
+        self.endScores = HTMLLabel(multiline=True, width=8*config.spriteSize, anchor_y='center', anchor_x='center', x=config.screenSize[0]//2, y=config.screenSize[1]//2, dpi=150)
+
+    def drawScoresBackground(self, x, y, height, opacity=0.9):
+        sprite = BoardSprite("scoresbg")
+        sprite.clear()
+        sprite.position = x/config.spriteSize, y/config.spriteSize
+        sprite.scale = 1.5*height/(sprite.height*config.spriteSize) 
+        sprite.opacity = opacity
+        sprite.draw()
 
     def drawScores(self):
-        txt = ["<b><font face='Edmunds' size=6>"+_("Scores")+"</font><br/></b>"]
-        for p in self.client.game.players.values():
-            txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
-        txt = u"".join(txt)
-        if self.scores.text != txt:
-            self.scores.text = unicode(txt)
-        self.scores.draw()
+        if not self.client.game.ended:
+            txt = ["<b><font face='Edmunds' size=6>"+_("Scores")+"</font><br/></b>"]
+            for p in self.client.game.players.values():
+                txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
+            txt = u"".join(txt)
+            if self.scores.text != txt:
+                self.scores.text = unicode(txt)
+            self.drawScoresBackground( self.scores.x+self.scores.content_width//2, self.scores.y-self.scores.content_height//2, self.scores.content_height,0.5)
+            self.scores.draw()
+        else:
+            if self.endScores.text == "":
+                txt = ["<center><b><font face='Edmunds' size=7>"+_("GAME OVER")+"</font><br/></b><font face='Edmunds' size=7 color='#ff9e13'>"+_("Scores")+"</font><br/>"]
+                idx = 0
+                for p in sorted(self.client.game.players.values(), key=lambda x: -x.score):
+                    txt.append(u"<b><font face='Edmunds' size={size} color='{color}'>{name}: {score}</font></b><br/>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score, size=max(6-idx,3)))
+                    idx += 1
+                txt = u"".join(txt+["</center>"])
+                self.endScores.text = unicode(txt)
+            self.drawScoresBackground(self.endScores.x, self.endScores.y, self.endScores.content_height)
+            self.endScores.draw()
 
     def draw(self):
         gl.glPushMatrix()

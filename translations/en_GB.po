@@ -215,3 +215,9 @@ msgstr ""
 #: tmx2brd.py:96
 msgid "Usage: {0} someBoard.tmx"
 msgstr "Usage: {0} someBoard.tmx"
+
+msgid "Point limit: "
+msgstr "Point limit: "
+
+msgid "darkgreen"
+msgstr "dark green"

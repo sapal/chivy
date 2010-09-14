@@ -55,11 +55,9 @@ class GameMenu(menu.Menu):
 
         items = []
 
+        items.append(IntegerMenuItem(_('Point limit: '), self.onPointsChange, config.minPoints, config.maxPoints, 10, config.points))
+
         items.append(IntegerMenuItem(_('Items: '), self.onItemsChange, config.minItemNumber, config.maxItemNumber, 1, config.itemNumber))
-
-        items.append(IntegerMenuItem(_('Bots: '), self.onBotsChange, config.minBots, config.maxBots, 1, config.bots))
-
-        items.append(IntegerMenuItem(_('Bot level: '), self.onBotSpeedChange, config.minBotSpeed, config.maxBotSpeed, 1, config.botSpeed))
 
         self.createBoardMenu()
         items.append(self.boardMenu)
@@ -77,10 +75,8 @@ class GameMenu(menu.Menu):
 
         createMenuLook(self, items)
 
-    def onBotSpeedChange(self, value):
-        config.botSpeed = value
-    def onBotsChange(self, value):
-        config.bots = value
+    def onPointsChange(self, value):
+        config.points = value
 
     def createBoardMenu(self):
         self.boardList = [ _("Generate Board") ]
@@ -237,9 +233,19 @@ class PlayerMenu(menu.Menu):
         self.playerPlaying = MultipleMenuItem(_("    Playing: "), self.onPlayerPlayingChange, [_("No"), _("Yes")], int(config.players[0]["playing"]))
         items.append(self.playerPlaying)
 
+        items.append(IntegerMenuItem(_('Bots: '), self.onBotsChange, config.minBots, config.maxBots, 1, config.bots))
+
+        items.append(IntegerMenuItem(_('Bot level: '), self.onBotSpeedChange, config.minBotSpeed, config.maxBotSpeed, 1, config.botSpeed))
+
         items.append(MenuItem(_("Back"), self.on_quit))
 
         createMenuLook(self, items)
+
+    def onBotSpeedChange(self, value):
+        config.botSpeed = value
+
+    def onBotsChange(self, value):
+        config.bots = value
 
     def onPlayerChange(self, idx):
         self.playerName.value = unicode(config.players[idx]["name"],"utf-8")
