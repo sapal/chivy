@@ -593,9 +593,9 @@ class MultipleMenuItem( MenuItem ):
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.LEFT:
-            self.idx = max(0, self.idx-1)
+            self.idx = (self.idx+len(self.items)-1)%len(self.items)
         elif symbol in (key.RIGHT, key.ENTER):
-            self.idx = min(len(self.items)-1, self.idx+1)
+            self.idx = (self.idx+1)%len(self.items)
 
         if symbol in (key.LEFT, key.RIGHT, key.ENTER):
             self.update()
@@ -620,7 +620,11 @@ class IntegerMenuItem(MenuItem):
     def getValue(self):
         return self._value
     def setValue(self, value):
-        self._value = max(min(value, self.maxValue), self.minValue)
+        if value < self.minValue:
+            value = self.maxValue
+        if value > self.maxValue:
+            value = self.minValue
+        self._value = value
     value = property(getValue, setValue)
 
     def on_key_press(self, symbol, modifiers):
