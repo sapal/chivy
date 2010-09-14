@@ -32,7 +32,7 @@ class ClientChannel(Channel):
 
     def Network_requestPlayers(self,data):
         players = data["players"]
-        print(_("New players: {0}").format(" ".join([p["name"] for p in players])))
+        print(_(u"New players: {0}").format(u" ".join([unicode(p["name"],"utf-8") for p in players])))
         playersId = []
         for p in players:
             playerId = self.game.addPlayer(name=p["name"],color=p["color"])
