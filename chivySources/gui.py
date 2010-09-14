@@ -302,6 +302,12 @@ class InputLayer(cocos.layer.Layer):
         rem = [ k for k in self.playersInput.keys() if k not in controls]
         for k in rem:
             del self.playersInput[k]
+
+        for p in controls:
+            b = keyBindings.preconfigured[self.client.controller.game.players[p].prefferedKeybindings]
+            if p not in self.playersInput and self.bindingOk(b):
+                self.playersInput[p] = PlayerControl(self.client.controller, p, b)
+
         bindings = [ b for b in keyBindings.preconfigured if self.bindingOk(b) ]
         idx = 0
         for p in controls:
@@ -313,7 +319,7 @@ class InputLayer(cocos.layer.Layer):
 
     def bindingOk(self,binding):
         for i in self.playersInput.values():
-            b = i.keyBinding
+            b = i.keyBindings
             for k in b:
                 if k in binding:
                     return False

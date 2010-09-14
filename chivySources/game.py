@@ -724,14 +724,16 @@ class Player(object):
     oooMen - list of player's OooMans
     activeOooMan
     color - player's color (string)
+    prefferedKeybindings
     """
-    def __init__(self,board,color="red",name=""):
+    def __init__(self,board,color="red",name="", prefferedKeybindings=0):
         self.name = name
         self.board = board
         self.oooMen = []
         self.color = color
         self.activeOooMan = None
         self.score = 0
+        self.prefferedKeybindings = prefferedKeybindings
         self.actions = {
                 "goNorth": (self.addAction, {'kind':ActionFactory.GO_NORTH}),
                 "goWest": (self.addAction, {'kind':ActionFactory.GO_WEST}),
@@ -833,9 +835,9 @@ class Game(object):
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
 
-    def addPlayer(self, name=None, color=None):
+    def addPlayer(self, name=None, color=None, prefferedKeybindings=0):
         """Returns created player id.
-        name = None or color = None indicates that a random one
+        name = None, color = None indicates that a random one
         should be used."""
         playerId = 0
         while playerId in self.players:
@@ -844,7 +846,7 @@ class Game(object):
             color = random.choice([ k for k in colors.colors.keys() if k not in [p.color for p in self.players.values()] ])
         if name is None:
             name = random.choice([ n for n in config.samplePlayerNames if n not in [p.name for p in self.players.values()] ])
-        self.players[playerId] = Player(self.board, color, name)
+        self.players[playerId] = Player(self.board, color, name, prefferedKeybindings)
         return playerId
 
     @staticmethod
@@ -873,7 +875,7 @@ class Game(object):
             players = config.players
         for p in players:
             if p["playing"]:
-                g.addPlayer(p["name"], p["color"])
+                g.addPlayer(p["name"], p["color"], p["prefferedKeybindings"])
                 #print("Add {0}:{1}".format(p["name"], p["color"]))
         return g
 

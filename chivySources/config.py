@@ -16,7 +16,7 @@ class Config(object):
     version = "0.2"
 
     """Configuration, that should be saved and loaded:"""
-    userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames',
+    userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames', 'userLevelsDir',
             'screenSize', 'fullScreen',  'players', 'host', 'serverAddress', 'botNames',
             'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
             'minPoints', 'maxPoints', 'points',
@@ -42,8 +42,10 @@ class Config(object):
     levelsDir = codeDir+".."+os.sep+"levels"+os.sep
     """Fonts directory:"""
     fontsDir = codeDir+".."+os.sep+"fonts"+os.sep
-    """User directory:"""
+    """User's directory:"""
     userDir = os.path.expanduser("~"+os.sep+".Chivy"+os.sep)
+    """User's levels directory:"""
+    userLevelsDir = userDir + "levels" + os.sep
 
     """Tiled directory:"""
     tiledDir = codeDir+".."+os.sep+"tiled"+os.sep
@@ -80,10 +82,10 @@ class Config(object):
             self.playing = playing
 
     """Players: (list of dict with keys: name(stirng), color(string), playing(bool) )"""
-    players = [ {"name":"Michał", "color":"green", "playing":True}, 
-                {"name":"Ewa", "color":"red", "playing":True}, 
-                {"name":"Szymon", "color":"blue", "playing":False}, 
-                {"name":"Bob", "color":"black", "playing":False}]
+    players = [ {"name":"Michał", "color":"green", "prefferedKeybindings":0, "playing":True}, 
+                {"name":"Ewa", "color":"red", "prefferedKeybindings":1, "playing":True}, 
+                {"name":"Szymon", "color":"blue", "prefferedKeybindings":2, "playing":False}, 
+                {"name":"Bob", "color":"black", "prefferedKeybindings":3, "playing":False}]
 
     """Host:"""
     host = "localhost"

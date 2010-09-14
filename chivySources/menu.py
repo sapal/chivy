@@ -78,11 +78,20 @@ class GameMenu(menu.Menu):
     def onPointsChange(self, value):
         config.points = value
 
+    def addBoardFiles(self, directory):
+        try:
+            for f in sorted(os.listdir(directory)):
+                if re.match(".*\\.brd$", f):
+                    self.boardList.append(f[:-4])
+                    self.boardFilenames.append(directory+f)
+        except OSError,e:
+            print(e)
+
     def createBoardMenu(self):
+        self.boardFilenames = [None]
         self.boardList = [ _("Generate Board") ]
-        for f in sorted(os.listdir(config.levelsDir)):
-            if re.match(".*\\.brd$", f):
-                self.boardList.append(f[:-4])
+        self.addBoardFiles(config.levelsDir)
+        self.addBoardFiles(config.userLevelsDir)
         idx = 0
         if config.boardFilename:
             try:
@@ -98,10 +107,7 @@ class GameMenu(menu.Menu):
                 activateItem(it)
             else:
                 deactivateItem(it)
-        if idx == 0:
-            config.boardFilename = None
-        else:
-            config.boardFilename = config.levelsDir + self.boardList[idx] + ".brd"
+        config.boardFilename = self.boardFilenames[idx]
     
     def onItemsChange(self, value):
         config.itemNumber = value
