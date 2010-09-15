@@ -154,26 +154,48 @@ class HudLayer(cocos.layer.Layer):
         gl.glPopMatrix()
 
 class BoardLayer(cocos.layer.Layer):
-    def __init__(self, client):
+    """
+    position = (x,y) - position of center of the board layer on screen.
+    dimensions = (width,height) - width an height of the board layer on screen.
+    """
+    def __init__(self, controller, dimensions=None):
+        """Passing None for position or dimensions defaults to screen center and
+        whole screen"""
         super(BoardLayer, self).__init__()
-        self.client = client
-        bw, bh = self.game.board.width, self.game.board.height
-        self.cameraPosition = bw/2, bh/2
+        self.controller = controller
+        self.setCameraPosition()
         w,h = config.screenSize
-        s = config.spriteSize
-        self.cameraZoom = min(w/(bw*s),h/(bh*s))*0.95
+        if dimensions is None: dimensions = w, h
+        self.dimensions = dimensions
+        self.setCameraZoom()
 
     @property
+    def width(self):
+        return self.dimensions[0]
+    @property
+    def height(self):
+        return self.dimensions[1]
+    @property
     def game(self):
-        return self.client.game
+        return self.controller.game
+
+    def setCameraPosition(self):
+        bw, bh = self.game.board.width, self.game.board.height
+        self.cameraPosition = bw/2, bh/2
+    def setCameraZoom(self):
+        bw, bh = self.game.board.width, self.game.board.height
+        s = config.spriteSize
+        self.cameraZoom = min(self.width/(bw*s), self.height/(bh*s))*0.95
 
     def toScreenCoords(self,pos):
         x, y = pos
         cx, cy = self.cameraPosition
-        w,h = config.screenSize
+        w,h = self.dimensions
         s = config.spriteSize
-        return (x-cx+0.5)*self.cameraZoom+w/s/2, (y-cy+0.5)*self.cameraZoom+h/s/2
-    
+        res =  (x-cx+0.5)*self.cameraZoom+w/s/2, (y-cy+0.5)*self.cameraZoom+h/s/2
+        #print("toScreenCoords({0}):{1}\tself.height:{2}".format(pos, res,self.height/s))
+        return res
+     
     def renderSprite(self, sprite):
         x, y = sprite.position
         scale = sprite.scale
@@ -281,6 +303,8 @@ class BoardLayer(cocos.layer.Layer):
         gl.glPushMatrix()
         self.transform()
 
+        self.setCameraZoom()
+        self.setCameraPosition()
         rabbyt.clear((1,1,1))
         self.drawBoard()
         self.drawOooMen()
@@ -338,10 +362,8 @@ class Client(cocos.scene.Scene):
 
         self.controller = controller
         controller.clients.append(self)
-        #super(Client, self).__init__(cocos.layer.util_layers.ColorLayer(255,255,255,255),BoardLayer(self),HudLayer(self),InputLayer(self))
         self.inputLayer = InputLayer(self)
-        #print(self.inputLayer.controlPlayers)
-        super(Client, self).__init__(BoardLayer(self),HudLayer(self),self.inputLayer)
+        super(Client, self).__init__(BoardLayer(self.controller), HudLayer(self), self.inputLayer)
         self.schedule(self.update)
         self.killController = killController
 

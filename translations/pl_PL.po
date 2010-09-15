@@ -251,3 +251,4 @@ msgstr "Limit punktów: "
 
 msgid "GAME OVER"
 msgstr "KONIEC GRY"
+

@@ -14,6 +14,7 @@ import server
 import keyBindings
 import controller
 import game
+import gui
 import colors
 import pyglet
 import rabbyt
@@ -50,8 +51,9 @@ def createMenuLook(myMenu,items):
 
 
 class GameMenu(menu.Menu):
-    def __init__(self):
-        super(GameMenu, self).__init__('Game Options')
+    def __init__(self, background):
+        super(GameMenu, self).__init__(_('Game Options'))
+        self.background = background
 
         items = []
 
@@ -100,6 +102,13 @@ class GameMenu(menu.Menu):
                 config.boardFilename = None
         self.boardMenu = MultipleMenuItem(_("Board: "), self.onBoardChange, self.boardList, idx)
 
+    def updateBoard(self):
+        g = game.Game.gameFromConfig()
+        g.players = {}
+        g.board.items = g.board.teleports
+        g.board.itemNumber = 0
+        self.background.setBoard(g.board)
+
     def onBoardChange(self, idx):
         genBoardItems = (self.teleports, self.tilesNumber, self.tilesMenu)
         for it in genBoardItems:
@@ -108,6 +117,7 @@ class GameMenu(menu.Menu):
             else:
                 deactivateItem(it)
         config.boardFilename = self.boardFilenames[idx]
+        self.updateBoard()
     
     def onItemsChange(self, value):
         config.itemNumber = value
@@ -128,7 +138,12 @@ class GameMenu(menu.Menu):
     def onTeleportsChange(self, value):
         config.teleports = value
 
+    def on_enter(self):
+        self.updateBoard()
+        super(GameMenu, self).on_enter()
+
     def on_quit(self):
+        self.background.setImage(None)
         self.parent.switch_to(0)
 
 class ConnectingMenu(menu.Menu):
@@ -309,14 +324,39 @@ class MainMenu(menu.Menu):
         self.parent.switch_to(2)
 
 class BackgroundLayer(layer.base_layers.Layer):
+    def __init__(self):
+        super(BackgroundLayer, self).__init__()
+        self.image = None
+        self.boardLayer = None
+        g = game.Game()
+        self.controller = controller.Controller(g)
+
+    def setBoard(self, board):
+        if not self.boardLayer:
+            w,h = config.screenSize
+            lw,lh = w/2,h/2
+            self.boardLayer = gui.BoardLayer(self.controller,(lw,lh))
+            self.boardLayer.position = (w-lw,(h-lh)/2)
+        self.controller.game.board = board
+
+    def setImage(self, image):
+        self.boardLayer = None
+        self.image = image
+
     def draw(self):
         gl.glPushMatrix()
         self.transform()
-        rabbyt.clear((1,1,1))
+        if self.boardLayer:
+            self.boardLayer.draw()
+        else:
+            rabbyt.clear((1,1,1))
+            if self.image:
+                pass #TODO
         gl.glPopMatrix()
 
 def getMenuScene():
     s = scene.Scene()
-    s.add(BackgroundLayer())
-    s.add(layer.base_layers.MultiplexLayer(MainMenu(), PlayerMenu(), GameMenu(), NetworkGameClientMenu(), ServerMenu(), ConnectingMenu()), z=1)
+    b = BackgroundLayer()
+    s.add(b)
+    s.add(layer.base_layers.MultiplexLayer(MainMenu(), PlayerMenu(), GameMenu(b), NetworkGameClientMenu(), ServerMenu(), ConnectingMenu()), z=1)
     return s
