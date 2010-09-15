@@ -131,12 +131,15 @@ class GameMenu(menu.Menu):
                 self.tilesMenu.value = config.tiles
                 return
         config.tiles = tiles
+        self.updateBoard()
 
     def onTileNumberChange(self, value):
         config.tileNumber = value
+        self.updateBoard()
 
     def onTeleportsChange(self, value):
         config.teleports = value
+        self.updateBoard()
 
     def on_enter(self):
         self.updateBoard()
