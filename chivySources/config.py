@@ -17,7 +17,7 @@ class Config(object):
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'samplePlayerNames', 'userLevelsDir',
-            'screenSize', 'fullScreen',  'players', 'host', 'serverAddress', 'botNames',
+            'fullScreen', 'windowedScreenSize',  'players', 'host', 'serverAddress', 'botNames',
             'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
             'minPoints', 'maxPoints', 'points',
             'boardFilename', 'minTileNumber', 'maxTileNumber', 'tileNumber', 
@@ -66,6 +66,9 @@ class Config(object):
     #screenSize = 1024,756
     screenSize = 800,600
     #screenSize = 640,480
+
+    """Windowed screen size:"""
+    windowedScreenSize = 800,600
 
     """Full screen mode:"""
     fullScreen = True
@@ -130,6 +133,11 @@ class Config(object):
     itemNumber = 4
 
     @staticmethod
+    def update():
+        if not Config.fullScreen:
+            Config.screenSize = Config.windowedScreenSize
+
+    @staticmethod
     def saveConfig():
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
@@ -159,6 +167,7 @@ class Config(object):
         for c in Config.userConfig:
             if c in config:
                 setattr(Config, c, config[c])
+        Config.update()
     #print(codeDir)
 
 Config.loadConfig()

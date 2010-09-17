@@ -398,15 +398,8 @@ class SpeedBoots(OwnedItem):
         if "speed" in kwargs:
             self.speed = kwargs["speed"]
 
-    def owner_update(self, update, *args, **kwargs):
-        a = self.owner.actionList
-        if a and "speed" in dir(a[0]):
-            s = a[0].speed
-            a[0].speed= self.speed
-        res = update(*args, **kwargs)
-        if a and "speed" in dir(a[0]):
-            a[0].speed = s
-        return res
+    def owner_speed(self, speed, *args, **kwargs):
+        return self.owner.player.speed*self.speed
 
 class Shield(OwnedItem):
     def __init__(self, position, activeTime=30, owner=None, *args, **kwargs):
@@ -432,16 +425,22 @@ class OooManAction(object):
     def __init__(self,oooMan,kind):
         """All derived classes should have constructor with this three parameters first."""
         self.startTime = 0
+        self.lastUpdate = 0
         self.progress = 0.0
-        self.speed = 1.0
         self.oooMan = oooMan
         self.ended = False
         self.started = False
         self.kind = kind
         self.discarded = False
 
+    @property
+    def speed(self):
+        return self.oooMan.speed
+
     def start(self,time):
         self.startTime = time
+        self.lastUpdate = time
+        self.progress = 0.0
         self.started = True
         if OooManAction.discardImpossible and not self.canPerform():
             self.discard()
@@ -449,8 +448,9 @@ class OooManAction(object):
     def update(self,time):
         """This method should return if update was performed."""
         if self.started:
-            dt = time - self.startTime
-            self.progress = min(1.0,dt*self.speed)
+            dt = time - self.lastUpdate
+            self.progress = min(1.0,self.progress + dt*self.speed)
+            self.lastUpdate = time
         if self.progress == 1.0 and not self.ended:
             self.end(time)
         if (not self.started) or self.ended or (not self.canPerform()):
@@ -652,6 +652,11 @@ class OooMan(GameObject):
     def __str__(self):
         return str(self.position)+" "+self.kind
     
+    @property
+    @itemAffected
+    def speed(self):
+        return self.player.speed
+    
     @itemAffected
     def collide(self,gameObject):
         if gameObject is self:
@@ -726,8 +731,9 @@ class Player(object):
     activeOooMan
     color - player's color (string)
     prefferedKeybindings
+    speed - player's base speed
     """
-    def __init__(self,board,color="red",name="", prefferedKeybindings=0, isBot=False):
+    def __init__(self,board,color="red",name="", prefferedKeybindings=0, isBot=False, speed=1.0):
         self.name = name
         self.board = board
         self.oooMen = []
@@ -735,6 +741,7 @@ class Player(object):
         self.isBot = isBot
         self.activeOooMan = None
         self.score = 0
+        self.speed = speed
         self.prefferedKeybindings = prefferedKeybindings
         self.actions = {
                 "goNorth": (self.addAction, {'kind':ActionFactory.GO_NORTH}),
@@ -793,6 +800,7 @@ class Player(object):
             self.activeOooMan.removeAction()
 
     def sendInput(self,action):
+        #print("input:{action}".format(action=action))
         f,kwargs = self.actions[action]
         f(**kwargs)
 

@@ -110,8 +110,8 @@ class NetworkedController(Controller,ConnectionListener):
             self.controlPlayers.extend(data["players"])
             for c in self.clients:
                 c.controlPlayers = self.controlPlayers
-            if self.gameReady and not self.playersReady and self.onSuccess:
-                self.onSuccess()
+            #if self.gameReady and not self.playersReady and self.onSuccess:
+            #    self.onSuccess()
             self.playersReady = True
 
     def sendInputDt(self, dt, data, time):
@@ -147,7 +147,7 @@ class NetworkedController(Controller,ConnectionListener):
         self.lastGameUpdate = time()
         if not self.gameReady and self.playersReady and self.onSuccess:
             self.onSuccess()
-        self.gameReady = True
+            self.gameReady = True
 
     def Network_lightGameUpdate(self,data):
         self._game.lightUnpickle(data['game'])
