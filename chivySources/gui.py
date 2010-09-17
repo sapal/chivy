@@ -170,7 +170,7 @@ class HudLayer(cocos.layer.Layer):
                 txt = ["<center><b><font face='Edmunds' size=7>"+_("GAME OVER")+"</font><br/></b><font face='Edmunds' size=7 color='#ff9e13'>"+_("Scores")+"</font><br/>"]
                 idx = 0
                 for p in sorted(self.client.game.players.values(), key=lambda x: -x.score):
-                    txt.append(u"<b><font face='Edmunds' size={size} color='{color}'>{name}: {score}</font></b><br/>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score, size=max(6-idx,3)))
+                    txt.append(u"<b><font face='Edmunds' size={size} color='{color}'>{name}: {score}</font></b><br/>".format(color=colors.htmlColor(p.color, onWhite=True), name=unicode(p.name,"utf-8"), score=p.score, size=max(6-idx,3)))
                     idx += 1
                 txt = u"".join(txt+["</center>"])
                 self.endScores.text = unicode(txt)

@@ -259,7 +259,7 @@ msgid "None"
 msgstr "Wcale"
 
 msgid "Few"
-msgstr "Niedużo"
+msgstr "Mało"
 
 msgid "Average"
 msgstr "Średnio"
