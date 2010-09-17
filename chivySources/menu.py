@@ -390,7 +390,7 @@ class BackgroundLayer(layer.base_layers.Layer):
             if self.image:
                 sprite = gui.BoardSprite(self.image)
                 w,h = config.screenSize
-                sprite.scaleToScreenHeight(h/2)
+                sprite.scaleToScreenHeight(h/3)
                 sw,sh = sprite.screenSize
                 sprite.setScreenPosition((w*3/4, h/2))
                 sprite.draw()

@@ -117,7 +117,7 @@ class Config(object):
     tileNumber = 100
 
     """Tiles:"""
-    tiles = "TT++LI"
+    tiles = "++TTIL"
 
     """Number of teleports:"""
     minTeleports = 0
