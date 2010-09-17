@@ -16,10 +16,12 @@ import controller
 import game
 import gui
 import colors
+import kinds
 import pyglet
 import rabbyt
 import re
 import os
+import random
 from translation import gettext as _
 
 def deactivateItem(item):
@@ -239,8 +241,9 @@ class ServerMenu(menu.Menu):
         config.serverAddress = value
 
 class PlayerMenu(menu.Menu):
-    def __init__(self):
+    def __init__(self, background):
         super(PlayerMenu, self).__init__(_('Players'))
+        self.background = background
         items = []
 
         self.choosePlayer = MultipleMenuItem("", self.onPlayerChange, [_("Player {0}").format(i+1) for i in range(len(config.players)) ], 0)
@@ -265,6 +268,10 @@ class PlayerMenu(menu.Menu):
 
         createMenuLook(self, items)
 
+    def updateImage(self):
+        idx = self.choosePlayer.idx
+        self.background.setImage("player{0}controls-base".format(config.players[idx]["prefferedKeybindings"]))
+
     def onBotSpeedChange(self, value):
         config.botSpeed = value
 
@@ -280,6 +287,7 @@ class PlayerMenu(menu.Menu):
         else:
             self.playerPlaying.idx = 0
         self.playerPlaying.update()
+        self.updateImage()
 
     def onPlayerNameChange(self, value):
         config.players[self.choosePlayer.idx]["name"] = value.encode("utf-8")
@@ -291,12 +299,18 @@ class PlayerMenu(menu.Menu):
         value = (idx == 1)
         config.players[self.choosePlayer.idx]["playing"] = value
     
+    def on_enter(self):
+        super(PlayerMenu, self).on_enter()
+        self.updateImage()
+
     def on_quit(self):
+        self.background.setImage(None)
         self.parent.switch_to(0)
 
 class MainMenu(menu.Menu):
-    def __init__(self):
+    def __init__(self, background):
         super(MainMenu, self).__init__(_('Chivy'))
+        self.background = background
         items = []
         items.append(MenuItem(_('Start Local Game'), self.onLocalGame))
         items.append(MenuItem(_('Join Network Game'), self.onNetworkGame))
@@ -313,6 +327,14 @@ class MainMenu(menu.Menu):
 
     def onStartServer(self):
         self.parent.switch_to(4)
+
+    def on_enter(self):
+        super(MainMenu, self).on_enter()
+        #self.background.setImage("OooMan-{color}-{kind}".format(color=random.choice(colors.colors.keys()), kind=random.choice(kinds.CLASSIC.keys())))
+        b = game.Board()
+        b.generateBoard("TT++LI", tileNumber=30)
+        g = game.Game.gameFromConfig(board=b, players=[])
+        self.background.setGame(g, bots=4)
 
     def on_quit(self):
         pyglet.app.exit()
@@ -331,16 +353,26 @@ class BackgroundLayer(layer.base_layers.Layer):
         super(BackgroundLayer, self).__init__()
         self.image = None
         self.boardLayer = None
-        g = game.Game()
-        self.controller = controller.Controller(g)
+        self.controller = controller.Controller(game.Game())
+        self.schedule(self.controller.update)
 
-    def setBoard(self, board):
+    def setGame(self, game, bots=0):
+        self.controller.setGame(game)
+        self.updateBoardLayer()
+        for b in range(bots):
+            self.controller.addBot()
+
+    def updateBoardLayer(self):
         if not self.boardLayer:
             w,h = config.screenSize
             lw,lh = w/2,h/2
             self.boardLayer = gui.BoardLayer(self.controller,(lw,lh))
             self.boardLayer.position = (w-lw,(h-lh)/2)
+
+    def setBoard(self, board):
+        self.setGame(game.Game())
         self.controller.game.board = board
+        self.updateBoardLayer()
 
     def setImage(self, image):
         self.boardLayer = None
@@ -349,17 +381,24 @@ class BackgroundLayer(layer.base_layers.Layer):
     def draw(self):
         gl.glPushMatrix()
         self.transform()
+
         if self.boardLayer:
             self.boardLayer.draw()
         else:
             rabbyt.clear((1,1,1))
             if self.image:
-                pass #TODO
+                sprite = gui.BoardSprite(self.image)
+                w,h = config.screenSize
+                sprite.scaleToScreenHeight(h/2)
+                sw,sh = sprite.screenSize
+                sprite.setScreenPosition((w*3/4, h/2))
+                sprite.draw()
+
         gl.glPopMatrix()
 
 def getMenuScene():
     s = scene.Scene()
     b = BackgroundLayer()
     s.add(b)
-    s.add(layer.base_layers.MultiplexLayer(MainMenu(), PlayerMenu(), GameMenu(b), NetworkGameClientMenu(), ServerMenu(), ConnectingMenu()), z=1)
+    s.add(layer.base_layers.MultiplexLayer(MainMenu(b), PlayerMenu(b), GameMenu(b), NetworkGameClientMenu(), ServerMenu(), ConnectingMenu()), z=1)
     return s

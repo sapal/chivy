@@ -33,6 +33,7 @@ def initialize():
     BoardSprite.loadSpritesRegex("teleport.*")
     BoardSprite.loadSpritesRegex("OooMan.*")
     BoardSprite.loadSpritesRegex("action.*")
+    BoardSprite.loadSpritesRegex("player.*control.*")
     clock.set_fps_limit(50)
     #cocos.director.director.window.set_exclusive_keyboard()
     rabbyt.set_default_attribs()
@@ -68,6 +69,25 @@ class BoardSprite(game.GameObject):
     def __init__(self, name):
         super(BoardSprite, self).__init__()
         self.name = name
+        self.clear()
+
+    def setScreenPosition(self, position):
+        x,y = position
+        s = config.spriteSize
+        self.position = x/s, y/s
+
+    def scaleToScreenHeight(self, height):
+        s = config.spriteSize
+        self.scale = height/(self.height*s)
+    
+    def scaleToScreenWidth(self, width):
+        s = config.spriteSize
+        self.scale = width/(self.width*s)
+
+    @property
+    def screenSize(self):
+        s = config.spriteSize
+        return s*self.width*self.scale, s*self.height*self.scale
 
     def clear(self):
         self.position = (0,0)
@@ -103,7 +123,7 @@ class BoardSprite(game.GameObject):
     def height(self):
         return self.size[1]
     @property
-    def widht(self):
+    def width(self):
         return self.size[0]
 
 class HudLayer(cocos.layer.Layer):

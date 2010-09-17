@@ -49,6 +49,7 @@ class Controller(object):
 
     def update(self,dt):
         self._game.update(dt)
+        self.bots[:] = [ b for b in self.bots if b.playerID in self._game.players ]
         for b in self.bots:
             b.update(dt)
 
