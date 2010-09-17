@@ -89,7 +89,7 @@ class Board(object):
         for teleport in self.teleports:
             t = ET.SubElement(board, "teleport")
             t.set("position", str(teleport.position))
-            t.set("target", str(teleport.position))
+            t.set("target", str(teleport.target))
             t.set("kind", str(teleport.kind))
         tree = ET.ElementTree(board)
         tree.write(fileName,"utf-8")
@@ -110,11 +110,12 @@ class Board(object):
             elif item.tag == "teleport":
                 position = utils.str2tuple(item.get("position", "(0,0)"))
                 target = utils.str2tuple(item.get("target", "(0,0)"))
-                kind = item.get("kind", "item")
-                teleport = Teleport((0,0), "circle")
-                teleport.kind = kind
+                kind = item.get("kind", "teleport-")[9:]
+
+                teleport = Teleport((0,0), kind)
                 teleport.position = position
                 teleport.target = target
+                #print("{2} {0} -> {1} ({3})".format(teleport.position, teleport.target, teleport.kind, item))
                 self.items.append(teleport)
 
     @property

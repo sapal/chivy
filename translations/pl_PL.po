@@ -252,3 +252,18 @@ msgstr "Limit punktów: "
 msgid "GAME OVER"
 msgstr "KONIEC GRY"
 
+msgid "    Walls: "
+msgstr "    Ściany: "
+
+msgid "None"
+msgstr "Wcale"
+
+msgid "Few"
+msgstr "Niedużo"
+
+msgid "Average"
+msgstr "Średnio"
+
+msgid "Many"
+msgstr "Dużo"
+

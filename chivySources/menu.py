@@ -72,12 +72,13 @@ class GameMenu(menu.Menu):
         self.tilesNumber = IntegerMenuItem(_('    Tiles: '), self.onTileNumberChange, config.minTileNumber, config.maxTileNumber, 10, config.tileNumber)
         items.append(self.tilesNumber)
 
-        self.tilesMenu = EntryMenuItem(_('    Tiles kinds: '), self.onTilesChange, config.tiles)
-        items.append(self.tilesMenu)
+        self.createWallsMenu()
+        items.append(self.wallsMenu)
 
         items.append(MenuItem(_('Back'), self.on_quit))
 
         createMenuLook(self, items)
+        self.onBoardChange(self.boardMenu.idx)
 
     def onPointsChange(self, value):
         config.points = value
@@ -91,17 +92,24 @@ class GameMenu(menu.Menu):
         except OSError,e:
             print(e)
 
+    def createWallsMenu(self):
+        self.tilesKindsNames = [ _("None"), _("Few"), _("Average"), _("Many") ]
+        self.tilesKinds = [ "+", "+T", "++TTIL", "+T+TILIL" ]
+        try:
+            idx = self.tilesKinds.index(config.tiles)
+        except:
+            idx = 0
+        self.wallsMenu = MultipleMenuItem(_("    Walls: "), self.onWallsChange, self.tilesKindsNames, idx)
+
     def createBoardMenu(self):
         self.boardFilenames = [None]
         self.boardList = [ _("Generate Board") ]
         self.addBoardFiles(config.levelsDir)
         self.addBoardFiles(config.userLevelsDir)
-        idx = 0
-        if config.boardFilename:
-            try:
-                idx = self.boardList.find(config.boardFilename)
-            except:
-                config.boardFilename = None
+        try:
+            idx = self.boardFilenames.index(config.boardFilename)
+        except:
+            idx = 0
         self.boardMenu = MultipleMenuItem(_("Board: "), self.onBoardChange, self.boardList, idx)
 
     def updateBoard(self):
@@ -112,7 +120,7 @@ class GameMenu(menu.Menu):
         self.background.setBoard(g.board)
 
     def onBoardChange(self, idx):
-        genBoardItems = (self.teleports, self.tilesNumber, self.tilesMenu)
+        genBoardItems = (self.teleports, self.tilesNumber, self.wallsMenu)
         for it in genBoardItems:
             if idx == 0:
                 activateItem(it)
@@ -124,15 +132,8 @@ class GameMenu(menu.Menu):
     def onItemsChange(self, value):
         config.itemNumber = value
 
-    def onTilesChange(self, tiles):
-        #print("Change {0} {1}".format(tiles, self.tilesMenu.value))
-        if not tiles:
-            return
-        for c in tiles:
-            if c not in "TIUL+":
-                self.tilesMenu.value = config.tiles
-                return
-        config.tiles = tiles
+    def onWallsChange(self, idx):
+        config.tiles = self.tilesKinds[idx]
         self.updateBoard()
 
     def onTileNumberChange(self, value):
