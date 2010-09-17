@@ -6,7 +6,8 @@ import game
 from config import Config as config
 from generateColors import replaceColor
 
-def concatenate(imageList, rotate=False):
+def concatenate(imageList, rotate=False, addDot=False):
+    dot = Image.open(config.imagesDir + "dot.png")
     images = map(Image.open, imageList)
     if rotate:
         w = 2*sum(i.size[0] + i.size[1] for i in images)
@@ -21,20 +22,24 @@ def concatenate(imageList, rotate=False):
             for r in range(4):
                 img = i.rotate(90*r)
                 result.paste(img, (x,0))
-                x += i.size[0]
+                if addDot:
+                    result.paste(dot, (x + (img.size[0]-dot.size[0])//2, (h-dot.size[1])//2))
+                x += img.size[0]
         else:
             result.paste(i, (x, 0))
+            if addDot:
+                result.paste(dot, (x + (img.size[0]-dot.size[0])//2, (h-dot.size[1])//2))
             x += i.size[0]
     return result
 
-def tile(nameList, output, rotate=False):
+def tile(nameList, output, rotate=False, addDot=False):
     imageList = [ config.imagesDir + name for name in nameList]
-    concatenate(imageList, rotate).save(config.tiledDir + output)
+    concatenate(imageList, rotate, addDot).save(config.tiledDir + output)
 
 if __name__ == "__main__":
     tile(["teleport-{0}128.png".format(kind) for kind in sorted(kinds.CLASSIC.keys())], "teleport-tiles.png" )
     replaceColor(config.tiledDir + "teleport-tiles.png", (96,96,96), config.tiledDir + "teleport-tiles.png", (255,0,0))
-    tile(["tile{0}128.png".format(kind) for kind in sorted(game.BoardTile.kinds.keys())], "tile-tiles.png", True )
+    tile(["tile{0}128.png".format(kind) for kind in sorted(game.BoardTile.kinds.keys())], "tile-tiles.png", True, True )
 
 
 
