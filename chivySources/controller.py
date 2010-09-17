@@ -31,7 +31,7 @@ class Controller(object):
         """Passing None for name or color will result in random one."""
         if name is None:
             name = self.randomBotNames(1)[0]
-        id = self.game.addPlayer(name,color)
+        id = self.game.addPlayer(name,color, isBot=True)
         self.bots.append(ai.ProximityAI(self, id))
 
     def setGame(self,game):

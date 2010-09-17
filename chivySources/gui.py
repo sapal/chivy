@@ -259,7 +259,7 @@ class BoardLayer(cocos.layer.Layer):
             a = oooMan.actionList[0]
             if a.started and not a.ended:
                 s.opacity = s.scale = 2* (abs(0.5 - a.progress))
-        if oooMan is player.activeOooMan:
+        if oooMan is player.activeOooMan and not player.isBot:
             g = BoardSprite("glow")
             g.clear()
             g.position = s.position

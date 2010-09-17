@@ -726,11 +726,12 @@ class Player(object):
     color - player's color (string)
     prefferedKeybindings
     """
-    def __init__(self,board,color="red",name="", prefferedKeybindings=0):
+    def __init__(self,board,color="red",name="", prefferedKeybindings=0, isBot=False):
         self.name = name
         self.board = board
         self.oooMen = []
         self.color = color
+        self.isBot = isBot
         self.activeOooMan = None
         self.score = 0
         self.prefferedKeybindings = prefferedKeybindings
@@ -835,7 +836,7 @@ class Game(object):
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
 
-    def addPlayer(self, name=None, color=None, prefferedKeybindings=0):
+    def addPlayer(self, name=None, color=None, prefferedKeybindings=0, isBot=False):
         """Returns created player id.
         name = None, color = None indicates that a random one
         should be used."""
@@ -846,7 +847,7 @@ class Game(object):
             color = random.choice([ k for k in colors.colors.keys() if k not in [p.color for p in self.players.values()] ])
         if name is None:
             name = random.choice([ n for n in config.samplePlayerNames if n not in [p.name for p in self.players.values()] ])
-        self.players[playerId] = Player(self.board, color, name, prefferedKeybindings)
+        self.players[playerId] = Player(self.board, color, name, prefferedKeybindings, isBot)
         return playerId
 
     @staticmethod
