@@ -16,7 +16,7 @@ class Config(object):
     version = "0.3"
 
     """Configuration, that should be saved and loaded:"""
-    userConfig = ['locale', 'imagesDir', 'fontsDir', 'levelsDir', 'spriteSize', 'samplePlayerNames', 'userLevelsDir',
+    userConfig = ['locale', 'samplePlayerNames', 'userLevelsDir',
             'screenSize', 'fullScreen',  'players', 'host', 'serverAddress', 'botNames',
             'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
             'minPoints', 'maxPoints', 'points',

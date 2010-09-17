@@ -11,13 +11,15 @@ colors = {
         "pink":(255,75,253),
         "darkgreen":(39,92,0)}
 
-def htmlColor(colorName):
+def htmlColor(colorName, onWhite=False):
     r,g,b = colors[colorName]
-    if colorName == "white":
+    if onWhite and colorName == "white":
         r,g,b = 190,190,190
     return "#{0:02x}{1:02x}{2:02x}".format(r,g,b)
 
-def rgba(colorName, alpha=255):
+def rgba(colorName, alpha=255, onWhite=False):
     r,g,b = colors[colorName]
+    if onWhite and colorName == "white":
+        r,g,b = 190,190,190
     return (r,g,b,alpha)
 

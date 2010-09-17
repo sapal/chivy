@@ -131,7 +131,8 @@ class HudLayer(cocos.layer.Layer):
         super(HudLayer, self).__init__()
         self.client = client
         self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=200),format='FPS: %(fps).2f')
-        self.scores = HTMLLabel(multiline=True, width=2*config.spriteSize, anchor_y='top', x=10, y=config.screenSize[1])
+        self.scores = Label(text=_("Scores"), font_name="Edmunds", font_size=24, anchor_y='top', x=10, y=config.screenSize[1], color=(0,0,0,255))
+        self.playersLabels = []
         self.endScores = HTMLLabel(multiline=True, width=8*config.spriteSize, anchor_y='center', anchor_x='center', x=config.screenSize[0]//2, y=config.screenSize[1]//2, dpi=150)
 
     def drawScoresBackground(self, x, y, height, opacity=0.9):
@@ -144,14 +145,26 @@ class HudLayer(cocos.layer.Layer):
 
     def drawScores(self):
         if not self.client.game.ended:
-            txt = ["<b><font face='Edmunds' size=6>"+_("Scores")+"</font><br/></b>"]
-            for p in self.client.game.players.values():
-                txt.append(u"<b><font face='Edmunds' size=5 color='{color}'>{name}: {score}</font><br/></b>".format(color=colors.htmlColor(p.color), name=unicode(p.name,"utf-8"), score=p.score))
-            txt = u"".join(txt)
-            if self.scores.text != txt:
-                self.scores.text = unicode(txt)
-            self.drawScoresBackground( self.scores.x+self.scores.content_width//2, self.scores.y-self.scores.content_height//2, self.scores.content_height,0.5)
+            players = list(self.client.game.players.values())
+            while len(self.playersLabels) > len(players):
+                self.playersLabes.pop()
+            while len(self.playersLabels) < len(players):
+                self.playersLabels.append(Label(font_name="Edmunds", font_size=18, anchor_y='top', x=10, bold=True))
+            idx = 0
+            y = self.scores.y - self.scores.content_height
+            w = self.scores.content_width
+            for p in players:
+                label = self.playersLabels[idx]
+                label.y = y
+                label.text = u"{name}: {score}".format(name=unicode(p.name,"utf-8"), score=p.score)
+                label.color = colors.rgba(p.color, onWhite=True)
+                idx += 1
+                y -= label.content_height
+                w = max(w, label.content_width)
+            self.drawScoresBackground( self.scores.x+w//2, (self.scores.y+y)//2, self.scores.y-y, 0.5)
             self.scores.draw()
+            for label in self.playersLabels:
+                label.draw()
         else:
             if self.endScores.text == "":
                 txt = ["<center><b><font face='Edmunds' size=7>"+_("GAME OVER")+"</font><br/></b><font face='Edmunds' size=7 color='#ff9e13'>"+_("Scores")+"</font><br/>"]
