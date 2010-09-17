@@ -845,7 +845,7 @@ class Game(object):
     def sendInput(self,playerId,action):
         self.players[playerId].sendInput(action)
 
-    def addPlayer(self, name=None, color=None, prefferedKeybindings=0, isBot=False):
+    def addPlayer(self, name=None, color=None, prefferedKeybindings=0, isBot=False, speed=1.0):
         """Returns created player id.
         name = None, color = None indicates that a random one
         should be used."""
@@ -856,7 +856,7 @@ class Game(object):
             color = random.choice([ k for k in colors.colors.keys() if k not in [p.color for p in self.players.values()] ])
         if name is None:
             name = random.choice([ n for n in config.samplePlayerNames if n not in [p.name for p in self.players.values()] ])
-        self.players[playerId] = Player(self.board, color, name, prefferedKeybindings, isBot)
+        self.players[playerId] = Player(self.board, color, name, prefferedKeybindings, isBot, speed)
         return playerId
 
     @staticmethod
@@ -885,7 +885,7 @@ class Game(object):
             players = config.players
         for p in players:
             if p["playing"]:
-                g.addPlayer(p["name"], p["color"], p["prefferedKeybindings"])
+                g.addPlayer(p["name"], p["color"], p["prefferedKeybindings"], speed=p["speed"])
                 #print("Add {0}:{1}".format(p["name"], p["color"]))
         return g
 

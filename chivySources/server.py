@@ -36,7 +36,7 @@ class ClientChannel(Channel):
         playersId = []
         for p in players:
             try:
-                playerId = self.game.addPlayer(name=p["name"], color=p["color"], isBot=data["bots"])
+                playerId = self.game.addPlayer(name=p["name"], color=p["color"], isBot=data["bots"], speed=p["speed"])
                 self.playerMap[self].append(playerId)
                 playersId.append(playerId)
             except:

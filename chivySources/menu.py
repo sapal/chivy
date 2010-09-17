@@ -258,6 +258,9 @@ class PlayerMenu(menu.Menu):
         self.playerColor = MultipleMenuItem(_("    Color: "), self.onPlayerColorChange, self.colorNames, self.colors.index(config.players[0]["color"]))
         items.append(self.playerColor)
 
+        self.playerSpeed = IntegerMenuItem(_("    Speed: "), self.onPlayerSpeedChange, 0.3, 3, 0.1, config.players[0]["speed"])
+        items.append(self.playerSpeed)
+
         self.playerPlaying = MultipleMenuItem(_("    Playing: "), self.onPlayerPlayingChange, [_("No"), _("Yes")], int(config.players[0]["playing"]))
         items.append(self.playerPlaying)
 
@@ -272,6 +275,9 @@ class PlayerMenu(menu.Menu):
     def updateImage(self):
         idx = self.choosePlayer.idx
         self.background.setImage("player{0}controls-base".format(config.players[idx]["prefferedKeybindings"]))
+
+    def onPlayerSpeedChange(self, value):
+        config.players[self.choosePlayer.idx]["speed"] = value
 
     def onBotSpeedChange(self, value):
         config.botSpeed = value

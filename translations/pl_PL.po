@@ -267,3 +267,5 @@ msgstr "Średnio"
 msgid "Many"
 msgstr "Dużo"
 
+msgid "    Speed: "
+msgstr "    Szybkość: "

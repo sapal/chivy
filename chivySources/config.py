@@ -13,7 +13,7 @@ class Config(object):
     title = "Chivy"
 
     """Game version:"""
-    version = "0.3"
+    version = "0.4"
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'samplePlayerNames', 'userLevelsDir',
@@ -85,10 +85,10 @@ class Config(object):
             self.playing = playing
 
     """Players: (list of dict with keys: name(stirng), color(string), playing(bool) )"""
-    players = [ {"name":"Michał", "color":"green", "prefferedKeybindings":0, "playing":True}, 
-                {"name":"Ewa", "color":"red", "prefferedKeybindings":1, "playing":True}, 
-                {"name":"Szymon", "color":"blue", "prefferedKeybindings":2, "playing":False}, 
-                {"name":"Bob", "color":"black", "prefferedKeybindings":3, "playing":False}]
+    players = [ {"name":"Michał", "color":"green", "prefferedKeybindings":0, "playing":True, "speed":1.0}, 
+                {"name":"Ewa", "color":"red", "prefferedKeybindings":1, "playing":True, "speed":1.0}, 
+                {"name":"Szymon", "color":"blue", "prefferedKeybindings":2, "playing":False, "speed":1.0}, 
+                {"name":"Bob", "color":"black", "prefferedKeybindings":3, "playing":False, "speed":1.0}]
 
     """Host:"""
     host = "localhost"

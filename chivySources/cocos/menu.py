@@ -620,9 +620,9 @@ class IntegerMenuItem(MenuItem):
     def getValue(self):
         return self._value
     def setValue(self, value):
-        if value < self.minValue:
+        if value < self.minValue - 0.001:
             value = self.maxValue
-        if value > self.maxValue:
+        if value > self.maxValue + 0.001:
             value = self.minValue
         self._value = value
     value = property(getValue, setValue)
