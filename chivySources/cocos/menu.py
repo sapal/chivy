@@ -609,9 +609,8 @@ class IntegerMenuItem(MenuItem):
         self.my_label = label
         self.minValue = minValue
         self.maxValue = maxValue
-        self._value = 0
-        self.value = value
         self.step = step
+        self._value = value
         super(IntegerMenuItem, self).__init__(self._get_label(), callback_func)
 
     def _get_label(self):
@@ -625,7 +624,12 @@ class IntegerMenuItem(MenuItem):
         if value > self.maxValue + 0.001:
             value = self.minValue
         self._value = value
+        self.update()
     value = property(getValue, setValue)
+
+    def update(self):
+        self.item.text = self._get_label()
+        self.item_selected.text = self._get_label()
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.LEFT:
@@ -633,8 +637,7 @@ class IntegerMenuItem(MenuItem):
         elif symbol in (key.RIGHT, key.ENTER):
             self.value += self.step
         if symbol in (key.LEFT, key.RIGHT, key.ENTER):
-            self.item.text = self._get_label()
-            self.item_selected.text = self._get_label()
+            self.update()
             self.callback_func(self.value)
             return True
 

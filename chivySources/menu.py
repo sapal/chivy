@@ -289,6 +289,7 @@ class PlayerMenu(menu.Menu):
         self.playerName.value = unicode(config.players[idx]["name"],"utf-8")
         self.playerColor.idx = self.colors.index(config.players[idx]["color"])
         self.playerColor.update()
+        self.playerSpeed.value = config.players[idx]["speed"]
         if config.players[idx]["playing"]:
             self.playerPlaying.idx = 1
         else:
@@ -396,7 +397,7 @@ class BackgroundLayer(layer.base_layers.Layer):
             if self.image:
                 sprite = gui.BoardSprite(self.image)
                 w,h = config.screenSize
-                sprite.scaleToScreenHeight(h/3)
+                sprite.scaleToScreenDimensions((w/2,h/2))
                 sw,sh = sprite.screenSize
                 sprite.setScreenPosition((w*3/4, h/2))
                 sprite.draw()

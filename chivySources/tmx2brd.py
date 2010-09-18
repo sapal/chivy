@@ -6,6 +6,7 @@ import xml.dom.minidom
 import re
 import kinds
 import sys
+import random
 from translation import gettext as _
 
 def parseDimensions(domMap, board):
@@ -42,11 +43,21 @@ def parseLayer(layer, layers, tilesets, dimensions):
             x = 0
             y -= 1
     if re.match("Teleports", name):
-        if "Teleports" not in layers:
-            layers["Teleports"] = {}
-        layers["Teleports"][name] = layer
+        if name == "Teleports":
+            if "TeleportsSingle" not in layers:
+                layers["TeleportsSingle"] = []
+            layers["TeleportsSingle"].append(layer)
+        else:
+            if "Teleports" not in layers:
+                layers["Teleports"] = {}
+            layers["Teleports"][name] = layer
     else:
         layers[name] = layer
+
+def addTeleport(board, tFrom, tTo, kind):
+    teleport = game.Teleport(tFrom, kind)
+    teleport.target = tTo
+    board.items.append(teleport)
 
 def generateBoard(board, layers):
     for pos,tile in layers["Map"].items():
@@ -71,9 +82,22 @@ def generateBoard(board, layers):
                 teleports[kind].append(pos)
     for k,tel in teleports.items():
         for i in range(len(tel)):
-            teleport = game.Teleport(tel[i-1], k)
-            teleport.target = tel[i]
-            board.items.append(teleport)
+            addTeleport(board, tel[i-1], tel[i], k)
+
+    if "TeleportsSingle" in layers:
+        for layer in layers["TeleportsSingle"]:
+            teleports = {}
+            for pos,tile in layer.items():
+                if tile[0] != "teleport" or pos not in board.tiles:
+                    continue
+                kind = tile[1]
+                if kind not in teleports:
+                    teleports[kind] = []
+                teleports[kind].append(pos)
+            for k,t in teleports.items():
+                random.shuffle(t)
+                for i in range(len(t)):
+                    addTeleport(board, t[i-1], t[i], k)
 
 def getBoard(tmxFile):
     b = game.Board()

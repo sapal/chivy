@@ -85,6 +85,11 @@ class BoardSprite(game.GameObject):
         s = config.spriteSize
         self.scale = width/(self.width*s)
 
+    def scaleToScreenDimensions(self, dimensions):
+        s = config.spriteSize
+        w,h = dimensions
+        self.scale = min(w/(self.width*s), h/(self.height*s))
+
     @property
     def screenSize(self):
         s = config.spriteSize

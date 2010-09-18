@@ -15,7 +15,9 @@
 			<li>
 			Create your board. It should contain layer named "Map", on wich "Tiles" tileset should be used.<br/> 
 			It can contain also layer named "Border", wich "Border" tileset should be used. If certain tile is marked as "Border" it will not be used for spawning players or items. <br/>
-			It is also possible to create one or more teleport layer (their names should begin with "Teleports", and tileset used should be "Teleports"). There should be at most one teleport of each kind on single teleport layer. The teleports will lead from layers with lower numbers to layers with higher numbers (Teleport from layer "Teleports1" will lead to teleport on "Teleports2" and so on). Teleport layer with highest number will lead to the layer with lowest number. If numbers are not used, the layers will be sorted lexicographically ("Teleportshaha", "Teleportslol", "Teleportswth" and so on).<br/></li>
+			It is also possible to create one or more teleport layer (their names should begin with "Teleports", and tileset used should be "Teleports"). There should be at most one teleport of each kind on single teleport layer. The teleports will lead from layers with lower numbers to layers with higher numbers (Teleport from layer "Teleports1" will lead to teleport on "Teleports2" and so on). Teleport layer with highest number will lead to the layer with lowest number. If numbers are not used, the layers will be sorted lexicographically ("Teleportshaha", "Teleportslol", "Teleportswth" and so on).<br/>
+			If Teleports layer is named just "Teleports", it may contain more than one teleport of each kind. The teleports will be connected in random order.<br/>
+			</li>
 			<li> Save your board </li>
 			<li> Run "tmx2brd.py" script from "chivySources" directory on saved file </li>
 			<li> Put created *.brd file in "levels" directory</li>
