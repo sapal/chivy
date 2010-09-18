@@ -177,22 +177,24 @@ class HudLayer(cocos.layer.Layer):
         gl.glPopMatrix()
 
     def update(self, dt):
-        players = sorted(self.client.game.players.values(), key=lambda x:-x.score)
+        game = self.client.game
+        players = sorted(game.players.keys(), key=lambda x:-game.players[x].score)
         y = [self.scores.y - self.scores.content_height]
-        for p in sorted(self.playersLabels.keys(), key=lambda x:-x.score):
+        for p in self.playersLabels.keys():
             if p not in players:
                 del self.playersLabels[p]
             else:
                 y.append(y[-1] - self.playersLabels[p].content_height)
         for p in players:
             if p not in self.playersLabels:
-                self.playersLabels[p] = Label(text=unicode(p.name, "utf-8"), font_name="Edmunds", font_size=18, anchor_y='top', x=10, bold=True, y=y[-1])
+                self.playersLabels[p] = Label(text=unicode(game.players[p].name, "utf-8"), font_name="Edmunds", font_size=18, anchor_y='top', x=10, bold=True, y=y[-1])
                 y.append(self.playersLabels[p].y - self.playersLabels[p].content_height)
 
-        for player,label in self.playersLabels.items():
+        for p,label in self.playersLabels.items():
+            player = game.players[p]
             label.text = u"{0}: {1}".format(unicode(player.name, "utf-8"), player.score)
-            label.color = colors.rgba(player.color)
-            target = y[players.index(player)]
+            label.color = colors.rgba(player.color, onWhite=True)
+            target = y[players.index(p)]
             direction = 1
             if target < label.y:
                 direction = -1
