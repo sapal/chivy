@@ -133,7 +133,7 @@ class HudLayer(cocos.layer.Layer):
         self.client = client
         self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=200),format='FPS: %(fps).2f')
         self.scores = Label(text=_("Scores"), font_name="Edmunds", font_size=24, anchor_y='top', x=10, y=config.screenSize[1], color=(0,0,0,255))
-        self.playersLabels = []
+        self.playersLabels = {}
         self.endScores = HTMLLabel(multiline=True, width=8*config.spriteSize, anchor_y='center', anchor_x='center', x=config.screenSize[0]//2, y=config.screenSize[1]//2, dpi=150)
 
     def drawScoresBackground(self, x, y, height, opacity=0.9):
@@ -146,25 +146,14 @@ class HudLayer(cocos.layer.Layer):
 
     def drawScores(self):
         if not self.client.game.ended:
-            players = list(self.client.game.players.values())
-            while len(self.playersLabels) > len(players):
-                self.playersLabes.pop()
-            while len(self.playersLabels) < len(players):
-                self.playersLabels.append(Label(font_name="Edmunds", font_size=18, anchor_y='top', x=10, bold=True))
-            idx = 0
             y = self.scores.y - self.scores.content_height
             w = self.scores.content_width
-            for p in sorted(players, key=lambda x: -x.score):
-                label = self.playersLabels[idx]
-                label.y = y
-                label.text = u"{name}: {score}".format(name=unicode(p.name,"utf-8"), score=p.score)
-                label.color = colors.rgba(p.color, onWhite=True)
-                idx += 1
+            for label in self.playersLabels.values():
                 y -= label.content_height
                 w = max(w, label.content_width)
             self.drawScoresBackground( self.scores.x+w//2, (self.scores.y+y)//2, self.scores.y-y, 0.5)
             self.scores.draw()
-            for label in self.playersLabels:
+            for label in sorted(self.playersLabels.values(), key=lambda x: -x.y):
                 label.draw()
         else:
             if self.endScores.text == "":
@@ -186,6 +175,28 @@ class HudLayer(cocos.layer.Layer):
         self.drawScores()
 
         gl.glPopMatrix()
+
+    def update(self, dt):
+        players = sorted(self.client.game.players.values(), key=lambda x:-x.score)
+        y = [self.scores.y - self.scores.content_height]
+        for p in sorted(self.playersLabels.keys(), key=lambda x:-x.score):
+            if p not in players:
+                del self.playersLabels[p]
+            else:
+                y.append(y[-1] - self.playersLabels[p].content_height)
+        for p in players:
+            if p not in self.playersLabels:
+                self.playersLabels[p] = Label(text=unicode(p.name, "utf-8"), font_name="Edmunds", font_size=18, anchor_y='top', x=10, bold=True, y=y[-1])
+                y.append(self.playersLabels[p].y - self.playersLabels[p].content_height)
+
+        for player,label in self.playersLabels.items():
+            label.text = u"{0}: {1}".format(unicode(player.name, "utf-8"), player.score)
+            label.color = colors.rgba(player.color)
+            target = y[players.index(player)]
+            direction = 1
+            if target < label.y:
+                direction = -1
+            label.y += direction*min(abs(target - label.y), 0.2*config.screenSize[1]*dt)
 
 class BoardLayer(cocos.layer.Layer):
     """
@@ -397,7 +408,8 @@ class Client(cocos.scene.Scene):
         self.controller = controller
         controller.clients.append(self)
         self.inputLayer = InputLayer(self)
-        super(Client, self).__init__(BoardLayer(self.controller), HudLayer(self), self.inputLayer)
+        self.hud = HudLayer(self)
+        super(Client, self).__init__(BoardLayer(self.controller), self.hud, self.inputLayer)
         self.schedule(self.update)
         self.killController = killController
 
@@ -408,6 +420,7 @@ class Client(cocos.scene.Scene):
 
     def update(self, dt):
         self.controller.update(dt)
+        self.hud.update(dt)
 
     def getControlPlayers(self):
         return self.inputLayer.controlPlayers
