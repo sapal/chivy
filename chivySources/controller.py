@@ -63,7 +63,7 @@ class NetworkedController(Controller,ConnectionListener):
         if not host:
             host = config.host
         if players is None:
-            players = [ {"name":p["name"], "color":p["color"]} for p in config.players if p["playing"]]
+            players = [ p for p in config.players if p["playing"]]
         self.onFail = onFail
         self.onSuccess = onSuccess
         self.gameReady = False
@@ -82,7 +82,7 @@ class NetworkedController(Controller,ConnectionListener):
     def addBot(self, name=None, color=None):
         if name is None:
             name = self.randomBotNames(1)[0]
-        connection.Send({"action":"requestPlayers", "players":[{"name":name, "color":color}], "bots":True})
+        connection.Send({"action":"requestPlayers", "players":[{"name":name, "color":color, "speed":1.0}], "bots":True})
 
     @property
     def ready(self):

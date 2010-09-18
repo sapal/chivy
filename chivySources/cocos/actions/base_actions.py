@@ -445,7 +445,7 @@ class InstantAction( IntervalAction ):
             raise TypeError("Can only multiply actions by ints")
         if other <= 1:
             return self
-        return  Loop_InstantAction(self, other)
+        return  Loop_Instant_Action(self, other)
 
 def loop(action, times):
     return action * times

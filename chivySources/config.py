@@ -13,7 +13,7 @@ class Config(object):
     title = "Chivy"
 
     """Game version:"""
-    version = "0.4"
+    version = "0.5"
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'samplePlayerNames', 'userLevelsDir',

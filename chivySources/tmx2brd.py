@@ -93,7 +93,7 @@ def getBoard(tmxFile):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(_("Usage: {0} someBoard.tmx").format(argv[0]))
+        print(_("Usage: {0} someBoard.tmx").format(sys.argv[0]))
         sys.exit()
     tmxFile = sys.argv[1]
     outFile = tmxFile[0:-3] + "brd"

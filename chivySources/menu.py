@@ -385,7 +385,7 @@ class BackgroundLayer(layer.base_layers.Layer):
         self.boardLayer = None
         self.image = image
 
-    def draw(self):
+    def draw(self, *args, **kwargs):
         gl.glPushMatrix()
         self.transform()
 

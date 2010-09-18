@@ -154,7 +154,7 @@ class HudLayer(cocos.layer.Layer):
             idx = 0
             y = self.scores.y - self.scores.content_height
             w = self.scores.content_width
-            for p in players:
+            for p in sorted(players, key=lambda x: -x.score):
                 label = self.playersLabels[idx]
                 label.y = y
                 label.text = u"{name}: {score}".format(name=unicode(p.name,"utf-8"), score=p.score)
@@ -391,7 +391,7 @@ class InputLayer(cocos.layer.Layer):
 class Client(cocos.scene.Scene):
     """Client for viewing game."""
 
-    def __init__(self, controller, players = None, killController=False):
+    def __init__(self, controller, killController=False):
         w,h = config.screenSize
 
         self.controller = controller
