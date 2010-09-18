@@ -22,11 +22,12 @@ from translation import gettext as _
 def initialize():
     w,h = config.screenSize
     if not config.fullScreen:
-        cocos.director.director.init(width=w, height=h)
+        cocos.director.director.init(width=w, height=h, caption="Chivy", resizable=True)
     else:
-        cocos.director.director.init(fullscreen=True)
+        cocos.director.director.init(fullscreen=True, caption="Chivy")
         w,h = cocos.director.director.get_window_size()
         config.screenSize = w,h
+    cocos.director.director.window.set_icon(pyglet.image.load(config.imagesDir + "icon.png"))
     pyglet.font.add_directory(config.fontsDir)
     BoardSprite.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword", "scoresbg"])
     BoardSprite.loadSpritesRegex("tile.*")

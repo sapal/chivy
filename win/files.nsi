@@ -5,5 +5,6 @@ file /r translations
 file /r levels
 file /r Python26
 file /r chivySources
+file /r tiled
 file chivy.py
 
