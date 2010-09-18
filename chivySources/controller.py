@@ -48,6 +48,7 @@ class Controller(object):
         self._game.sendInput(playerId,action)
 
     def update(self,dt):
+        #print("{0} update".format(self))
         self._game.update(dt)
         self.bots[:] = [ b for b in self.bots if b.playerID in self._game.players ]
         for b in self.bots:

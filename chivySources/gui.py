@@ -403,6 +403,7 @@ class Client(cocos.scene.Scene):
     def on_exit(self):
         if self.killController:
             self.controller.end()
+        super(Client, self).on_exit()
 
     def update(self, dt):
         self.controller.update(dt)
