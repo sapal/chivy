@@ -1,0 +1,96 @@
+@font-face {
+	font-family: 'EdmundsRegular';
+	src: url('edmunds-webfont.eot');
+	src: local('☺'), url('edmunds-webfont.woff') format('woff'), url('edmunds-webfont.ttf') format('truetype'), url('edmunds-webfont.svg#webfontYbGsEbps') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+body{
+	color:#000000;
+	background-color:#ffffff;
+	text-align:center;
+}
+
+.menuHref, .menuSelfHref{
+	font-family:"EdmundsRegular";
+	font-size:150%;
+	text-decoration:none;
+}
+a.menuHref:link{color:#000000;}
+a.menuHref:visited{color:#000000;}
+a.menuHref:hover{color:rgb(255,158,19);}
+a.menuHref:active{color:rgb(255,158,19);}
+a.menuSelfHref:link{color:#ff0000;}
+a.menuSelfHref:visited{color:#ff0000;}
+a.menuSelfHref:hover{color:rgb(255,158,19);}
+a.menuSelfHref:active{color:rgb(255,158,19);}
+
+.menuTd, .menuSelfTd{
+	text-align:center;
+}
+
+table{
+	border-collapse:collapse;
+	/*width:800px;*/
+	margin:0 auto 0 auto;
+	padding:0;
+	border:0;
+	text-align:left;
+}
+h1,h2,h3,h4,h5,h6{
+	font-family:"EdmundsRegular";
+	font-weight:normal;
+}
+h1{
+	font-size:400%;
+}
+h2{
+	font-size:300%;
+}
+h3{
+	font-size:200%;
+}
+h4{
+	font-size:150%;
+}
+h5{
+	font-size:125%;
+}
+h6{
+	font-size:100%;
+}
+.borderH, .borderV, .borderLT, .borderRT, .borderRB, .borderLB{
+	margin:0px;
+	padding:0px;
+	border:0px;
+}
+.borderH{
+	background-image:url('borderH.png');
+	background-repeat:repeat-x;
+	height:20px;
+}
+.borderV{
+	background-image:url('borderV.png');
+	background-repeat:repeat-y;
+	height:100%;
+	width:20px;
+}
+.borderLT, .borderRT, .borderRB, .borderLB{
+	background-repeat:no-repeat;
+	height:20px;
+	width:20px;
+}
+
+.borderLT{
+	background-image:url('borderLT.png');
+}
+.borderRT{
+	background-image:url('borderRT.png');
+}
+.borderLB{
+	background-image:url('borderLB.png');
+}
+.borderRB{
+	background-image:url('borderRB.png');
+}
+

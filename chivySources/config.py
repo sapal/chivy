@@ -17,6 +17,7 @@ class Config(object):
 
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'samplePlayerNames', 'userLevelsDir',
+            'showFPS', 'userScreenshotsDir',
             'fullScreen', 'windowedScreenSize',  'players', 'host', 'serverAddress', 'botNames',
             'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
             'minPoints', 'maxPoints', 'points',
@@ -46,6 +47,8 @@ class Config(object):
     userDir = os.path.expanduser("~"+os.sep+".Chivy"+os.sep)
     """User's levels directory:"""
     userLevelsDir = userDir + "levels" + os.sep
+    """User's screenshots directory:"""
+    userScreenshotsDir = userDir + "screenshots" + os.sep
 
     """Tiled directory:"""
     tiledDir = codeDir+".."+os.sep+"tiled"+os.sep
@@ -60,6 +63,9 @@ class Config(object):
 
     """Bot names:"""
     botNames = [".:^LoL bOt^:.", "c_style_bot", "camelCaseBot", "h^bot", "#@$!!&^*", "CONSTANT_BOT" ]
+
+    """Show FPS?"""
+    showFPS = True
 
     """Screen size:"""
     #screenSize = 1280,800

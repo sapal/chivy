@@ -155,6 +155,7 @@ The director also has some useful attributes:
 __docformat__ = 'restructuredtext'
 
 from os import getenv
+import os
 import pyglet
 from pyglet import window, event
 from pyglet import clock
@@ -219,7 +220,12 @@ class DefaultHandler( object ):
 
         elif symbol == pyglet.window.key.S and (modifiers & pyglet.window.key.MOD_ACCEL):
             import time
-            pyglet.image.get_buffer_manager().get_color_buffer().save('screenshot-%d.png' % (int( time.time() ) ) )
+            try:
+                if not os.path.exists(director.screenshotsDir):
+                    os.makedirs(director.screenshotsDir)
+                pyglet.image.get_buffer_manager().get_color_buffer().save(director.screenshotsDir+'screenshot-%d.png' % (int( time.time() ) ) )
+            except Exception,e:
+                print(e)
             return True
 
         if symbol == pyglet.window.key.ESCAPE:
@@ -315,6 +321,7 @@ class Director(event.EventDispatcher):
 
     def __init__(self):
         super(Director, self).__init__()
+        self.screenshotsDir = "."+os.sep
 
     def init(self, *args, **kwargs):
         """Initializes the Director creating the main window.

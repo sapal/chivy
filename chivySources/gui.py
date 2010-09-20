@@ -28,6 +28,7 @@ def initialize():
         w,h = cocos.director.director.get_window_size()
         config.screenSize = w,h
     cocos.director.director.window.set_icon(pyglet.image.load(config.imagesDir + "icon.png"))
+    cocos.director.director.screenshotsDir = config.userScreenshotsDir
     pyglet.font.add_directory(config.fontsDir)
     BoardSprite.loadSprites(["glow", "cheatSheet", "speedBoots", "shield", "masterSword", "scoresbg"])
     BoardSprite.loadSpritesRegex("tile.*")
@@ -176,7 +177,7 @@ class HudLayer(cocos.layer.Layer):
         gl.glPushMatrix()
         self.transform()
 
-        self.fps.draw()
+        if config.showFPS:self.fps.draw()
         self.drawScores()
 
         gl.glPopMatrix()
