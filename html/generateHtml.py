@@ -6,7 +6,9 @@ import os
 menuItems = [ ("Strona główna", "mainPage"), ("Sterowanie", "controls"), ("Instalacja", "installing") ]
 
 def generateMenu(output):
-    outputName = output[:output.rfind('.')]
+    outputFile = output[:output.rfind('.')]
+    outputName = os.path.split(output)[1]
+    outputName = outputName[:outputName.rfind('.')]
     s = """<table width="780px">
         <tr><td class="borderLT"></td><td class="borderH"></td><td class="borderRT"></td></tr>
         <tr><td class="borderV"></td>
@@ -21,7 +23,7 @@ def generateMenu(output):
     s += "\n".join(items) + """</tr></table></td>
             <td class="borderV"></td></tr>
         <tr><td class="borderLB"></td><td class="borderH"></td><td class="borderRB"></td></tr>"""
-    f = open(outputName+".menu", "w")
+    f = open(outputFile+".menu", "w")
     f.write(s)
     f.close()
 

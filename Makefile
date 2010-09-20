@@ -17,13 +17,13 @@ man/man6/chivy.6.gz: man/man6/chivy.txt
 	txt2man -t chivy man/man6/chivy.txt > man/man6/chivy.6
 	gzip -f man/man6/chivy.6
 
-html/mainPage.html:html/template.html html/mainPage.content html/mainPage.title
+html/mainPage.html:html/template.html html/mainPage.content html/mainPage.title html/generateHtml.py
 	python html/generateHtml.py html/template.html html/mainPage.html
 
-html/controls.html:html/template.html html/controls.content html/controls.title
+html/controls.html:html/template.html html/controls.content html/controls.title html/generateHtml.py
 	python html/generateHtml.py html/template.html html/controls.html
 
-html/installing.html:html/template.html html/installing.content html/installing.title
+html/installing.html:html/template.html html/installing.content html/installing.title html/generateHtml.py
 	python html/generateHtml.py html/template.html html/installing.html
 
 images/icon.png: images/icon.svg
