@@ -41,76 +41,271 @@
        id="perspective10" />
     <filter
        inkscape:collect="always"
-       id="filter5898">
+       id="filter5898"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.6416499"
-         id="feGaussianBlur5900" />
+         id="feGaussianBlur5900"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4965" />
+      <feTurbulence
+         id="feTurbulence4967"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4969"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5902">
+       id="filter5902"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.2839792"
-         id="feGaussianBlur5904" />
+         id="feGaussianBlur5904"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4959" />
+      <feTurbulence
+         id="feTurbulence4961"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4963"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5906">
+       id="filter5906"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.9259688"
-         id="feGaussianBlur5908" />
+         id="feGaussianBlur5908"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4983" />
+      <feTurbulence
+         id="feTurbulence4985"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4987"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5910">
+       id="filter5910"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="2.5679584"
-         id="feGaussianBlur5912" />
+         id="feGaussianBlur5912"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4989" />
+      <feTurbulence
+         id="feTurbulence4991"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4993"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5914">
+       id="filter5914"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="2.4624748"
-         id="feGaussianBlur5916" />
+         id="feGaussianBlur5916"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4995" />
+      <feTurbulence
+         id="feTurbulence4997"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4999"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5918">
+       id="filter5918"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="3.2832997"
-         id="feGaussianBlur5920" />
+         id="feGaussianBlur5920"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix5001" />
+      <feTurbulence
+         id="feTurbulence5003"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap5005"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5922">
+       id="filter5922"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.2339996"
-         id="feGaussianBlur5924" />
+         id="feGaussianBlur5924"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4971" />
+      <feTurbulence
+         id="feTurbulence4973"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4975"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter5926">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.2339996"
-         id="feGaussianBlur5928" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter5951">
+       id="filter5951"
+       inkscape:label="Roughen"
+       inkscape:menu="ABCs"
+       inkscape:menu-tooltip="Small-scale roughening to edges and content"
+       color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="0.92304375"
-         id="feGaussianBlur5953" />
+         id="feGaussianBlur5953"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4977" />
+      <feTurbulence
+         id="feTurbulence4979"
+         numOctaves="3"
+         seed="0"
+         type="turbulence"
+         baseFrequency="0.04"
+         result="result91"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         id="feDisplacementMap4981"
+         in2="result91"
+         scale="6.6"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         in="fbSourceGraphic" />
     </filter>
+    <filter
+       id="filter4539"
+       inkscape:label="filtr9" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -121,9 +316,9 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.6521454"
      inkscape:cx="86.360111"
-     inkscape:cy="160.33702"
+     inkscape:cy="102.3907"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="svg2"
      showgrid="false"
      inkscape:window-width="1243"
      inkscape:window-height="800"
@@ -139,7 +334,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>

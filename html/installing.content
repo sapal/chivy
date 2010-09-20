@@ -1,4 +1,29 @@
+<!-- TODO:dokończyć -->
 <h2>Jak zainstalować Chivy?</h2>
 <h3>Z paczki DEB (Ubuntu/Debian)</h3>
+<ol class="bigList">
+<li>Pobież paczkę DEB: <a href="Chivy_0.5-1_all.deb"><img class="icon" src="icon-deb.png" alt="Kliknij, aby pobrać"/></a></li>
+<li>Otwórz ją</li>
+<li>Kliknij „Zainstaluj pakiet”</li>
+<li>Jeżeli nie można zainstalować pakietu (niespełnione zależności), to włącz źródła „universe” (Administracja ⇝ Źródła oprogramowania ⇝ Oprogramowanie Open Source utrzymywane przez społeczność (universe) )</li>
+<li>Wpisz hasło administratora</li>
+<li>Uruchom grę: Programy ⇝ Gry ⇝ (Zręcznościowe ⇝) Chivy</li>
+</ol>
+
 <h3>Za pomocą instalatora (Windows)</h3>
+<ol class="bigList">
+<li>Pobierz instalator: <a href="Chivy_0.5.exe"><img class="icon" src="icon-installer.png" alt="Kliknij, aby pobrać"/></a></li>
+<li>Uruchom go</li>
+<li>Kliknij „Install”</li>
+<li>Kliknij „Close” </li>
+<li>Uruchom grę: Menu Start ⇝ Programy ⇝ Chivy ⇝ Chivy</li>
+</ol>
+
 <h3>Z pythonowego pliku .egg (Cokolwiek, co ma pythona)</h3>
+<ol class="bigList">
+<li>Zainstaluj pythona 2.6: <a href="www.python.org">www.python.org</a></li>
+<li>Zainstaluj setuptools: <a href="http://pypi.python.org/pypi/setuptools">http://pypi.python.org/pypi/setuptools</a></li>
+<li>Pobierz plik .egg: <a href="Chivy-0.5-py2.6.egg"><img class="icon" src="icon-egg.png" alt="Kliknij, aby pobrać"/></a></li>
+<li>Uruchom skrypt „easy_install.py” z plikiem .egg (może wymagać uprawnień administratora)</li>
+<li>Uruchom grę: „python -m chivy”</li>
+</ol>

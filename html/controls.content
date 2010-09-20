@@ -1,8 +1,55 @@
-<h2>Gracz 1</h2>
-<img src="player0controls-base128.png">
-<h2>Gracz 2</h2>
-<img src="player1controls-base128.png">
-<h2>Gracz 3</h2>
-<img src="player2controls-base128.png">
-<h2>Gracz 4</h2>
-<img src="player3controls-base128.png">
+<div class="controls">
+<h2>Jak poruszać się po menu?</h2>
+<table class="keyBindings"><tr><th>Klawisz</th><th>Działanie</th></tr>
+<tr><td class="key">Strzałki do góry i w dół</td><td class="value">Wybierz pozycję z menu</td></tr>
+<tr><td class="key">Strzałki na boki</td><td class="value">Zmień opcję</td></tr>
+<tr><td class="key">Enter</td><td class="value">Wejdź do menu / zmień opcję</td></tr>
+<tr><td class="key">Escape</td><td class="value">Wróć do poprzedniego menu / zakończ grę</td></tr>
+</table>
+<em>Można też użyć myszki.</em>
+
+<h2>Jak sterować figurami?</h2>
+<h3>Gracz 1</h3>
+<img src="player0controls-base128.png" alt="Gracz 1"/>
+<table class="keyBindings"><tr><th>Klawisz</th><th>Działanie</th></tr>
+<tr><td class="key">Strzałka do góry</td><td class="value">Idź do góry</td></tr>
+<tr><td class="key">Strzałka w dół</td><td class="value">Idź na dół</td></tr>
+<tr><td class="key">Strzałka w lewo</td><td class="value">Idź w lewo</td></tr>
+<tr><td class="key">Strzałka w prawo</td><td class="value">Idź w prawo</td></tr>
+<tr><td class="key">Prawy Ctrl</td><td class="value">Zmień aktywną figurę</td></tr>
+<tr><td class="key">Ukośnik (/)</td><td class="value">Użyj przedmiotu / teleportu</td></tr>
+</table>
+
+<h3>Gracz 2</h3>
+<img src="player1controls-base128.png" alt="Gracz 2"/>
+<table class="keyBindings"><tr><th>Klawisz</th><th>Działanie</th></tr>
+<tr><td class="key">W</td><td class="value">Idź do góry</td></tr>
+<tr><td class="key">S</td><td class="value">Idź na dół</td></tr>
+<tr><td class="key">A</td><td class="value">Idź w lewo</td></tr>
+<tr><td class="key">D</td><td class="value">Idź w prawo</td></tr>
+<tr><td class="key">Q</td><td class="value">Zmień aktywną figurę</td></tr>
+<tr><td class="key">E</td><td class="value">Użyj przedmiotu / teleportu</td></tr>
+</table>
+
+<h3>Gracz 3</h3>
+<img src="player2controls-base128.png" alt="Gracz 3"/>
+<table class="keyBindings"><tr><th>Klawisz</th><th>Działanie</th></tr>
+<tr><td class="key">I</td><td class="value">Idź do góry</td></tr>
+<tr><td class="key">K</td><td class="value">Idź na dół</td></tr>
+<tr><td class="key">J</td><td class="value">Idź w lewo</td></tr>
+<tr><td class="key">L</td><td class="value">Idź w prawo</td></tr>
+<tr><td class="key">U</td><td class="value">Zmień aktywną figurę</td></tr>
+<tr><td class="key">O</td><td class="value">Użyj przedmiotu / teleportu</td></tr>
+</table>
+
+<h3>Gracz 4</h3>
+<img src="player3controls-base128.png" alt="Gracz 4"/>
+<table class="keyBindings"><tr><th>Klawisz</th><th>Działanie</th></tr>
+<tr><td class="key">NUM 8</td><td class="value">Idź do góry</td></tr>
+<tr><td class="key">NUM 5</td><td class="value">Idź na dół</td></tr>
+<tr><td class="key">NUM 4</td><td class="value">Idź w lewo</td></tr>
+<tr><td class="key">NUM 6</td><td class="value">Idź w prawo</td></tr>
+<tr><td class="key">NUM 7</td><td class="value">Zmień aktywną figurę</td></tr>
+<tr><td class="key">NUM 9</td><td class="value">Użyj przedmiotu / teleportu</td></tr>
+</table>
+</div>

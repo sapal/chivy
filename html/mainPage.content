@@ -1,7 +1,24 @@
 <h2>Co to jest Chivy?</h2>
-Taka sobie gierka.
+<p><em>Chivy</em> to prosta gra zręcznościowa z elementami logicznymi. Wymaga od graczy dużej podzielności uwagi, zręcznych palców i umiejętności szybkiego myślenia.</p>
+<p>W <em>Chivy</em> można grać w wielu graczy na jednym komputerze (maksymalnie 4 graczy), przez sieć lub z przeciwnikami
+komputerowymi (6 poziomów trudności). Do wyboru jest kilka przygotowanych plansz, ale można również wygenerować losową mapę.</p>
 <h2>Jak wygląda Chivy?</h2>
 <table>
-	<tr><td><img width="95%" src="screenshot1.png"/></td></tr>
-	<tr><td><img width="95%" src="screenshot2.png"/></td></tr>
+	<tr><td><img width="720px" src="screenshot1.png" alt="Menu główne"/></td></tr>
+	<tr><td><img width="720px" src="screenshot2.png" alt="Rozgrywka"/></td></tr>
 </table>
+<h2>O co w tym chodzi?</h2>
+<p>Każdy z graczy kontroluje <em>trzy figury</em> (losowo wybrane z: koła, gwiazdy, pięciokąta, kwadratu, trójkąta i półksiężyca). Każda z nich
+zjada dwie inne figury (są one narysowane na dole, przy każdej figurze). Jeśli figura gracza <em>zje</em> inną figurę, gracz <em>zdobywa dwa punkty</em>. Jeżeli jednak figura gracza <em>zostanie zjedzona</em>, to gracz <em>traci jeden punkt</em>. Każda zjedzona figura jest zastępowana nową, losowo wybraną, pojawiającą się w dowolnym miejscu planszy.</p>
+<p>Gracz może sterować <em>jedną figurą na raz</em>. Może <em>rozkazać jej</em> wykonać kolejno kilka akcji, nie może jednak cofnąć rozkazu. 
+<em>Przełączając</em> aktywną figurę, można wydawać rozkazy wszystkim swoim figurom.</p>
+<p>Używając <em>teleportu</em>, można szybko przenieść figurę w inne miejsce. Każdego teleportu może używać tylko <em>jeden rodzaj figur</em>.
+Używanie <em>przedmiotów</em> daje dużą przewagę, nawet jeśli tylko na krótką chwilę. Można mieć wiele aktywnych przedmiotów naraz. Poniżej znajduje się opis działania każdego z nich:</p>
+<table><tr><th>Przedmiot</th><th>Działanie</th></tr>
+<tr><td class="key"><img src="masterSword128.png" alt="Miecz"/></td><td class="value">Figura, która zdobędzie miecz, <em>zjada wszystkie inne figury</em>.<br/> Uwaga: nie znaczy to, że nie można jej zjeść.</td></tr>
+<tr><td class="key"><img src="shield128.png" alt="Tarcza"/></td><td class="value">Figura, która zdobędzie tarczę, jest <em>niezjadalna</em>.</td></tr>
+<tr><td class="key"><img src="speedBoots128.png" alt="Buty"/></td><td class="value"><em>Szybkość</em> figury, która zdobędzie buty <em>wzrasta 1,5-krotnie</em>.</td></tr>
+</table>
+<p><em>Zwycięża</em> gracz, który pierwszy osiągnie ustaloną <em>liczbę punktów</em>.</p>
+
+

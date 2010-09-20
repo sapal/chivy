@@ -36,7 +36,7 @@
 ; !define licensefile license.txt
  
 ; icons must be Microsoft .ICO files
- !define icon "images\icon.ico"
+ !define icon "images\icon-installer.ico"
  
 ; installer background screen
  !define screenimage "images\icon.png"

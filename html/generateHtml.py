@@ -3,13 +3,13 @@ import re
 import sys
 import os
 
-menuItems = [ ("Strona główna", "mainPage"), ("Sterowanie", "controls"), ("Instalacja", "installing") ]
+menuItems = [ ("Strona główna", "mainPage"), ("Jak grać", "controls"), ("Instalacja", "installing") ]
 
 def generateMenu(output):
     outputFile = output[:output.rfind('.')]
     outputName = os.path.split(output)[1]
     outputName = outputName[:outputName.rfind('.')]
-    s = """<table width="780px">
+    s = u"""<table width="780px">
         <tr><td class="borderLT"></td><td class="borderH"></td><td class="borderRT"></td></tr>
         <tr><td class="borderV"></td>
             <td class="menu"><table width="100%"><tr>"""
@@ -19,12 +19,12 @@ def generateMenu(output):
         cls = "menu"
         if href == outputName:
             cls = "menuSelf"
-        items.append('<td width="{prc}%" class="{cls}Td"><a class="{cls}Href" href="{href}.html">{name}</a></td>'.format(cls=cls, href=href, name=name, prc=prc))
-    s += "\n".join(items) + """</tr></table></td>
+        items.append(u'<td width="{prc}%" class="{cls}Td"><a class="{cls}Href" href="{href}.html">{name}</a></td>'.format(cls=cls, href=href, name=unicode(name,"utf-8"), prc=prc))
+    s += u"\n".join(items) + u"""</tr></table></td>
             <td class="borderV"></td></tr>
-        <tr><td class="borderLB"></td><td class="borderH"></td><td class="borderRB"></td></tr>"""
+        <tr><td class="borderLB"></td><td class="borderH"></td><td class="borderRB"></td></tr></table>"""
     f = open(outputFile+".menu", "w")
-    f.write(s)
+    f.write(s.encode("utf-8"))
     f.close()
 
 def generateHtml(template, output):
@@ -44,7 +44,7 @@ def generateHtml(template, output):
                 except Exception,e:
                     print(e)
     for k,v in repl.items():
-        template = template.replace("<!--{0}-->".format(k), v)
+        template = template.replace("<!--{0}-->".format(k), v.strip())
     f = open(output, 'w')
     f.write(template)
     f.close()

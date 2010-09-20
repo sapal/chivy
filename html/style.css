@@ -5,10 +5,57 @@
 	font-weight: normal;
 	font-style: normal;
 }
+td.appIcon{
+	/*position:absolute;*/
+	top:0;
+	left:0px;
+	height:192px;
+	width:192px;
+}
+h1.title{
+	margin:0;
+	padding:0;
+}
+td.title{
+	/*position:absolute;*/
+	top:0;
+	left:192px;
+	width:588px;
+	height:192px;
+}
+table.title{
+	text-align:center;
+	top:0;
+	height:192px;
+}
+img.appIcon{
+	height:192px;
+	width:192px;
+}
+img.icon{
+	height:64px;
+	vertical-align:-30%;
+	border:0;
+}
 body{
 	color:#000000;
 	background-color:#ffffff;
 	text-align:center;
+	font-size:125%;
+	font-family:"Times New Roman", "Times", serif;
+	margin:0;
+	padding:0;
+}
+p{
+	text-indent:50px;
+	text-align:justify;
+}
+.bigList{
+	font-family:"EdmundsRegular";
+	font-size:125%;
+	font-weight:normal;
+	text-align:left;
+	line-height:200%;
 }
 
 .menuHref, .menuSelfHref{
@@ -16,17 +63,44 @@ body{
 	font-size:150%;
 	text-decoration:none;
 }
-a.menuHref:link{color:#000000;}
-a.menuHref:visited{color:#000000;}
-a.menuHref:hover{color:rgb(255,158,19);}
-a.menuHref:active{color:rgb(255,158,19);}
-a.menuSelfHref:link{color:#ff0000;}
-a.menuSelfHref:visited{color:#ff0000;}
-a.menuSelfHref:hover{color:rgb(255,158,19);}
-a.menuSelfHref:active{color:rgb(255,158,19);}
+
+a:link, a:visited{color:#000000;}
+a:hover, a:active{color:rgb(255,158,19);}
+a.menuSelfHref:link, a.menuSelfHref:visited{color:#ff0000;}
+a.menuSelfHref:hover, a.menuSelfHref:active{color:rgb(255,158,19);}
 
 .menuTd, .menuSelfTd{
 	text-align:center;
+}
+
+th{
+	font-family:"EdmundsRegular";
+	font-size:150%;
+	padding:16px;
+	text-align:center;
+}
+
+.key{
+	font-family:"EdmundsRegular";
+	font-size:150%;
+	text-align:center;
+}
+.value{
+	text-align:center;
+}
+em{
+	font-family:"EdmundsRegular";
+	font-style:normal;
+}
+div.controls{
+	text-align:center;
+}
+table.keyBindings{
+	/*padding:16px;*/
+	margin:10px auto 10px auto;
+
+	text-align:left;
+	border-collapse:separate;
 }
 
 table{
@@ -42,7 +116,7 @@ h1,h2,h3,h4,h5,h6{
 	font-weight:normal;
 }
 h1{
-	font-size:400%;
+	font-size:350%;
 }
 h2{
 	font-size:300%;
@@ -94,3 +168,6 @@ h6{
 	background-image:url('borderRB.png');
 }
 
+.content{
+	text-align:center;
+}
