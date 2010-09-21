@@ -3,7 +3,7 @@ import os
 import os.path
 import sys
 from ast import literal_eval
-import re
+import locale as Locale
 """Game config."""
 
 class Config(object):
@@ -26,7 +26,7 @@ class Config(object):
             'maxItemNumber', 'itemNumber']
 
     """Localization:"""
-    locale = "pl_PL"
+    locale = Locale.getdefaultlocale()[0]
 
     """Entry directory:"""
     entryDir = os.path.dirname(os.path.abspath(sys.argv[0]))+os.sep

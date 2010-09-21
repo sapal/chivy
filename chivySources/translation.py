@@ -12,7 +12,7 @@ if (lc):
 language = os.environ.get('LANGUAGE', None)
 if (language):
     langs += language.split(":")
-langs += ["pl_PL"]
+langs += ["en_GB","pl_PL"]
 
 Gettext.bindtextdomain(APP_NAME, config.translationsDir)
 Gettext.textdomain(APP_NAME)

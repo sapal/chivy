@@ -137,7 +137,7 @@ class HudLayer(cocos.layer.Layer):
     def __init__(self, client):
         super(HudLayer, self).__init__()
         self.client = client
-        self.fps = clock.ClockDisplay(font=font.load('Edmunds',bold=True,dpi=200),format='FPS: %(fps).2f')
+        self.fps = clock.ClockDisplay(font=font.load('Edmunds',dpi=200),format='FPS: %(fps).2f')
         self.scores = Label(text=_("Scores"), font_name="Edmunds", font_size=24, anchor_y='top', x=10, y=config.screenSize[1], color=(0,0,0,255))
         self.playersLabels = {}
         self.endScores = HTMLLabel(multiline=True, width=8*config.spriteSize, anchor_y='center', anchor_x='center', x=config.screenSize[0]//2, y=config.screenSize[1]//2, dpi=150)
@@ -163,10 +163,10 @@ class HudLayer(cocos.layer.Layer):
                 label.draw()
         else:
             if self.endScores.text == "":
-                txt = ["<center><b><font face='Edmunds' size=7>"+_("GAME OVER")+"</font><br/></b><font face='Edmunds' size=7 color='#ff9e13'>"+_("Scores")+"</font><br/>"]
+                txt = ["<center><font face='Edmunds' size=7>"+_("GAME OVER")+"</font><br/><font face='Edmunds' size=7 color='#ff9e13'>"+_("Scores")+"</font><br/>"]
                 idx = 0
                 for p in sorted(self.client.game.players.values(), key=lambda x: -x.score):
-                    txt.append(u"<b><font face='Edmunds' size={size} color='{color}'>{name}: {score}</font></b><br/>".format(color=colors.htmlColor(p.color, onWhite=True), name=unicode(p.name,"utf-8"), score=p.score, size=max(6-idx,3)))
+                    txt.append(u"<font face='Edmunds' size={size} color='{color}'>{name}: {score}</font><br/>".format(color=colors.htmlColor(p.color, onWhite=True), name=unicode(p.name,"utf-8"), score=p.score, size=max(6-idx,3)))
                     idx += 1
                 txt = u"".join(txt+["</center>"])
                 self.endScores.text = unicode(txt)
@@ -193,7 +193,7 @@ class HudLayer(cocos.layer.Layer):
                 y.append(y[-1] - self.playersLabels[p].content_height)
         for p in players:
             if p not in self.playersLabels:
-                self.playersLabels[p] = Label(text=unicode(game.players[p].name, "utf-8"), font_name="Edmunds", font_size=18, anchor_y='top', x=10, bold=True, y=y[-1])
+                self.playersLabels[p] = Label(text=unicode(game.players[p].name, "utf-8"), font_name="Edmunds", font_size=18, anchor_y='top', x=10, y=y[-1])
                 y.append(self.playersLabels[p].y - self.playersLabels[p].content_height)
 
         for p,label in self.playersLabels.items():

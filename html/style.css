@@ -5,10 +5,22 @@
 	font-weight: normal;
 	font-style: normal;
 }
+div.contentDiv{
+	position:absolute;
+	left:50%;
+	margin-left:-410px;
+	/*margin-top:10px;
+	margin-bottom:10px;*/
+	padding:20px;
+	/*border:20px;
+	border-color:white;*/
+	width:820px;
+	background-color:white;
+}
 td.appIcon{
 	/*position:absolute;*/
 	top:0;
-	left:0px;
+	left:0;
 	height:192px;
 	width:192px;
 }
@@ -27,6 +39,10 @@ table.title{
 	text-align:center;
 	top:0;
 	height:192px;
+	width:780px;
+}
+table.border{
+	width:780px;
 }
 img.appIcon{
 	height:192px;
@@ -37,9 +53,12 @@ img.icon{
 	vertical-align:-30%;
 	border:0;
 }
+img.screenshot{
+	width:720px;
+}
 body{
 	color:#000000;
-	background-color:#ffffff;
+	background-color:#000000;
 	text-align:center;
 	font-size:125%;
 	font-family:"Times New Roman", "Times", serif;

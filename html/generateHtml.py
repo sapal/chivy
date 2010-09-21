@@ -9,7 +9,7 @@ def generateMenu(output):
     outputFile = output[:output.rfind('.')]
     outputName = os.path.split(output)[1]
     outputName = outputName[:outputName.rfind('.')]
-    s = u"""<table width="780px">
+    s = u"""<table class="border">
         <tr><td class="borderLT"></td><td class="borderH"></td><td class="borderRT"></td></tr>
         <tr><td class="borderV"></td>
             <td class="menu"><table width="100%"><tr>"""

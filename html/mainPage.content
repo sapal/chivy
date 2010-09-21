@@ -4,14 +4,16 @@
 komputerowymi (6 poziomów trudności). Do wyboru jest kilka przygotowanych plansz, ale można również wygenerować losową mapę.</p>
 <h2>Jak wygląda Chivy?</h2>
 <table>
-	<tr><td><img width="720px" src="screenshot1.png" alt="Menu główne"/></td></tr>
-	<tr><td><img width="720px" src="screenshot2.png" alt="Rozgrywka"/></td></tr>
+	<tr><td><img class="screenshot" src="screenshot1.png" alt="Menu główne"/></td></tr>
+	<tr><td><img class="screenshot" src="screenshot2.png" alt="Rozgrywka"/></td></tr>
 </table>
 <h2>O co w tym chodzi?</h2>
 <p>Każdy z graczy kontroluje <em>trzy figury</em> (losowo wybrane z: koła, gwiazdy, pięciokąta, kwadratu, trójkąta i półksiężyca). Każda z nich
 zjada dwie inne figury (są one narysowane na dole, przy każdej figurze). Jeśli figura gracza <em>zje</em> inną figurę, gracz <em>zdobywa dwa punkty</em>. Jeżeli jednak figura gracza <em>zostanie zjedzona</em>, to gracz <em>traci jeden punkt</em>. Każda zjedzona figura jest zastępowana nową, losowo wybraną, pojawiającą się w dowolnym miejscu planszy.</p>
+<img src="cheatSheet128.png" alt="Kto kogo zjada."/>
 <p>Gracz może sterować <em>jedną figurą na raz</em>. Może <em>rozkazać jej</em> wykonać kolejno kilka akcji, nie może jednak cofnąć rozkazu. 
 <em>Przełączając</em> aktywną figurę, można wydawać rozkazy wszystkim swoim figurom.</p>
+<img src="teleports.png" alt="Rodzaje teleportów"/>
 <p>Używając <em>teleportu</em>, można szybko przenieść figurę w inne miejsce. Każdego teleportu może używać tylko <em>jeden rodzaj figur</em>.
 Używanie <em>przedmiotów</em> daje dużą przewagę, nawet jeśli tylko na krótką chwilę. Można mieć wiele aktywnych przedmiotów naraz. Poniżej znajduje się opis działania każdego z nich:</p>
 <table><tr><th>Przedmiot</th><th>Działanie</th></tr>
