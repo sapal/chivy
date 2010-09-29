@@ -366,6 +366,7 @@ class BoardLayer(cocos.layer.Layer):
 
 class InputLayer(cocos.layer.Layer):
     is_event_handler = True
+
     def __init__(self, client):
         super(InputLayer, self).__init__()
         self.client = client
@@ -381,15 +382,15 @@ class InputLayer(cocos.layer.Layer):
             del self.playersInput[k]
 
         for p in controls:
-            b = keyBindings.preconfigured[self.client.controller.game.players[p].prefferedKeybindings]
+            (b,t) = keyBindings.preconfigured[self.client.controller.game.players[p].prefferedKeybindings]
             if p not in self.playersInput and self.bindingOk(b):
-                self.playersInput[p] = PlayerControl(self.client.controller, p, b)
+                self.playersInput[p] = PlayerControl(self.client.controller, p, b, t)
 
-        bindings = [ b for b in keyBindings.preconfigured if self.bindingOk(b) ]
+        bindings = [ (b,t) for b,t in keyBindings.preconfigured if self.bindingOk(b) ]
         idx = 0
         for p in controls:
             if p not in self.playersInput and idx < len(bindings):
-                self.playersInput[p] = PlayerControl(self.client.controller, p, bindings[idx])
+                self.playersInput[p] = PlayerControl(self.client.controller, p, bindings[idx][0], bindings[idx][1])
                 idx += 1
 
     controlPlayers = property(getControlPlayers,setControlPlayers)
@@ -405,6 +406,11 @@ class InputLayer(cocos.layer.Layer):
     def on_key_press(self, key, modyfiers):
         for i in self.playersInput.values():
             if i.on_key_press(key, modyfiers):return True
+        return False
+    
+    def on_text(self, text):
+        for i in self.playersInput.values():
+            if i.on_text(text):return True
         return False
 
 class Client(cocos.scene.Scene):
@@ -442,14 +448,25 @@ class Client(cocos.scene.Scene):
         return self.controller.game
 
 class PlayerControl(pyglet.event.EventDispatcher):
-    def __init__(self, controller, playerId, keyBindings):
-        """keyBindings is a dictionary key -> action (string)"""
+    def __init__(self, controller, playerId, keyBindings, textBindings=None):
+        """keyBindings is a dictionary key -> action (string).
+        textBindings should be a dictionary symbol (string) -> action or None."""
+        if textBindings is None:
+            textBindings = {}
+        self.textBindings = textBindings
         self.controller = controller
         self.playerId = playerId
         self.keyBindings = keyBindings
+
     def on_key_press(self, symbol, modifiers):
         if symbol in self.keyBindings:
             self.controller.sendInput(self.playerId, self.keyBindings[symbol])
+            return True
+        return False
+
+    def on_text(self, text):
+        if text in self.textBindings:
+            self.controller.sendInput(self.playerId, self.textBindings[text])
             return True
         return False
 
@@ -458,8 +475,10 @@ class InputListener(pyglet.event.EventDispatcher):
     
     keyBindings - dictionary:
         pyglet.window.key -> (function,kwargs)"""
+
     def __init__(self):
         self.keyBindings = {}
+
     def on_key_press(self,symbol,modifiers):
         if symbol in self.keyBindings:
             f,kwargs = self.keyBindings[symbol]

@@ -17,7 +17,7 @@
 <tr><td class="key">Strzałka w lewo</td><td class="value">Idź w lewo</td></tr>
 <tr><td class="key">Strzałka w prawo</td><td class="value">Idź w prawo</td></tr>
 <tr><td class="key">Prawy Ctrl</td><td class="value">Zmień aktywną figurę</td></tr>
-<tr><td class="key">Ukośnik (/)</td><td class="value">Użyj przedmiotu / teleportu</td></tr>
+<tr><td class="key">Prawy Shift</td><td class="value">Użyj przedmiotu / teleportu</td></tr>
 </table>
 
 <h3>Gracz 2</h3>
