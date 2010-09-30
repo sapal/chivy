@@ -65,7 +65,7 @@ class Config(object):
     botNames = [".:^LoL bOt^:.", "c_style_bot", "camelCaseBot", "h^bot", "#@$!!&^*", "CONSTANT_BOT" ]
 
     """Show FPS?"""
-    showFPS = True
+    showFPS = False
 
     """Screen size:"""
     #screenSize = 1280,800
