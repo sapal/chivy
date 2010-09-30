@@ -3,7 +3,7 @@ import re
 import sys
 import os
 
-menuItems = [ ("Strona główna", "mainPage"), ("Jak grać", "controls"), ("Instalacja", "installing") ]
+menuItems = []
 
 def generateMenu(output):
     outputFile = output[:output.rfind('.')]
@@ -51,10 +51,11 @@ def generateHtml(template, output):
 
 if __name__=="__main__":
     if len(sys.argv) < 3:
-        print("Usage: {0} template output.html".format(sys.argv[0]))
+        print("Usage: {0} template menu output.html".format(sys.argv[0]))
         sys.exit()
-    generateMenu(sys.argv[2])
-    generateHtml(sys.argv[1], sys.argv[2])
+    menuItems = eval(open(sys.argv[2]).read()) 
+    generateMenu(sys.argv[3])
+    generateHtml(sys.argv[1], sys.argv[3])
 
     
     

@@ -1,0 +1,8 @@
+<table class="border">
+        <tr><td class="borderLT"></td><td class="borderH"></td><td class="borderRT"></td></tr>
+        <tr><td class="borderV"></td>
+            <td class="menu"><table width="100%"><tr><td width="33.3333333333%" class="menuTd"><a class="menuHref" href="mainPage.en.html">Main Page</a></td>
+<td width="33.3333333333%" class="menuTd"><a class="menuHref" href="controls.en.html">How to Play</a></td>
+<td width="33.3333333333%" class="menuSelfTd"><a class="menuSelfHref" href="installing.en.html">Installing</a></td></tr></table></td>
+            <td class="borderV"></td></tr>
+        <tr><td class="borderLB"></td><td class="borderH"></td><td class="borderRB"></td></tr></table>

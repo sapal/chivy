@@ -1,0 +1,21 @@
+<h2>What is Chivy?</h2>
+<p><em>Chivy</em> is a simple arcade game with logic elements. It requires of players high attention divisibility, skillful hands and quick thinking.</p>
+<p><em>Chivy</em> can be played by many players on one computer (up to 4 players), through network or with computer opponents (6 difficulty levels). There are some levels included, but it is also possible to generate a random board.</p>
+<h2>How does Chivy look like?</h2>
+<table>
+	<tr><td><img class="screenshot" src="screenshot1.en.png" alt="Main Menu"/></td></tr>
+	<tr><td><img class="screenshot" src="screenshot2.en.png" alt="Gameplay"/></td></tr>
+</table>
+<h2>What it is all about?</h2>
+<p> Every players controls <em>three shapes</em> (randomly chosen from circle, star, pentagon, square, triangle and crescent). Every one of them eats two other shapes (pictured near the bottom of every shape). If player's shape <em>eats</em> other shape, the player <em>gains two points</em>. But if player's shape <em>is eaten</em>, the player <em>loses one point</em>. Every eaten shape is replaced by a new one, randomly chosen and placed on a random position on board.</p>
+
+<img src="cheatSheet128.png" alt="Who eats who"/>
+<p>The player can steer <em>one shape at a time</em>. The shape can be ordered to perform successively some actions, however the order can not be cancelled. By <em>switching</em> active shape it is possible to control all of ones shapes.</p>
+<img src="teleports.png" alt="Teleports kinds"/>
+<p>By using a <em>teleport</em> it is possible to rapidly move a shape to different position on board. Every teleport can be used by only <em>one kind of shapes</em>. Using <em>items</em> gives player big advantage, even if only for a little while. It is possible for a shape to have many active items at a time. Below are descriptions of effects of using various items:</p>
+<table><tr><th>Item</th><th>Effect</th></tr>
+<tr><td class="key"><img src="masterSword128.png" alt="Sword"/></td><td class="value">Shape with sword <em>eats every kind of shapes</em><br/>Note that it still can be eaten.</td></tr>
+<tr><td class="key"><img src="shield128.png" alt="Shield"/></td><td class="value">Shape with shield is <em>inedible</em>.</td></tr>
+<tr><td class="key"><img src="speedBoots128.png" alt="Boots"/></td><td class="value">Boots <em>increase speed</em> of shape <em>by 1.5</em>.</td></tr>
+</table>
+<p>First player to reach predetermined <em>number of points wins</em>.</p>

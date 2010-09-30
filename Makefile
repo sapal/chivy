@@ -17,14 +17,15 @@ man/man6/chivy.6.gz: man/man6/chivy.txt
 	txt2man -t chivy man/man6/chivy.txt > man/man6/chivy.6
 	gzip -f man/man6/chivy.6
 
-html/mainPage.html:html/template.html html/mainPage.content html/mainPage.title html/generateHtml.py
-	python html/generateHtml.py html/template.html html/mainPage.html
+html/%.pl.html:html/template.html html/%.pl.content html/%.pl.title html/generateHtml.py
+	python html/generateHtml.py html/template.html html/menu.pl $@
 
-html/controls.html:html/template.html html/controls.content html/controls.title html/generateHtml.py
-	python html/generateHtml.py html/template.html html/controls.html
+html/%.en.html:html/template.html html/%.en.content html/%.en.title html/generateHtml.py
+	python html/generateHtml.py html/template.html html/menu.en $@
 
-html/installing.html:html/template.html html/installing.content html/installing.title html/generateHtml.py
-	python html/generateHtml.py html/template.html html/installing.html
+pl:html/mainPage.pl.html html/controls.pl.html html/installing.pl.html
+
+en:html/mainPage.en.html html/controls.en.html html/installing.en.html
 
 images/icon.png: images/icon.svg
 	rsvg-convert images/icon.svg -o images/icon.png
@@ -45,6 +46,6 @@ dist/Chivy_${VERSION}-1_all.deb: chivy.py ${SOURCES} ${DATA} man/man6/chivy.6.gz
 	cp images/icon.png deb/usr/share/pixmaps/chivy.png
 	fakeroot dpkg-deb --build deb dist/Chivy_${VERSION}-1_all.deb
 
-all: dist/Chivy-${VERSION}-py2.6.egg dist/Chivy_${VERSION}-1_all.deb ${HTML}
+all: dist/Chivy-${VERSION}-py2.6.egg dist/Chivy_${VERSION}-1_all.deb pl en
 
-.PHONY: all
+.PHONY: all pl en

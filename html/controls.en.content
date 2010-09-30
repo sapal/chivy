@@ -1,0 +1,55 @@
+<div class="controls">
+<h2>How to move in menu?</h2>
+<table class="keyBindings"><tr><th>Key</th><th>Action</th></tr>
+<tr><td class="key">Up and down arrows</td><td class="value">Choose menu item</td></tr>
+<tr><td class="key">Left and right arrows</td><td class="value">Change option</td></tr>
+<tr><td class="key">Enter</td><td class="value">Enter menu / change option</td></tr>
+<tr><td class="key">Escape</td><td class="value">Go to previous menu / end game</td></tr>
+</table>
+<em>It is also possible to use mouse to navigate menu.</em>
+
+<h2>How to control shapes?</h2>
+<h3>Player 1</h3>
+<img src="player0controls-base128.png" alt="Player 1"/>
+<table class="keyBindings"><tr><th>Key</th><th>Action</th></tr>
+<tr><td class="key">Up arrow</td><td class="value">Go up</td></tr>
+<tr><td class="key">Down arrow</td><td class="value">Go down</td></tr>
+<tr><td class="key">Left arrow</td><td class="value">Go left</td></tr>
+<tr><td class="key">Right arrow</td><td class="value">Go right</td></tr>
+<tr><td class="key">Right Ctrl</td><td class="value">Switch active shape</td></tr>
+<tr><td class="key">Right Shift</td><td class="value">Use item / teleport</td></tr>
+</table>
+
+<h3>Player 2</h3>
+<img src="player1controls-base128.png" alt="Player 2"/>
+<table class="keyBindings"><tr><th>Key</th><th>Action</th></tr>
+<tr><td class="key">W</td><td class="value">Go up</td></tr>
+<tr><td class="key">S</td><td class="value">Go down</td></tr>
+<tr><td class="key">A</td><td class="value">Go left</td></tr>
+<tr><td class="key">D</td><td class="value">Go right</td></tr>
+<tr><td class="key">Q</td><td class="value">Switch active shape</td></tr>
+<tr><td class="key">E</td><td class="value">Use item / teleport</td></tr>
+</table>
+
+<h3>Player 3</h3>
+<img src="player2controls-base128.png" alt="Player 3"/>
+<table class="keyBindings"><tr><th>Key</th><th>Action</th></tr>
+<tr><td class="key">I</td><td class="value">Go up</td></tr>
+<tr><td class="key">K</td><td class="value">Go down</td></tr>
+<tr><td class="key">J</td><td class="value">Go left</td></tr>
+<tr><td class="key">L</td><td class="value">Go right</td></tr>
+<tr><td class="key">U</td><td class="value">Switch active shape</td></tr>
+<tr><td class="key">O</td><td class="value">Use item / teleport</td></tr>
+</table>
+
+<h3>Player 4</h3>
+<img src="player3controls-base128.png" alt="Player 4"/>
+<table class="keyBindings"><tr><th>Key</th><th>Action</th></tr>
+<tr><td class="key">NUM 8</td><td class="value">Go up</td></tr>
+<tr><td class="key">NUM 5</td><td class="value">Go down</td></tr>
+<tr><td class="key">NUM 4</td><td class="value">Go left</td></tr>
+<tr><td class="key">NUM 6</td><td class="value">Go right</td></tr>
+<tr><td class="key">NUM 7</td><td class="value">Switch active shape</td></tr>
+<tr><td class="key">NUM 9</td><td class="value">Use item / teleport</td></tr>
+</table>
+</div>
