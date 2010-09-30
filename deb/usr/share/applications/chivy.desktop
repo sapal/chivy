@@ -1,11 +1,11 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Chivy
-Comment=Small game
-Comment[pl]=Prosta gra
+Comment=Simple multiplayer game
+Comment[pl]=Prosta gra wieloosobowa
 Exec=chivy
 Icon=chivy
 Terminal=false
 Type=Application
-Categories=Game;ArcadeGame
+Categories=Game;ArcadeGame;
 StartupNotify=true

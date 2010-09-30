@@ -5,4 +5,10 @@ Architecture: all
 Section: games
 Depends: python (>= 2.6), python-rabbyt (>= 0.8.1), python-pyglet (>= 1.1.2)
 Maintainer: Michał Sapalski <sapalskimichal@gmail.com>
-Description: Simple game
+Description: Simple multiplayer action game with logic elements.
+ It requires of players high attention divisibility, skillful hands and 
+ quick thinking.  Chivy can be played by many players on one computer 
+ (up to 4 players), through network or with computer opponents 
+ (6 difficulty levels). 
+ There are some levels included, but it is also possible to generate 
+ a random board.

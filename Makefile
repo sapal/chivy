@@ -4,7 +4,7 @@ VERSION=$(shell sed -n 's/[ ]*version *= *"\(.*\)"/\1/p' chivySources/config.py)
 SOURCES=$(shell find chivySources -name '*.py')
 DATA=$(shell find images tiled fonts levels)
 I18N=translations/pl_PL/LC_MESSAGES/base.mo translations/en_GB/LC_MESSAGES/base.mo
-DEBFILES=deb/DEBIAN/control deb/usr/games/chivy deb/usr/share/games/Chivy/chivy deb/usr/share/applications/chivy.desktop
+DEBFILES=deb/DEBIAN/control deb/usr/share/applications/chivy.desktop deb/usr/share/doc/*
 HTML=$(shell find html)
 
 translations/pl_PL/LC_MESSAGES/base.mo: translations/pl_PL.po
@@ -14,8 +14,8 @@ translations/en_GB/LC_MESSAGES/base.mo: translations/en_GB.po
 	msgfmt --output-file=translations/en_GB/LC_MESSAGES/base.mo translations/en_GB.po 
 
 man/man6/chivy.6.gz: man/man6/chivy.txt
-	txt2man -t chivy man/man6/chivy.txt > man/man6/chivy.6
-	gzip -f man/man6/chivy.6
+	txt2man -t chivy -s 6 -B chivy man/man6/chivy.txt > man/man6/chivy.6
+	gzip --best -f man/man6/chivy.6
 
 html/%.pl.html:html/template.html html/%.pl.content html/%.pl.title html/generateHtml.py
 	python html/generateHtml.py html/template.html html/menu.pl $@
@@ -36,12 +36,10 @@ dist/Chivy-${VERSION}-py2.6.egg: setup.py chivy.py ${SOURCES} ${DATA} images/ico
 dist/Chivy_${VERSION}-1_all.deb: chivy.py ${SOURCES} ${DATA} man/man6/chivy.6.gz ${DEBFILES} images/icon.png ${I18N}
 	mkdir -p deb/usr/share/games/Chivy/
 	mkdir -p deb/usr/share/man/man6/
-	#mkdir -p deb/usr/share/icons/hicolor/scalable/apps
 	mkdir -p deb/usr/share/app-install/icons/
 	mkdir -p deb/usr/share/pixmaps
 	cp chivy.py chivySources images translations tiled levels fonts -R deb/usr/share/games/Chivy/
 	cp man/man6/chivy.6.gz deb/usr/share/man/man6/
-	#cp images/icon.svg deb/usr/share/icons/hicolor/scalable/apps/chivy.svg
 	cp images/icon.svg deb/usr/share/app-install/icons/chivy.svg
 	cp images/icon.png deb/usr/share/pixmaps/chivy.png
 	fakeroot dpkg-deb --build deb dist/Chivy_${VERSION}-1_all.deb
