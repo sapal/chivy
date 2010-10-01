@@ -17,10 +17,10 @@ man/man6/chivy.6.gz: man/man6/chivy.txt
 	txt2man -t chivy -s 6 -B chivy man/man6/chivy.txt > man/man6/chivy.6
 	gzip --best -f man/man6/chivy.6
 
-html/%.pl.html:html/template.html html/%.pl.content html/%.pl.title html/generateHtml.py
+html/%.pl.html:html/template.html html/%.pl.content html/%.pl.title html/%.pl.lang html/generateHtml.py
 	python html/generateHtml.py html/template.html html/menu.pl $@
 
-html/%.en.html:html/template.html html/%.en.content html/%.en.title html/generateHtml.py
+html/%.en.html:html/template.html html/%.en.content html/%.en.title html/%.pl.lang html/generateHtml.py
 	python html/generateHtml.py html/template.html html/menu.en $@
 
 pl:html/mainPage.pl.html html/controls.pl.html html/installing.pl.html
