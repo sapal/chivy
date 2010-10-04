@@ -75,7 +75,7 @@ def startServer(argv):
     parser.add_option("-g", "--generate-board", default="TT++LI", help=_("Tiles used to create board."), dest="tiles")
     parser.add_option("-t", "--teleports", default=3, type="int", help=_("Number of teleports of each kind"))
     parser.add_option("-n", "--number-of-tiles", default=100, type="int", help=_("Number of tiles on board"), dest="number")
-    parser.add_option("-s", "--random-seed", type="int", default=random.randint(0,100000), help=_("Random seed used to generate board"), dest="seed")
+    parser.add_option("-s", "--random-seed", default=random.randint(0,100000), help=_("Random seed used to generate board"), dest="seed")
     options, args = parser.parse_args(argv)
 
     board = game.Board()
