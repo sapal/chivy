@@ -155,7 +155,7 @@ class GameMenu(menu.Menu):
 class ConnectingMenu(menu.Menu):
     def __init__(self):
         super(ConnectingMenu, self).__init__(_('Connecting...'))
-        self.button = MenuItem("Back",self.on_quit)
+        self.button = MenuItem(_("Back"),self.on_quit)
         createMenuLook(self, [self.button])
         self.ctrl = None
 

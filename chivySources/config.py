@@ -4,6 +4,7 @@ import os.path
 import sys
 from ast import literal_eval
 import locale as Locale
+import ipAddress
 """Game config."""
 
 class Config(object):
@@ -18,7 +19,7 @@ class Config(object):
     """Configuration, that should be saved and loaded:"""
     userConfig = ['locale', 'samplePlayerNames', 'userLevelsDir',
             'showFPS', 'userScreenshotsDir',
-            'fullScreen', 'windowedScreenSize',  'players', 'host', 'serverAddress', 'botNames',
+            'fullScreen', 'windowedScreenSize',  'players', 'host', 'botNames',
             'minBots', 'maxBots', 'bots', 'minBotSpeed', 'maxBotSpeed', 'botSpeed',
             'minPoints', 'maxPoints', 'points',
             'boardFilename', 'minTileNumber', 'maxTileNumber', 'tileNumber', 
@@ -100,7 +101,7 @@ class Config(object):
     host = "localhost"
 
     """Server address:"""
-    serverAddress = "localhost"
+    serverAddress = ipAddress.getIpAddress()
 
     """Point limit:"""
     minPoints = 10

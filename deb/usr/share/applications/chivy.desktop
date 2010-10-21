@@ -8,4 +8,4 @@ Icon=chivy
 Terminal=false
 Type=Application
 Categories=Game;ArcadeGame;
-StartupNotify=true
+StartupNotify=false
