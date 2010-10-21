@@ -22,6 +22,7 @@ import rabbyt
 import re
 import os
 import random
+import ipAddress
 from translation import gettext as _
 
 def deactivateItem(item):
@@ -210,7 +211,13 @@ class ServerMenu(menu.Menu):
         self.startItem = MenuItem(_("Start"), self.onStart)
         items.append(self.startItem)
 
-        items.append(EntryMenuItem(_("Host address: "), self.onAddressChange, config.serverAddress))
+        self.ipAddresses = ipAddress.getIpAddresses() 
+        idx = 0
+        if config.serverAddress in self.ipAddresses:
+            idx = self.ipAddresses.index(config.serverAddress)
+        else:
+            config.serverAddress = self.ipAddresses[idx]
+        items.append(MultipleMenuItem(_("Host address: "), self.onAddressChange, self.ipAddresses, idx))
 
         items.append(MenuItem(_("Back"), self.on_quit))
 
@@ -239,7 +246,7 @@ class ServerMenu(menu.Menu):
         self.startItem.update()
 
     def onAddressChange(self, value):
-        config.serverAddress = value
+        config.serverAddress = self.ipAddresses[value]
 
 class PlayerMenu(menu.Menu):
     def __init__(self, background):

@@ -1,5 +1,5 @@
 Package: chivy
-Version: 0.5
+Version: 0.6
 Priority: optional
 Architecture: all
 Section: games
@@ -10,5 +10,12 @@ Description: Simple multiplayer action game with logic elements.
  quick thinking.  Chivy can be played by many players on one computer 
  (up to 4 players), through network or with computer opponents 
  (6 difficulty levels). 
- There are some levels included, but it is also possible to generate 
- a random board.
+ There are some maps included, but it is also possible to generate 
+ a random one.
+Description-pl: Chivy to prosta gra zręcznościowa z elementami logicznymi.
+ Wymaga od graczy dużej podzielności uwagi, zręcznych palców i umiejętności
+ szybkiego myślenia. W Chivy można grać w wielu graczy na jednym komputerze
+ (maksymalnie 4 graczy), przez sieć lub z przeciwnikami komputerowymi
+ (6 poziomów trudności). 
+ Do wyboru jest kilka przygotowanych plansz, ale można również
+ wygenerować losową mapę.
