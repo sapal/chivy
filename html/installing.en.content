@@ -1,7 +1,7 @@
 <h2>How to install Chivy?</h2>
 <h3>With DEB package (Ubuntu/Debian)</h3>
 <ol class="bigList">
-<li>Download DEB package: <a href="Chivy_0.6-1_all.deb"><img class="icon" src="icon-deb.png" alt="Click to download"/></a></li>
+<li>Download DEB package: <a href="Chivy_0.6-2_all.deb"><img class="icon" src="icon-deb.png" alt="Click to download"/></a></li>
 <li>Open it</li>
 <li>Click “Install package”</li>
 <li>If the package cannot be installed (dependency is not satisfiable), enable “universe” software sources (System ⇝ Administration ⇝ Software sources ⇝ Community-maintained Open Source software (universe) )</li>

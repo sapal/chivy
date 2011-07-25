@@ -22,7 +22,7 @@ class GameObject(object):
         return self.position[1]
 
 class BoardTile(GameObject):
-    """Class dzoescripting single board-tile.
+    """Class descripting single board-tile.
     
     position - position on board (x,y) - (0,0) is lower left corner
     upSide - rotation of tile (witch of the sides is facing NORTH - one of BoardTile.directions)

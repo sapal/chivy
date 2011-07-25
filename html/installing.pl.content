@@ -1,7 +1,7 @@
 <h2>Jak zainstalować Chivy?</h2>
 <h3>Z paczki DEB (Ubuntu/Debian)</h3>
 <ol class="bigList">
-<li>Pobież paczkę DEB: <a href="Chivy_0.6-1_all.deb"><img class="icon" src="icon-deb.png" alt="Kliknij, aby pobrać"/></a></li>
+<li>Pobież paczkę DEB: <a href="Chivy_0.6-2_all.deb"><img class="icon" src="icon-deb.png" alt="Kliknij, aby pobrać"/></a></li>
 <li>Otwórz ją</li>
 <li>Kliknij „Zainstaluj pakiet”</li>
 <li>Jeżeli nie można zainstalować pakietu (niespełnione zależności), to włącz źródła „universe” (System ⇝ Administracja ⇝ Źródła oprogramowania ⇝ Oprogramowanie Open Source utrzymywane przez społeczność (universe) )</li>

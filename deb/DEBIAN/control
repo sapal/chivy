@@ -3,8 +3,10 @@ Version: 0.6
 Priority: optional
 Architecture: all
 Section: games
-Depends: python (>= 2.6), python-rabbyt (>= 0.8.1), python-pyglet (>= 1.1.2)
+Installed-Size: 124
+Depends: python2.6 (>= 2.6), python-rabbyt (>= 0.8.1), python-pyglet (>= 1.1.2)
 Maintainer: Michał Sapalski <sapalskimichal@gmail.com>
+Provides: chivy
 Description: Simple multiplayer action game with logic elements.
  It requires of players high attention divisibility, skillful hands and 
  quick thinking.  Chivy can be played by many players on one computer 
@@ -19,3 +21,4 @@ Description-pl: Chivy to prosta gra zręcznościowa z elementami logicznymi.
  (6 poziomów trudności). 
  Do wyboru jest kilka przygotowanych plansz, ale można również
  wygenerować losową mapę.
+
