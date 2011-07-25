@@ -53,5 +53,7 @@ dist/Chivy_${VERSION}-${DEBVERSION}_all.deb: chivy.py ${SOURCES} ${DATA} man/man
 clean:
 	rm dist -r || true
 	rm html/*.pl.html html/*.en.html || true
+	rm man/man6/chivy.6.gz || true
+	rm -r deb/DEBIAN/md5sums build Chivy.egg-info/ || true
 	cd deb/usr/share/games/Chivy/ && rm -r chivy.py chivySources fonts images levels tiled translations || true
 .PHONY: all pl en clean
