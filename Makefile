@@ -35,7 +35,7 @@ images/icon.png: images/icon.svg
 	rsvg-convert images/icon.svg -o images/icon.png
 
 dist/Chivy-${VERSION}-py2.6.egg: setup.py chivy.py ${SOURCES} ${DATA} images/icon.png ${I18N}
-	python setup.py bdist_egg
+	python2.6 setup.py bdist_egg
 
 dist/Chivy_${VERSION}-${DEBVERSION}_all.deb: chivy.py ${SOURCES} ${DATA} man/man6/chivy.6.gz ${DEBFILES} ${DEB} images/icon.png ${I18N}
 	mkdir -p deb/usr/share/games/Chivy/
