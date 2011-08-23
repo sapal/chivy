@@ -9,20 +9,13 @@ def generateMenu(output):
     outputFile = output[:output.rfind('.')]
     outputName = os.path.split(output)[1]
     outputName = outputName[:outputName.rfind('.')]
-    s = u"""<table class="border">
-        <tr><td class="borderLT"></td><td class="borderH"></td><td class="borderRT"></td></tr>
-        <tr><td class="borderV"></td>
-            <td class="menu"><table width="100%"><tr>"""
     items = []
-    prc=100.0/len(menuItems)
     for name, href in menuItems:
         cls = "menu"
         if href == outputName:
             cls = "menuSelf"
-        items.append(u'<td width="{prc}%" class="{cls}Td"><a class="{cls}Href" href="{href}.html">{name}</a></td>'.format(cls=cls, href=href, name=unicode(name,"utf-8"), prc=prc))
-    s += u"\n".join(items) + u"""</tr></table></td>
-            <td class="borderV"></td></tr>
-        <tr><td class="borderLB"></td><td class="borderH"></td><td class="borderRB"></td></tr></table>"""
+        items.append(u'<div class="menuItem"><a class="{cls}Href" href="{href}.html">{name}</a></div>'.format(cls=cls, href=href, name=unicode(name,"utf-8")))
+    s = u"\n\t\t".join(items)+'<br class="clear"/>'
     f = open(outputFile+".menu", "w")
     f.write(s.encode("utf-8"))
     f.close()
